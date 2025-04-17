@@ -1,2 +1,2 @@
 # mega
-Gelato Mega SDK for Account Abstraction 
+MEGA - Modern EVM Gelato Accounts
