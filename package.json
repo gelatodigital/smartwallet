@@ -1,6 +1,9 @@
 {
   "name": "mega",
   "private": true,
+  "author": "Gelato",
+  "description": "Modern Account Abstraction SDK",
+  "homepage": "https://github.com/gelatodigital/mega",
   "type": "module",
   "scripts": {
     "build": "tsc --project ./tsconfig.build.json",
@@ -11,7 +14,7 @@
     "clean": "pnpm -r clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish",
+    "release": "pnpm build && pnpm version-packages && changeset publish",
     "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
