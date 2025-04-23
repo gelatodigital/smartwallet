@@ -14,7 +14,6 @@ export interface SponsoredCallRequest {
 
 export const sponsoredCall = async (request: SponsoredCallRequest): Promise<string> => {
   if (request.authorizationList && request.authorizationList.length > 0)
-    // biome-ignore lint/performance/noDelete: <explanation>
     delete request.authorizationList[0].v;
 
   const { taskId, message } = await fetch(`${GELATO_API}/relays/v2/sponsored-call-eip7702`, {

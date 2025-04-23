@@ -18,6 +18,9 @@
       },
       "style": {
         "useConst": "error"
+      },
+      "performance": {
+        "noDelete": "off"
       }
     }
   },
