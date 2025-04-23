@@ -2,7 +2,7 @@ import { Mega, PaymentFactory } from '@gelatomega/core';
 import {
   GelatoMegaDynamicConnectButton,
   GelatoMegaDynamicContextProvider,
-  useGelatoMegaDynamicContext,
+  useGelatoMegaDynamicContext
 } from '@gelatomega/react-dynamic';
 import { useEffect, useState } from 'react';
 import { sepolia } from 'viem/chains';
@@ -26,8 +26,8 @@ const WalletInfoComponent = () => {
         {
           to: '0xa8851f5f279eD47a292f09CA2b6D40736a51788E',
           data: '0xd09de08a',
-          value: 0n,
-        },
+          value: 0n
+        }
       ]);
 
       setTransactionHash(hash);
@@ -41,13 +41,20 @@ const WalletInfoComponent = () => {
   useEffect(() => {
     const initializeMega = async () => {
       if (walletClient?.account && sponsorApiKey) {
-        console.log('Initializing Mega', walletClient.account, sponsorApiKey);
+        // TODO Sign authorization is undefined since WalletClient is not provided with that from Dynamic, determine how to do that
+        console.log(
+          'Initializing Mega',
+          walletClient.account,
+          sponsorApiKey,
+          !!walletClient.account.signAuthorization
+        );
+
         try {
           // Create a wallet client with chain and account
           const clientWithChain = {
             ...walletClient,
             chain: sepolia,
-            account: walletClient.account,
+            account: walletClient.account
           };
 
           // Initialize Mega with the wallet client and sponsored payment
@@ -119,7 +126,7 @@ export default function Providers() {
   return (
     <GelatoMegaDynamicContextProvider
       settings={{
-        environmentId: dynamicEnvironmentId,
+        environmentId: dynamicEnvironmentId
       }}
     >
       <WalletInfoComponent />

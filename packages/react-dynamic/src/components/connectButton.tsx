@@ -6,7 +6,7 @@ interface GelatoMegaDynamicConnectButtonProps {
 }
 
 export const GelatoMegaDynamicConnectButton: FC<GelatoMegaDynamicConnectButtonProps> = ({
-  children,
+  children
 }) => {
   return <DynamicConnectButton>{children}</DynamicConnectButton>;
 };
