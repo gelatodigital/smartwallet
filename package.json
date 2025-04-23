@@ -24,5 +24,15 @@
   "simple-git-hooks": {
     "pre-commit": "pnpm format"
   },
-  "packageManager": "pnpm@10.8.1"
+  "packageManager": "pnpm@10.8.1",
+  "pnpm": {
+    "overrides": {
+      "mega": "workspace:*"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "mega": "*"
+      }
+    }
+  }
 }
