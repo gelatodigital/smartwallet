@@ -1,17 +1,17 @@
 {
-	"name": "examples",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"dev": "tsx ."
-	},
-	"dependencies": {
-		"mega": "workspace:*",
-		"viem": "catalog:"
-	},
-	"devDependencies": {
-		"@types/node": "latest",
-		"tsx": "^4.19.3",
-		"typescript": "catalog:"
-	}
+  "name": "examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx ."
+  },
+  "dependencies": {
+    "mega": "workspace:*",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "^4.19.3",
+    "typescript": "catalog:"
+  }
 }
