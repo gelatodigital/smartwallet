@@ -51,7 +51,7 @@ const WalletInfoComponent = () => {
           };
 
           // Initialize Mega with the wallet client and sponsored payment
-          const megaInstance = new Mega(clientWithChain, PaymentFactory.native);
+          const megaInstance = new Mega(clientWithChain, PaymentFactory.sponsored(sponsorApiKey));
 
           setMega(megaInstance);
         } catch (error) {
