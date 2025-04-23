@@ -1,6 +1,9 @@
 {
-  "name": "mega",
+  "name": "gelatomega",
   "private": true,
+  "author": "Gelato",
+  "description": "Modern Account Abstraction SDK",
+  "homepage": "https://github.com/gelatodigital/mega",
   "type": "module",
   "scripts": {
     "build": "tsc --project ./tsconfig.build.json",
@@ -11,18 +14,31 @@
     "clean": "pnpm -r clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && pnpm version-packages && changeset publish",
+    "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@changesets/cli": "^2.27.1",
+    "@changesets/cli": "^2.29.2",
+    "prettier": "^3.5.3",
+    "simple-git-hooks": "^2.12.1",
     "typescript": "catalog:"
   },
   "engines": {
     "node": ">=23"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm format"
+    "pre-commit": "pnpm format && pnpm lint"
   },
-  "packageManager": "pnpm@10.8.1"
+  "packageManager": "pnpm@10.8.1",
+  "pnpm": {
+    "overrides": {
+      "mega": "workspace:*"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "mega": "*"
+      }
+    }
+  }
 }

@@ -1,9 +1,9 @@
 {
-  "name": "examples",
+  "name": "mega-sponsored",
   "private": true,
-  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "tsx ."
+    "dev": "tsx src/index.ts"
   },
   "dependencies": {
     "mega": "workspace:*",

@@ -1,5 +1,6 @@
-import { SignedAuthorizationList } from 'viem';
-import { GELATO_API } from './constants';
+import type { SignedAuthorizationList } from 'viem';
+
+import { GELATO_API } from './constants.js';
 
 export interface SponsoredCallRequest {
   chainId: number;

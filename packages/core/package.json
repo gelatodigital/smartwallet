@@ -1,8 +1,9 @@
 {
-  "name": "mega",
-  "description": "Modern Account Abstraction SDK",
+  "name": "@gelatomega/core",
   "version": "0.0.1",
-  "type": "module",
+  "author": "Gelato",
+  "description": "Modern Account Abstraction SDK",
+  "main": "./index.ts",
   "peerDependencies": {
     "typescript": "catalog:",
     "viem": "catalog:"
@@ -11,5 +12,8 @@
     "typescript": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "viem": "catalog:"
   }
 }

@@ -1,6 +1,7 @@
 packages:
-  - src
-  - examples
+  - 'examples/*'
+  - 'packages/*'
+  - docs
 
 onlyBuiltDependencies:
   - '@biomejs/biome'
