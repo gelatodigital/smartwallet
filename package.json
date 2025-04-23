@@ -11,18 +11,21 @@
     "clean": "pnpm -r clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
     "@changesets/cli": "^2.27.1",
+    "prettier": "^3.5.3",
+    "simple-git-hooks": "^2.12.1",
     "typescript": "catalog:"
   },
   "engines": {
     "node": ">=23"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm format"
+    "pre-commit": "pnpm lint"
   },
   "packageManager": "pnpm@10.8.1",
   "pnpm": {
