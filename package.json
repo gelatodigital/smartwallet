@@ -28,7 +28,7 @@
     "node": ">=23"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint"
+    "pre-commit": "pnpm format && pnpm lint"
   },
   "packageManager": "pnpm@10.8.1",
   "pnpm": {
