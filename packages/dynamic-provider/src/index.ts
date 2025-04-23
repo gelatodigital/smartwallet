@@ -1,1 +1,1 @@
-export { GelatoMegaDynamicContextProvider } from './provider.js';
+export { GelatoMegaDynamicContextProvider, useGelatoMegaDynamicContext } from './provider.js';
