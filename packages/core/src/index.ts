@@ -1,2 +1,2 @@
-export { Mega } from './mega.js';
-export { PaymentFactory } from './payment.js';
+export { createMegaClient } from "./mega.js";
+export { native, erc20, sponsored } from "./payment/index.js";
