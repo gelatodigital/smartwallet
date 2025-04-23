@@ -1,5 +1,6 @@
 import type { Address, Call, TypedDataDefinition } from 'viem';
-import { EXECUTION_MODE } from './constants';
+
+import { EXECUTION_MODE } from './constants.js';
 
 export const serializeTypedData = (
   chainId: number,

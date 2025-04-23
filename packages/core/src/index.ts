@@ -1,2 +1,2 @@
-export { Mega } from './mega';
-export { PaymentFactory } from './payment';
+export { Mega } from './mega.js';
+export { PaymentFactory } from './payment.js';

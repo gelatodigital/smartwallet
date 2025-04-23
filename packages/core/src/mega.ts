@@ -8,11 +8,12 @@ import {
   publicActions,
 } from 'viem';
 import { encodeExecuteData } from 'viem/experimental/erc7821';
-import { abi } from './abi';
-import { DELEGATION_ADDRESSES } from './constants';
-import { serializeTypedData } from './eip712';
-import type { Payment } from './payment';
-import { sponsoredCall } from './relay';
+
+import { abi } from './abi.js';
+import { DELEGATION_ADDRESSES } from './constants.js';
+import { serializeTypedData } from './eip712.js';
+import type { Payment } from './payment.js';
+import { sponsoredCall } from './relay.js';
 
 type WalletClientWithChainAndAccount = WalletClient & { chain: Chain; account: Account };
 type MegaClient = WalletClientWithChainAndAccount & PublicActions;
