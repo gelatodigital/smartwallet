@@ -1,9 +1,8 @@
 {
   "name": "mega-sponsored",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "tsx ."
+    "dev": "tsx src/index.ts"
   },
   "dependencies": {
     "mega": "workspace:*",
