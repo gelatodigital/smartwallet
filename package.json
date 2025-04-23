@@ -1,10 +1,9 @@
 {
   "name": "mega",
   "private": true,
-  "version": "0.0.1",
-  "description": "Modern Account Abstraction SDK",
+  "type": "module",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "tsc --project ./tsconfig.build.json",
     "dev": "pnpm -r dev",
     "lint": "biome check .",
     "format": "biome format --write .",
@@ -15,13 +14,15 @@
     "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
     "@biomejs/biome": "^1.5.3",
-    "@types/node": "^20.10.5",
-    "typescript": "^5.3.3"
+    "@changesets/cli": "^2.27.1",
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">=23"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm format"
   },
   "packageManager": "pnpm@10.8.1"
 }

@@ -1,0 +1,15 @@
+{
+	"name": "mega",
+	"description": "Modern Account Abstraction SDK",
+	"version": "0.0.1",
+	"type": "module",
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "viem": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
+}
