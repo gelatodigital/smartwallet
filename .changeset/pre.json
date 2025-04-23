@@ -2,7 +2,7 @@
   "mode": "pre",
   "tag": "alpha",
   "initialVersions": {
-    "@mega/core": "0.0.1"
+    "@gelatomega/core": "0.0.1"
   },
   "changesets": []
 }

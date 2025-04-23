@@ -1,4 +1,4 @@
-import { Mega, PaymentFactory } from '@mega/core';
+import { Mega, PaymentFactory } from '@gelatomega/core';
 import { http, createWalletClient } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';

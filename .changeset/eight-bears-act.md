@@ -1,5 +1,5 @@
 ---
-"@mega/core": patch
+"@gelatomega/core": patch
 ---
 
 chore: initial alpha version
