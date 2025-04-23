@@ -1,0 +1,24 @@
+{
+  "name": "@gelatomega/dynamic-provider",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "description": "Context provider supporting Dynamic WaaS",
+  "main": "./index.ts",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@dynamic-labs/ethereum": "^4.12.4",
+    "@dynamic-labs/sdk-react-core": "^4.12.4",
+    "react": "^19.1.0",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.2"
+  }
+}

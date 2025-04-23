@@ -6,7 +6,7 @@
   "homepage": "https://github.com/gelatodigital/mega",
   "type": "module",
   "scripts": {
-    "build": "tsc --project ./tsconfig.build.json",
+    "build": "tsc --project ./tsconfig.build.json --jsx react-jsx",
     "dev": "pnpm -r dev",
     "lint": "biome check .",
     "format": "biome format --write .",
