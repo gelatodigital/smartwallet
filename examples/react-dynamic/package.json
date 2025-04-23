@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@gelatomega/core": "workspace:*",
-    "@gelatomega/dynamic-provider": "workspace:*",
+    "@gelatomega/react-dynamic": "workspace:*",
     "react": "catalog:",
     "react-dom": "^19.1.0",
     "viem": "catalog:"

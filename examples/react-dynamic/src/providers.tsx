@@ -2,7 +2,7 @@ import { Mega, PaymentFactory } from '@gelatomega/core';
 import {
   GelatoMegaDynamicContextProvider,
   useGelatoMegaDynamicContext,
-} from '@gelatomega/dynamic-provider';
+} from '@gelatomega/react-dynamic';
 import { useEffect, useState } from 'react';
 import { sepolia } from 'viem/chains';
 

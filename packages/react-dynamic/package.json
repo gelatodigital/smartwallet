@@ -1,5 +1,5 @@
 {
-  "name": "@gelatomega/dynamic-provider",
+  "name": "@gelatomega/react-dynamic",
   "version": "0.0.1",
   "author": "Gelato",
   "description": "Context provider supporting Dynamic WaaS",

@@ -5,6 +5,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    exclude: ['@gelatomega/core', '@gelatomega/dynamic-provider'],
+    exclude: ['@gelatomega/core', '@gelatomega/react-dynamic'],
   },
 });
