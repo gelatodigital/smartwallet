@@ -6,7 +6,7 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "mega": "workspace:*",
+    "gelatomega": "workspace:*",
     "viem": "catalog:"
   },
   "devDependencies": {

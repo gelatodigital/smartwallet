@@ -38,7 +38,7 @@ importers:
 
   examples/sponsored:
     dependencies:
-      mega:
+      gelatomega:
         specifier: workspace:*
         version: link:../..
       viem:
