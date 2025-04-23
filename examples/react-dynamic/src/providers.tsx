@@ -1,5 +1,6 @@
 import { Mega, PaymentFactory } from '@gelatomega/core';
 import {
+  GelatoMegaDynamicConnectButton,
   GelatoMegaDynamicContextProvider,
   useGelatoMegaDynamicContext,
 } from '@gelatomega/react-dynamic';
@@ -10,18 +11,10 @@ const WalletInfoComponent = () => {
   const { walletClient, handleLogOut } = useGelatoMegaDynamicContext();
   const [mega, setMega] = useState<Mega | null>(null);
 
-  const [address, setAddress] = useState<string | null>(null);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
-
-  const getAddress = async () => {
-    if (walletClient) {
-      const address = await walletClient.getAddresses();
-      setAddress(address[0]);
-    }
-  };
 
   const executeTransaction = async () => {
     if (!mega) return;
@@ -48,6 +41,7 @@ const WalletInfoComponent = () => {
   useEffect(() => {
     const initializeMega = async () => {
       if (walletClient?.account && sponsorApiKey) {
+        console.log('Initializing Mega', walletClient.account, sponsorApiKey);
         try {
           // Create a wallet client with chain and account
           const clientWithChain = {
@@ -57,12 +51,14 @@ const WalletInfoComponent = () => {
           };
 
           // Initialize Mega with the wallet client and sponsored payment
-          const megaInstance = new Mega(clientWithChain, PaymentFactory.sponsored(sponsorApiKey));
+          const megaInstance = new Mega(clientWithChain, PaymentFactory.native);
 
           setMega(megaInstance);
         } catch (error) {
           console.error('Failed to initialize Mega:', error);
         }
+      } else {
+        console.log('No wallet client or sponsor API key');
       }
     };
 
@@ -75,11 +71,6 @@ const WalletInfoComponent = () => {
       {walletClient ? (
         <div>
           <p>Wallet connected!</p>
-          <button type="button" onClick={getAddress}>
-            Get Address
-          </button>
-          {address && <p>Address: {address}</p>}
-
           <div style={{ marginTop: '20px' }}>
             <h3>Mega Transaction</h3>
             {mega ? (
@@ -93,13 +84,16 @@ const WalletInfoComponent = () => {
               <p>Mega not initialized</p>
             )}
           </div>
-
+          <p />
           <button type="button" onClick={handleLogOut}>
             Logout
           </button>
         </div>
       ) : (
-        <p>No wallet connected</p>
+        <div>
+          <p>No wallet connected</p>
+          <GelatoMegaDynamicConnectButton>Login</GelatoMegaDynamicConnectButton>
+        </div>
       )}
     </div>
   );
