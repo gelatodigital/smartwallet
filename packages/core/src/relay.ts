@@ -20,9 +20,9 @@ export const sponsoredCall = async (request: SponsoredCallRequest): Promise<stri
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(request)
   }).then((raw) => raw.json());
 
   if (message) throw new Error(message);

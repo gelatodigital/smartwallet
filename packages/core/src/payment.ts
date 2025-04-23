@@ -19,5 +19,5 @@ export type Payment = NativePayment | ERC20Payment | SponsoredPayment;
 export const PaymentFactory = {
   native: { type: 'native' } as NativePayment,
   erc20: (token: Address): ERC20Payment => ({ type: 'erc20', token }),
-  sponsored: (apiKey: string): SponsoredPayment => ({ type: 'sponsored', apiKey }),
+  sponsored: (apiKey: string): SponsoredPayment => ({ type: 'sponsored', apiKey })
 };

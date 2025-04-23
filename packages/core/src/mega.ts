@@ -5,7 +5,7 @@ import {
   type Chain,
   type PublicActions,
   type WalletClient,
-  publicActions,
+  publicActions
 } from 'viem';
 import { encodeExecuteData } from 'viem/experimental/erc7821';
 
@@ -38,14 +38,14 @@ export class Mega {
     let authorizationList = undefined;
     if (!this.hasDelegated) {
       const bytecode = await this.client.getCode({
-        address: this.client.account.address,
+        address: this.client.account.address
       });
 
       if (bytecode?.toLowerCase() !== `0xef0100${this.delegationAddress.slice(2).toLowerCase()}`) {
         const authorization = await this.client.signAuthorization({
           account: this.client.account,
           contractAddress: this.delegationAddress,
-          executor: this.payment.type === 'native' ? 'self' : undefined,
+          executor: this.payment.type === 'native' ? 'self' : undefined
         });
 
         authorizationList = [authorization];
@@ -65,7 +65,7 @@ export class Mega {
         nonce = (await this.client.readContract({
           address: this.client.account.address,
           abi,
-          functionName: 'getNonce',
+          functionName: 'getNonce'
         })) as bigint;
 
         console.log('nonce', nonce);
@@ -75,19 +75,19 @@ export class Mega {
         this.client.chain.id,
         this.client.account.address,
         calls,
-        nonce,
+        nonce
       );
 
       // TODO: add support for passkey signers
       opData = await this.client.signTypedData({
         account: this.client.account,
-        ...typedData,
+        ...typedData
       });
     }
 
     const executeData = encodeExecuteData({
       calls,
-      opData,
+      opData
     });
 
     let hashOrTaskId: string;
@@ -99,7 +99,7 @@ export class Mega {
           to: this.client.account.address,
           chain: this.client.chain,
           authorizationList,
-          data: executeData,
+          data: executeData
         });
         break;
       }
@@ -109,7 +109,7 @@ export class Mega {
           target: this.client.account.address,
           data: executeData,
           sponsorApiKey: this.payment.apiKey,
-          authorizationList,
+          authorizationList
         });
         break;
       }

@@ -6,11 +6,11 @@ export const abi = [
       {
         name: 'pubkey',
         type: 'bytes',
-        internalType: 'bytes',
-      },
+        internalType: 'bytes'
+      }
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
@@ -19,11 +19,11 @@ export const abi = [
       {
         name: 'keyHash',
         type: 'bytes32',
-        internalType: 'bytes32',
-      },
+        internalType: 'bytes32'
+      }
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
@@ -33,24 +33,24 @@ export const abi = [
       {
         name: '',
         type: 'uint256',
-        internalType: 'uint256',
-      },
+        internalType: 'uint256'
+      }
     ],
-    stateMutability: 'view',
+    stateMutability: 'view'
   },
   {
     type: 'error',
     name: 'InvalidCaller',
-    inputs: [],
+    inputs: []
   },
   {
     type: 'error',
     name: 'Unauthorized',
-    inputs: [],
+    inputs: []
   },
   {
     type: 'error',
     name: 'UnsupportedExecutionMode',
-    inputs: [],
-  },
+    inputs: []
+  }
 ];
