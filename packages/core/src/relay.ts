@@ -1,4 +1,4 @@
-import { SignedAuthorizationList } from 'viem';
+import type { SignedAuthorizationList } from 'viem';
 import { GELATO_API } from './constants';
 
 export interface SponsoredCallRequest {
@@ -13,7 +13,7 @@ export interface SponsoredCallRequest {
 
 export const sponsoredCall = async (request: SponsoredCallRequest): Promise<string> => {
   if (request.authorizationList && request.authorizationList.length > 0)
-    delete request.authorizationList[0].v;
+    request.authorizationList[0].v = undefined;
 
   const { taskId, message } = await fetch(`${GELATO_API}/relays/v2/sponsored-call-eip7702`, {
     method: 'POST',

@@ -1,5 +1,5 @@
 import { Mega, PaymentFactory } from '@mega/core';
-import { createWalletClient, http } from 'viem';
+import { http, createWalletClient } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { sepolia } from 'viem/chains';
 

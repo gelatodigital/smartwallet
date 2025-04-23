@@ -1,4 +1,4 @@
-import { Address, Call, TypedDataDefinition } from 'viem';
+import type { Address, Call, TypedDataDefinition } from 'viem';
 import { EXECUTION_MODE } from './constants';
 
 export const serializeTypedData = (

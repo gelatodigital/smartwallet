@@ -1,10 +1,18 @@
-import { Account, Address, Call, Chain, publicActions, PublicActions, WalletClient } from 'viem';
+import {
+  type Account,
+  type Address,
+  type Call,
+  type Chain,
+  type PublicActions,
+  type WalletClient,
+  publicActions,
+} from 'viem';
 import { encodeExecuteData } from 'viem/experimental/erc7821';
-import { DELEGATION_ADDRESSES } from './constants';
-import { sponsoredCall } from './relay';
-import { Payment } from './payment';
 import { abi } from './abi';
+import { DELEGATION_ADDRESSES } from './constants';
 import { serializeTypedData } from './eip712';
+import type { Payment } from './payment';
+import { sponsoredCall } from './relay';
 
 type WalletClientWithChainAndAccount = WalletClient & { chain: Chain; account: Account };
 type MegaClient = WalletClientWithChainAndAccount & PublicActions;
