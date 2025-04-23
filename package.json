@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@changesets/cli": "^2.27.1",
+    "@changesets/cli": "^2.29.2",
     "prettier": "^3.5.3",
     "simple-git-hooks": "^2.12.1",
     "typescript": "catalog:"

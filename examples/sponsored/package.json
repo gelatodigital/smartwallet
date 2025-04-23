@@ -1,6 +1,7 @@
 {
   "name": "mega-sponsored",
   "private": true,
+  "version": "0.0.1",
   "scripts": {
     "dev": "tsx src/index.ts"
   },
