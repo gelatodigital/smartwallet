@@ -1,7 +1,6 @@
 import { EthereumWalletConnectors, isEthereumWallet } from '@dynamic-labs/ethereum';
 import { DynamicContextProvider, useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import type React from 'react';
-import type { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { WalletClient } from 'viem';
 
@@ -29,17 +28,19 @@ interface GelatoMegaDynamicContextProps {
   };
 }
 
-export const GelatoMegaDynamicContextProvider: React.FC<GelatoMegaDynamicContextProps> = ({
-  children,
-  settings,
-}) => {
+const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
+
+  const customHandleLogOut = async () => {
+    setWalletClient(null);
+    handleLogOut();
+  };
 
   useEffect(() => {
     const fetchWalletClient = async () => {
       if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
-        throw new Error('No primary wallet found');
+        return;
       }
 
       try {
@@ -54,15 +55,26 @@ export const GelatoMegaDynamicContextProvider: React.FC<GelatoMegaDynamicContext
   }, [primaryWallet]);
 
   return (
+    <GelatoMegaDynamicProviderContext.Provider
+      value={{ walletClient, handleLogOut: customHandleLogOut }}
+    >
+      {children}
+    </GelatoMegaDynamicProviderContext.Provider>
+  );
+};
+
+export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps> = ({
+  children,
+  settings,
+}) => {
+  return (
     <DynamicContextProvider
       settings={{
         environmentId: settings.environmentId,
         walletConnectors: [EthereumWalletConnectors],
       }}
     >
-      <GelatoMegaDynamicProviderContext.Provider value={{ walletClient, handleLogOut }}>
-        {children}
-      </GelatoMegaDynamicProviderContext.Provider>
+      <GelatoMegaDynamicInternal>{children}</GelatoMegaDynamicInternal>
     </DynamicContextProvider>
   );
 };
