@@ -5,10 +5,6 @@ export interface NativePayment {
   readonly type: "native";
 }
 
-export interface NativePaymentWithRelay {
-  readonly type: "native-relay";
-}
-
 export interface ERC20Payment {
   readonly type: "erc20";
   readonly token: Address;
@@ -19,13 +15,9 @@ export interface SponsoredPayment {
   readonly apiKey: string;
 }
 
-export type Payment = NativePayment | NativePaymentWithRelay | ERC20Payment | SponsoredPayment;
+export type Payment = NativePayment | ERC20Payment | SponsoredPayment;
 
 export const native = (): NativePayment => ({ type: "native" });
-
-export const nativeWithRelay = (): NativePaymentWithRelay => ({
-  type: "native-relay"
-});
 
 export const erc20 = (token: Address): ERC20Payment => ({
   type: "erc20",
@@ -34,8 +26,7 @@ export const erc20 = (token: Address): ERC20Payment => ({
 
 export const isErc20 = (payment: Payment): payment is ERC20Payment => payment.type === "erc20";
 
-export const isNativeWithRelay = (payment: Payment): payment is NativePaymentWithRelay =>
-  payment.type === "native-relay";
+export const isNative = (payment: Payment): payment is NativePayment => payment.type === "native";
 
 export const sponsored = (apiKey: string): SponsoredPayment => ({
   type: "sponsored",

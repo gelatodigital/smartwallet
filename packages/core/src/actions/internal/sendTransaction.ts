@@ -27,20 +27,6 @@ export async function sendTransaction<
 ) {
   switch (payment.type) {
     case "native": {
-      return await client.sendTransaction({
-        account: client.account,
-        to: client.account.address,
-        from: client.account.address,
-        chain: client.chain,
-        authorizationList,
-        data: encodeExecuteData({
-          calls,
-          opData
-        })
-        // TODO: fix type
-      } as any);
-    }
-    case "native-relay": {
       return await callGelatoAccount({
         chainId: client.chain.id,
         target: client.account.address,
