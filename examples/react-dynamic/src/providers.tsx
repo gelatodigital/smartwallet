@@ -1,4 +1,4 @@
-import { createMegaClient, sponsored} from "@gelatomega/core";
+import { createMegaClient, sponsored } from "@gelatomega/core";
 import {
   GelatoMegaDynamicConnectButton,
   GelatoMegaDynamicContextProvider,
@@ -6,11 +6,11 @@ import {
 } from "@gelatomega/react-dynamic";
 import { useEffect, useState } from "react";
 import { sepolia } from "viem/chains";
-import type { WalletClient, Transport, Chain, Account } from "viem";
 
 const WalletInfoComponent = () => {
   const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaDynamicContext();
-  const [mega, setMega] = useState<Mega | null>(null);
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const [mega, setMega] = useState<any | null>(null);
 
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,12 +25,14 @@ const WalletInfoComponent = () => {
     setIsLoading(true);
     try {
       // Example transaction - sending a simple call
-      const hash = await mega.execute([
-        {
+      const hash = await mega.execute({
+        payment: sponsored(sponsorApiKey),
+        calls: [
+          {
             to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
             data: "0xd09de08a",
-          value: 0n
-        }
+            value: 0n
+          }
         ]
       });
 
@@ -54,15 +56,9 @@ const WalletInfoComponent = () => {
         );
 
         try {
-          // Create a wallet client with chain and account
-          const clientWithChain = {
-            ...walletClient,
-            chain: sepolia,
-            account: walletClient.account
-          };
-
           // Initialize Mega with the wallet client and sponsored payment
-          const megaInstance = new Mega(clientWithChain, PaymentFactory.sponsored(sponsorApiKey));
+          // Add a type assertion to ensure TypeScript knows account is defined
+          const megaInstance = createMegaClient(walletClient);
 
           setMega(megaInstance);
         } catch (error) {
