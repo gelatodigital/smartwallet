@@ -22,8 +22,6 @@ export async function getOpData<
         abi: accountAbi,
         functionName: "getNonce"
       })) as bigint;
-
-      console.log("nonce", nonce);
     }
 
     const typedData = serializeTypedData(client.chain.id, client.account.address, calls, nonce);

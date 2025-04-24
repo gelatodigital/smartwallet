@@ -11,7 +11,6 @@ import type {
 
 import { encodeExecuteData } from "viem/experimental/erc7821";
 import type { Payment } from "../../payment/index.js";
-import { sponsoredCall } from "../../relay/index.js";
 
 export async function sendTransaction<
   transport extends Transport = Transport,
@@ -51,7 +50,18 @@ export async function sendTransaction<
         authorizationList
       });
     }
-    // TODO: add support for ERC20 payments
+    case "erc20": {
+      return await callGelatoAccount({
+        chainId: client.chain.id,
+        target: client.account.address,
+        feeToken: payment.token,
+        data: encodeExecuteData({
+          calls,
+          opData
+        }),
+        authorizationList
+      });
+    }
     default: {
       throw new Error("Unsupported payment type");
     }
