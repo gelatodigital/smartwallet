@@ -3,6 +3,7 @@ import { DynamicContextProvider, useDynamicContext } from '@dynamic-labs/sdk-rea
 import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { WalletClient } from 'viem';
+import { hashAuthorization } from 'viem/utils';
 
 interface GelatoMegaDynamicContextType {
   walletClient: WalletClient | null;
@@ -10,7 +11,7 @@ interface GelatoMegaDynamicContextType {
 }
 
 const GelatoMegaDynamicProviderContext = createContext<GelatoMegaDynamicContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const useGelatoMegaDynamicContext = () => {
@@ -45,6 +46,26 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
 
       try {
         const client = await primaryWallet.getWalletClient();
+
+        client.account.signAuthorization = async (parameters) => {
+          const { chainId, nonce } = parameters;
+          const address = parameters.contractAddress ?? parameters.address;
+
+          const hashedAuthorization = hashAuthorization({
+            address,
+            chainId,
+            nonce
+          });
+          const signature = await client.signMessage({
+            message: {
+              raw: hashedAuthorization
+            }
+          });
+
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          return signature as any;
+        };
+
         setWalletClient(client);
       } catch (error) {
         console.error('Failed to get wallet client:', error);
@@ -65,13 +86,13 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
 
 export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps> = ({
   children,
-  settings,
+  settings
 }) => {
   return (
     <DynamicContextProvider
       settings={{
         environmentId: settings.environmentId,
-        walletConnectors: [EthereumWalletConnectors],
+        walletConnectors: [EthereumWalletConnectors]
       }}
     >
       <GelatoMegaDynamicInternal>{children}</GelatoMegaDynamicInternal>
