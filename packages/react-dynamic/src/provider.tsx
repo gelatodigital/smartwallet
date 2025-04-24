@@ -2,11 +2,11 @@ import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethere
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { WalletClient } from "viem";
+import type { Account, Chain, Transport, WalletClient } from "viem";
 import { hashAuthorization } from "viem/utils";
 
 interface GelatoMegaDynamicContextType {
-  walletClient: WalletClient | null;
+  walletClient: WalletClient<Transport, Chain, Account> | null;
   handleLogOut: () => void;
   switchNetwork: (chainId: number) => void;
 }
@@ -86,7 +86,11 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <GelatoMegaDynamicProviderContext.Provider
-      value={{ walletClient, handleLogOut: customHandleLogOut, switchNetwork }}
+      value={{
+        walletClient: walletClient as WalletClient<Transport, Chain, Account>,
+        handleLogOut: customHandleLogOut,
+        switchNetwork
+      }}
     >
       {children}
     </GelatoMegaDynamicProviderContext.Provider>
