@@ -28,7 +28,7 @@ const callGelatoApi = async <T extends object>(endpoint: string, request: T): Pr
     if (request.authorizationList.length > 0) {
       delete request.authorizationList[0].v;
     } else {
-      delete request.authorizationList
+      delete request.authorizationList;
     }
   }
 
