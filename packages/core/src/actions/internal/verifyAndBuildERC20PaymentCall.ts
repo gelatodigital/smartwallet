@@ -14,13 +14,13 @@ export async function verifyAndBuildERC20PaymentCall<
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   payment: ERC20Payment
 ) {
-  const [tokens, estimatedFee, [balance, decimals]] = await Promise.all([
+  const [tokens, estimatedFee, [balance, decimals, symbol]] = await Promise.all([
     getPaymentTokens(client.chain.id),
     getEstimatedFee(
       client.chain.id,
       payment.token,
       // TODO: dynamic gas limit
-      100000n,
+      50000n,
       0n
     ),
     client.multicall({
@@ -36,6 +36,12 @@ export async function verifyAndBuildERC20PaymentCall<
           abi: parseAbi(["function decimals() view returns (uint8)"]),
           functionName: "decimals",
           args: []
+        },
+        {
+          address: payment.token,
+          abi: parseAbi(["function symbol() view returns (string)"]),
+          functionName: "symbol",
+          args: []
         }
       ],
       allowFailure: false
@@ -48,13 +54,13 @@ export async function verifyAndBuildERC20PaymentCall<
 
   if (!isPaymentTokenAllowed) {
     throw new Error(
-      `Token ${payment.token} is not allowed to be used as a payment token on ${client.chain.name}. Available tokens: ${tokens.join(", ")}`
+      `Token ${symbol} (${payment.token}) is not allowed to be used as a payment token on ${client.chain.name}. Available tokens: ${tokens.join(", ")}`
     );
   }
 
   if (balance < estimatedFee) {
     throw new Error(
-      `Insufficient balance of token ${payment.token}: want ${formatUnits(estimatedFee, decimals)}, have ${formatUnits(balance, decimals)}`
+      `Insufficient balance of ${symbol} (${payment.token}): want ${formatUnits(estimatedFee, decimals)}, have ${formatUnits(balance, decimals)}`
     );
   }
 
