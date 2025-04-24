@@ -1,13 +1,10 @@
 import "dotenv/config";
-import { createMegaClient, sponsored } from "@gelatomega/core";
+import { createMegaClient, erc20 } from "@gelatomega/core";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
-if (!process.env.SPONSOR_API_KEY) {
-  throw new Error("SPONSOR_API_KEY is not set");
-}
-
+const token = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
 const account = privateKeyToAccount(privateKey);
 
@@ -19,9 +16,9 @@ const client = createWalletClient({
 
 createMegaClient(client)
   .execute({
-    payment: sponsored(process.env.SPONSOR_API_KEY),
+    payment: erc20(token),
     calls: [{ to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E", data: "0xd09de08a", value: 0n }]
   })
   .then((id) => {
-    console.log(`Your Gelato sponsored id is: ${id}`);
+    console.log(`Your Gelato id is: ${id}`);
   });
