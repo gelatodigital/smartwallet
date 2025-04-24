@@ -9,7 +9,7 @@ import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
   const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaDynamicContext();
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define MegaClient type
   const [mega, setMega] = useState<any | null>(null);
 
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
@@ -47,19 +47,10 @@ const WalletInfoComponent = () => {
   useEffect(() => {
     const initializeMega = async () => {
       if (walletClient?.account && sponsorApiKey) {
-        // TODO Sign authorization is undefined since WalletClient is not provided with that from Dynamic, determine how to do that
-        console.log(
-          "Initializing Mega",
-          walletClient.account,
-          sponsorApiKey,
-          !!walletClient.account.signAuthorization
-        );
+        console.log("Initializing Mega", walletClient.account);
 
         try {
-          // Initialize Mega with the wallet client and sponsored payment
-          // Add a type assertion to ensure TypeScript knows account is defined
           const megaInstance = createMegaClient(walletClient);
-
           setMega(megaInstance);
         } catch (error) {
           console.error("Failed to initialize Mega:", error);
