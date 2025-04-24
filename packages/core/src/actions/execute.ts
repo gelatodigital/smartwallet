@@ -1,4 +1,13 @@
-import type { Account, Call, Chain, Hash, PublicActions, Transport, WalletClient } from "viem";
+import type {
+  Account,
+  Call,
+  Chain,
+  Hash,
+  PublicActions,
+  SignedAuthorizationList,
+  Transport,
+  WalletClient
+} from "viem";
 import { getCode } from "viem/actions";
 import { encodeExecuteData } from "viem/experimental/erc7821";
 
@@ -32,7 +41,7 @@ export async function execute<
     bytecode.length > 0 &&
     lowercase(bytecode) === lowercase(`0xef0100${DELEGATION_ADDRESSES[client.chain.id].slice(2)}`);
 
-  let authorizationList = undefined;
+  let authorizationList: SignedAuthorizationList | undefined = undefined;
   if (!isEip7702Authorized) {
     const authorization = await client.signAuthorization({
       account: client.account,
