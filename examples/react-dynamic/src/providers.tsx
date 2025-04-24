@@ -8,13 +8,15 @@ import { useEffect, useState } from 'react';
 import { sepolia } from 'viem/chains';
 
 const WalletInfoComponent = () => {
-  const { walletClient, handleLogOut } = useGelatoMegaDynamicContext();
+  const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaDynamicContext();
   const [mega, setMega] = useState<Mega | null>(null);
 
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+
+  switchNetwork(sepolia.id);
 
   const executeTransaction = async () => {
     if (!mega) return;

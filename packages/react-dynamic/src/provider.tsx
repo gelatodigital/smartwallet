@@ -8,6 +8,7 @@ import { hashAuthorization } from 'viem/utils';
 interface GelatoMegaDynamicContextType {
   walletClient: WalletClient | null;
   handleLogOut: () => void;
+  switchNetwork: (chainId: number) => void;
 }
 
 const GelatoMegaDynamicProviderContext = createContext<GelatoMegaDynamicContextType | undefined>(
@@ -37,6 +38,14 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
     setWalletClient(null);
     handleLogOut();
   };
+
+  const switchNetwork = (chainId: number) => {
+    if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
+      return;
+    }
+
+    primaryWallet.switchNetwork(chainId);
+  }
 
   useEffect(() => {
     const fetchWalletClient = async () => {
@@ -77,7 +86,7 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <GelatoMegaDynamicProviderContext.Provider
-      value={{ walletClient, handleLogOut: customHandleLogOut }}
+      value={{ walletClient, handleLogOut: customHandleLogOut, switchNetwork }}
     >
       {children}
     </GelatoMegaDynamicProviderContext.Provider>
