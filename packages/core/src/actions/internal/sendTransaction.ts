@@ -11,6 +11,7 @@ import type {
 
 import { encodeExecuteData } from "viem/experimental/erc7821";
 import type { Payment } from "../../payment/index.js";
+import { callGelatoAccount, sponsoredCall } from "../../relay/index.js";
 
 export async function sendTransaction<
   transport extends Transport = Transport,
