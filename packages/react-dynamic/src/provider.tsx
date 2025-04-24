@@ -2,7 +2,14 @@ import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethere
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Account, Chain, Transport, WalletClient } from "viem";
+import {
+  type Account,
+  type Chain,
+  type SignedAuthorization,
+  type Transport,
+  type WalletClient,
+  parseSignature
+} from "viem";
 import { hashAuthorization } from "viem/utils";
 
 interface GelatoMegaDynamicContextType {
@@ -71,8 +78,16 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
             }
           });
 
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          return signature as any;
+          const parsedSignature = parseSignature(signature);
+
+          const signedAuthorization: SignedAuthorization = {
+            address,
+            chainId,
+            nonce,
+            ...parsedSignature
+          };
+
+          return signedAuthorization;
         };
 
         setWalletClient(client);
