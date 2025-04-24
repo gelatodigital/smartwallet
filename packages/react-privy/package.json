@@ -1,0 +1,26 @@
+{
+  "name": "@gelatomega/react-privy",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "description": "Context provider supporting Privy WaaS",
+  "main": "./index.ts",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@privy-io/react-auth": "^2.10.0",
+    "react": "catalog:",
+    "viem": "catalog:",
+    "zod": "^3.24.3",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}
