@@ -1,11 +1,12 @@
-import { Mega, PaymentFactory } from '@gelatomega/core';
+import { createMegaClient, sponsored} from "@gelatomega/core";
 import {
   GelatoMegaDynamicConnectButton,
   GelatoMegaDynamicContextProvider,
   useGelatoMegaDynamicContext
-} from '@gelatomega/react-dynamic';
-import { useEffect, useState } from 'react';
-import { sepolia } from 'viem/chains';
+} from "@gelatomega/react-dynamic";
+import { useEffect, useState } from "react";
+import { sepolia } from "viem/chains";
+import type { WalletClient, Transport, Chain, Account } from "viem";
 
 const WalletInfoComponent = () => {
   const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaDynamicContext();
@@ -26,15 +27,16 @@ const WalletInfoComponent = () => {
       // Example transaction - sending a simple call
       const hash = await mega.execute([
         {
-          to: '0xa8851f5f279eD47a292f09CA2b6D40736a51788E',
-          data: '0xd09de08a',
+            to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+            data: "0xd09de08a",
           value: 0n
         }
-      ]);
+        ]
+      });
 
       setTransactionHash(hash);
     } catch (error) {
-      console.error('Transaction failed:', error);
+      console.error("Transaction failed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +47,7 @@ const WalletInfoComponent = () => {
       if (walletClient?.account && sponsorApiKey) {
         // TODO Sign authorization is undefined since WalletClient is not provided with that from Dynamic, determine how to do that
         console.log(
-          'Initializing Mega',
+          "Initializing Mega",
           walletClient.account,
           sponsorApiKey,
           !!walletClient.account.signAuthorization
@@ -64,10 +66,10 @@ const WalletInfoComponent = () => {
 
           setMega(megaInstance);
         } catch (error) {
-          console.error('Failed to initialize Mega:', error);
+          console.error("Failed to initialize Mega:", error);
         }
       } else {
-        console.log('No wallet client or sponsor API key');
+        console.log("No wallet client or sponsor API key");
       }
     };
 
@@ -80,12 +82,12 @@ const WalletInfoComponent = () => {
       {walletClient ? (
         <div>
           <p>Wallet connected!</p>
-          <div style={{ marginTop: '20px' }}>
+          <div style={{ marginTop: "20px" }}>
             <h3>Mega Transaction</h3>
             {mega ? (
               <div>
                 <button type="button" onClick={executeTransaction} disabled={isLoading}>
-                  {isLoading ? 'Processing...' : 'Execute Transaction'}
+                  {isLoading ? "Processing..." : "Execute Transaction"}
                 </button>
                 {transactionHash && <p>Transaction Hash: {transactionHash}</p>}
               </div>
@@ -117,8 +119,8 @@ export default function Providers() {
       <div>
         <h1>Error</h1>
         <p>
-          {!dynamicEnvironmentId && 'Dynamic environment ID is not set. '}
-          {!sponsorApiKey && 'Sponsor API key is not set. '}
+          {!dynamicEnvironmentId && "Dynamic environment ID is not set. "}
+          {!sponsorApiKey && "Sponsor API key is not set. "}
           Please set the required environment variables.
         </p>
       </div>
