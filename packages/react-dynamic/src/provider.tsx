@@ -45,7 +45,7 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     primaryWallet.switchNetwork(chainId);
-  }
+  };
 
   useEffect(() => {
     const fetchWalletClient = async () => {
