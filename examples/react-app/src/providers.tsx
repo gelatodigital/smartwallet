@@ -76,6 +76,7 @@ const WalletInfoComponent = () => {
       {walletClient ? (
         <div>
           <p>Wallet connected!</p>
+          <p>Wallet Address: {walletClient.account.address}</p>
           <div style={{ marginTop: "20px" }}>
             <h3>Mega Transaction</h3>
             {mega ? (
@@ -115,7 +116,18 @@ const WalletInfoComponent = () => {
                 <button type="button" onClick={executeTransaction} disabled={isLoading}>
                   {isLoading ? "Processing..." : "Execute Transaction"}
                 </button>
-                {transactionHash && <p>Transaction Hash: {transactionHash}</p>}
+                {transactionHash && (
+                  <p>
+                    Transaction Executed:{" "}
+                    <a
+                      href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      view on explorer
+                    </a>
+                  </p>
+                )}
               </div>
             ) : (
               <p>Mega not initialized</p>
