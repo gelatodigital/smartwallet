@@ -5,7 +5,8 @@
   "description": "Common react types",
   "main": "./index.ts",
   "peerDependencies": {
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "viem": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {

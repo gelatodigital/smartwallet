@@ -2,10 +2,12 @@
   "name": "@gelatomega/react-privy",
   "version": "0.0.1",
   "author": "Gelato",
+  "type": "module",
   "description": "Context provider supporting Privy WaaS",
   "main": "./index.ts",
   "peerDependencies": {
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "viem": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {
