@@ -18,6 +18,7 @@
     "@gelatomega/react-types": "workspace:*",
     "@dynamic-labs/ethereum": "^4.12.4",
     "@dynamic-labs/sdk-react-core": "^4.12.4",
+    "@dynamic-labs/wallet-connector-core": "^4.12.4",
     "react": "catalog:",
     "viem": "catalog:",
     "react-dom": "catalog:"

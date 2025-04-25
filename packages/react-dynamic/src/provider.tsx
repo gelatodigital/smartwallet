@@ -1,5 +1,6 @@
 import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethereum";
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import type { wallet } from "@gelatomega/react-types";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -47,6 +48,12 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode; defaultChain: Chain |
         return;
       }
 
+      const connector = primaryWallet.connector;
+
+      if (!connector || !isTurnkeyWalletConnector(connector)) {
+        return;
+      }
+
       try {
         if (defaultChain) {
           await primaryWallet.switchNetwork(defaultChain.id);
@@ -54,34 +61,24 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode; defaultChain: Chain |
 
         const client = await primaryWallet.getWalletClient();
 
-        // TODO: Dynamic provider having issues with signing auth
-        // client.account.signAuthorization = async (parameters) => {
-        //   const { chainId, nonce } = parameters;
-        //   const address = parameters.contractAddress ?? parameters.address;
+        client.account.signAuthorization = async (parameters) => {
+          const { chainId, nonce } = parameters;
+          const contractAddress = parameters.contractAddress ?? parameters.address;
 
-        //   const hashedAuthorization = hashAuthorization({
-        //     address,
-        //     chainId,
-        //     nonce
-        //   });
-        //   TODO there is no exposed sign method on the wallet client
-        //   const signature = await client.sign({
-        //     message: {
-        //       raw: hashedAuthorization
-        //     }
-        //   });
+          const signedAuthorization = await connector.experimental_signAuthorization({
+            contractAddress
+          });
 
-        //   const parsedSignature = parseSignature(signature);
-
-        //   const signedAuthorization: SignedAuthorization = {
-        //     address,
-        //     chainId,
-        //     nonce,
-        //     ...parsedSignature
-        //   };
-
-        //   return signedAuthorization;
-        // };
+          return {
+            address: contractAddress,
+            chainId,
+            nonce,
+            r: signedAuthorization.r,
+            s: signedAuthorization.s,
+            v: signedAuthorization.v,
+            yParity: signedAuthorization.yParity
+          };
+        };
 
         setWalletClient(client);
       } catch (error) {
