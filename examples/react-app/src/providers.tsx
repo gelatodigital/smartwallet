@@ -176,7 +176,9 @@ export default function Providers() {
 
   return (
     <GelatoMegaContextProvider
-      type="privy"
+      // Changing this to `dynamic` or `privy` is enough to change WaaS provider
+      // VITE_WAAS_APP_ID also needs to be set accordingly
+      type="dynamic"
       settings={{
         appId: waasAppId
       }}
