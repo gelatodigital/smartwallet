@@ -18,29 +18,24 @@ export async function getOpData<
   account extends Account = Account
 >(
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
-  calls: Call[],
-  payment: Payment
+  calls: Call[]
 ) {
-  if (payment.type !== "native") {
-    const nonceHex = await client.getStorageAt({
-      address: client.account.address,
-      slot: NONCE_STORAGE_SLOT
-    });
+  const nonceHex = await client.getStorageAt({
+    address: client.account.address,
+    slot: NONCE_STORAGE_SLOT
+  });
 
-    if (!nonceHex) {
-      throw new Error("Failed to get nonce");
-    }
-
-    const nonce = hexToBigInt(nonceHex);
-
-    const typedData = serializeTypedData(client.chain.id, client.account.address, calls, nonce);
-
-    // TODO: add support for passkey signers
-    return await client.signTypedData({
-      account: client.account,
-      ...typedData
-    });
+  if (!nonceHex) {
+    throw new Error("Failed to get nonce");
   }
 
-  return undefined;
+  const nonce = hexToBigInt(nonceHex);
+
+  const typedData = serializeTypedData(client.chain.id, client.account.address, calls, nonce);
+
+  // TODO: add support for passkey signers
+  return await client.signTypedData({
+    account: client.account,
+    ...typedData
+  });
 }

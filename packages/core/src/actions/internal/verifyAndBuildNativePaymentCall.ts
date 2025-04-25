@@ -13,7 +13,7 @@ export async function verifyAndBuildNativePaymentCall<
       client.chain.id,
       ethAddress,
       // TODO: dynamic gas limit
-      100000n,
+      200000n,
       0n
     ),
     client.getBalance({
