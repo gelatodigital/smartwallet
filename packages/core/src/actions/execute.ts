@@ -31,7 +31,7 @@ export async function execute<
     calls.push(await verifyAndBuildNativePaymentCall(client));
   }
 
-  const opData = await getOpData(client, calls, payment);
+  const opData = await getOpData(client, calls);
 
   return await sendTransaction(client, calls, payment, authorizationList, opData);
 }

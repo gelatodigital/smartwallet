@@ -1,4 +1,4 @@
-# Sponsored Payment Example
+# Native Payment Example
 
 ## Prerequisites
 

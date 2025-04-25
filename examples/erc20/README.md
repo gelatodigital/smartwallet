@@ -1,4 +1,4 @@
-# ERC20 Example
+# ERC20 Payment Example
 
 ## Prerequisites
 
@@ -8,6 +8,7 @@
 ## Quick Start
 
 1. Install dependencies:
+
 ```bash
 pnpm install
 ```
@@ -15,6 +16,7 @@ pnpm install
 ## Running Examples
 
 1. Run the example:
+
 ```bash
 pnpm dev
 ```

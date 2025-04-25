@@ -20,7 +20,7 @@ export async function verifyAndBuildERC20PaymentCall<
       client.chain.id,
       payment.token,
       // TODO: dynamic gas limit
-      100000n,
+      200000n,
       0n
     ),
     client.multicall({
