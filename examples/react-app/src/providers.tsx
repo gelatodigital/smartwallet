@@ -5,10 +5,9 @@ import {
   useGelatoMegaPrivyContext
 } from "@gelatomega/react-privy";
 import { useEffect, useState } from "react";
-import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
-  const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaPrivyContext();
+  const { walletClient, logout } = useGelatoMegaPrivyContext();
   // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define MegaClient type
   const [mega, setMega] = useState<any | null>(null);
 
@@ -16,8 +15,6 @@ const WalletInfoComponent = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
-
-  switchNetwork(sepolia.id);
 
   const executeTransaction = async () => {
     if (!mega) return;
@@ -83,7 +80,7 @@ const WalletInfoComponent = () => {
             )}
           </div>
           <p />
-          <button type="button" onClick={handleLogOut}>
+          <button type="button" onClick={logout}>
             Logout
           </button>
         </div>
@@ -118,7 +115,7 @@ export default function Providers() {
   return (
     <GelatoMegaPrivyContextProvider
       settings={{
-        environmentId: privyEnvironmentId
+        appId: privyEnvironmentId
       }}
     >
       <WalletInfoComponent />
