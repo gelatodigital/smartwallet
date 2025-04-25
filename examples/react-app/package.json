@@ -1,5 +1,5 @@
 {
-  "name": "mega-react-dynamic",
+  "name": "mega-react-app",
   "private": true,
   "version": "0.0.1",
   "scripts": {
@@ -9,8 +9,7 @@
   },
   "dependencies": {
     "@gelatomega/core": "workspace:*",
-    "@gelatomega/react-dynamic": "workspace:*",
-    "@gelatomega/react-privy": "workspace:*",
+    "@gelatomega/react-sdk": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "viem": "catalog:"

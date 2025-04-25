@@ -12,10 +12,16 @@ export default defineConfig({
         __dirname,
         "../../packages/react-dynamic/src/index.ts"
       ),
-      "@gelatomega/react-privy": path.resolve(__dirname, "../../packages/react-privy/src/index.ts")
+      "@gelatomega/react-privy": path.resolve(__dirname, "../../packages/react-privy/src/index.ts"),
+      "@gelatomega/react-sdk": path.resolve(__dirname, "../../packages/react-sdk/src/index.ts")
     }
   },
   optimizeDeps: {
-    include: ["@gelatomega/core", "@gelatomega/react-dynamic", "@gelatomega/react-privy"]
+    include: [
+      "@gelatomega/core",
+      "@gelatomega/react-dynamic",
+      "@gelatomega/react-privy",
+      "@gelatomega/react-sdk"
+    ]
   }
 });

@@ -75,10 +75,7 @@ importers:
       '@gelatomega/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@gelatomega/react-dynamic':
-        specifier: workspace:*
-        version: link:../../packages/react-dynamic
-      '@gelatomega/react-privy':
+      '@gelatomega/react-sdk':
         specifier: workspace:*
         version: link:../../packages/react-sdk
       react:
@@ -210,7 +207,7 @@ importers:
         version: link:../react-dynamic
       '@gelatomega/react-privy':
         specifier: workspace:*
-        version: 'link:'
+        version: link:../react-privy
       '@gelatomega/react-types':
         specifier: workspace:*
         version: link:../react-types

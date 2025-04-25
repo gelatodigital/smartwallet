@@ -1,13 +1,13 @@
 import { createMegaClient, erc20, native, sponsored } from "@gelatomega/core";
 import {
-  GelatoMegaPrivyConnectButton,
-  GelatoMegaPrivyContextProvider,
-  useGelatoMegaPrivyContext
-} from "@gelatomega/react-privy";
+  GelatoMegaConnectButton,
+  GelatoMegaContextProvider,
+  useGelatoMegaProviderContext
+} from "@gelatomega/react-sdk";
 import { useEffect, useState } from "react";
 
 const WalletInfoComponent = () => {
-  const { walletClient, logout } = useGelatoMegaPrivyContext();
+  const { walletClient, logout } = useGelatoMegaProviderContext();
   // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define MegaClient type
   const [mega, setMega] = useState<any | null>(null);
   const [paymentType, setPaymentType] = useState<string>("sponsored");
@@ -129,7 +129,7 @@ const WalletInfoComponent = () => {
       ) : (
         <div>
           <p>No wallet connected</p>
-          <GelatoMegaPrivyConnectButton>Login</GelatoMegaPrivyConnectButton>
+          <GelatoMegaConnectButton>Login</GelatoMegaConnectButton>
         </div>
       )}
     </div>
@@ -137,16 +137,15 @@ const WalletInfoComponent = () => {
 };
 
 export default function Providers() {
-  // const dynamicEnvironmentId = import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID;
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
-  const privyEnvironmentId = import.meta.env.VITE_PRIVY_ENVIRONMENT_ID;
+  const waasAppId = import.meta.env.VITE_WAAS_APP_ID;
 
-  if (!privyEnvironmentId || !sponsorApiKey) {
+  if (!waasAppId || !sponsorApiKey) {
     return (
       <div>
         <h1>Error</h1>
         <p>
-          {!privyEnvironmentId && "Privy environment ID is not set. "}
+          {!waasAppId && "WAAS app ID is not set. "}
           {!sponsorApiKey && "Sponsor API key is not set. "}
           Please set the required environment variables.
         </p>
@@ -155,12 +154,13 @@ export default function Providers() {
   }
 
   return (
-    <GelatoMegaPrivyContextProvider
+    <GelatoMegaContextProvider
+      type="privy"
       settings={{
-        appId: privyEnvironmentId
+        appId: waasAppId
       }}
     >
       <WalletInfoComponent />
-    </GelatoMegaPrivyContextProvider>
+    </GelatoMegaContextProvider>
   );
 }
