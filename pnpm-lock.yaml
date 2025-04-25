@@ -80,7 +80,7 @@ importers:
         version: link:../../packages/react-dynamic
       '@gelatomega/react-privy':
         specifier: workspace:*
-        version: link:../../packages/react-privy
+        version: link:../../packages/react-sdk
       react:
         specifier: 'catalog:'
         version: 18.2.0
@@ -202,6 +202,31 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 18.3.6(@types/react@18.3.20)
+
+  packages/react-sdk:
+    dependencies:
+      '@gelatomega/react-dynamic':
+        specifier: workspace:*
+        version: link:../react-dynamic
+      '@gelatomega/react-privy':
+        specifier: workspace:*
+        version: 'link:'
+      '@gelatomega/react-types':
+        specifier: workspace:*
+        version: link:../react-types
+      react:
+        specifier: 'catalog:'
+        version: 18.2.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+      viem:
+        specifier: 'catalog:'
+        version: 2.28.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.3)
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 18.3.20
 
   packages/react-types:
     dependencies:
