@@ -63,32 +63,34 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const client = await primaryWallet.getWalletClient();
 
-        client.account.signAuthorization = async (parameters) => {
-          const { chainId, nonce } = parameters;
-          const address = parameters.contractAddress ?? parameters.address;
+        // TODO: Dynamic provider having issues with signing auth
+        // client.account.signAuthorization = async (parameters) => {
+        //   const { chainId, nonce } = parameters;
+        //   const address = parameters.contractAddress ?? parameters.address;
 
-          const hashedAuthorization = hashAuthorization({
-            address,
-            chainId,
-            nonce
-          });
-          const signature = await client.signMessage({
-            message: {
-              raw: hashedAuthorization
-            }
-          });
+        //   const hashedAuthorization = hashAuthorization({
+        //     address,
+        //     chainId,
+        //     nonce
+        //   });
+        //   TODO there is no exposed sign method on the wallet client
+        //   const signature = await client.sign({
+        //     message: {
+        //       raw: hashedAuthorization
+        //     }
+        //   });
 
-          const parsedSignature = parseSignature(signature);
+        //   const parsedSignature = parseSignature(signature);
 
-          const signedAuthorization: SignedAuthorization = {
-            address,
-            chainId,
-            nonce,
-            ...parsedSignature
-          };
+        //   const signedAuthorization: SignedAuthorization = {
+        //     address,
+        //     chainId,
+        //     nonce,
+        //     ...parsedSignature
+        //   };
 
-          return signedAuthorization;
-        };
+        //   return signedAuthorization;
+        // };
 
         setWalletClient(client);
       } catch (error) {
