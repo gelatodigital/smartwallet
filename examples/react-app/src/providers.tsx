@@ -1,14 +1,14 @@
 import { createMegaClient, sponsored } from "@gelatomega/core";
 import {
-  GelatoMegaDynamicConnectButton,
-  GelatoMegaDynamicContextProvider,
-  useGelatoMegaDynamicContext
-} from "@gelatomega/react-dynamic";
+  GelatoMegaPrivyConnectButton,
+  GelatoMegaPrivyContextProvider,
+  useGelatoMegaPrivyContext
+} from "@gelatomega/react-privy";
 import { useEffect, useState } from "react";
 import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
-  const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaDynamicContext();
+  const { walletClient, handleLogOut, switchNetwork } = useGelatoMegaPrivyContext();
   // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define MegaClient type
   const [mega, setMega] = useState<any | null>(null);
 
@@ -90,7 +90,7 @@ const WalletInfoComponent = () => {
       ) : (
         <div>
           <p>No wallet connected</p>
-          <GelatoMegaDynamicConnectButton>Login</GelatoMegaDynamicConnectButton>
+          <GelatoMegaPrivyConnectButton>Login</GelatoMegaPrivyConnectButton>
         </div>
       )}
     </div>
@@ -98,15 +98,16 @@ const WalletInfoComponent = () => {
 };
 
 export default function Providers() {
-  const dynamicEnvironmentId = import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID;
+  // const dynamicEnvironmentId = import.meta.env.VITE_DYNAMIC_ENVIRONMENT_ID;
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+  const privyEnvironmentId = import.meta.env.VITE_PRIVY_ENVIRONMENT_ID;
 
-  if (!dynamicEnvironmentId || !sponsorApiKey) {
+  if (!privyEnvironmentId || !sponsorApiKey) {
     return (
       <div>
         <h1>Error</h1>
         <p>
-          {!dynamicEnvironmentId && "Dynamic environment ID is not set. "}
+          {!privyEnvironmentId && "Privy environment ID is not set. "}
           {!sponsorApiKey && "Sponsor API key is not set. "}
           Please set the required environment variables.
         </p>
@@ -115,12 +116,12 @@ export default function Providers() {
   }
 
   return (
-    <GelatoMegaDynamicContextProvider
+    <GelatoMegaPrivyContextProvider
       settings={{
-        environmentId: dynamicEnvironmentId
+        environmentId: privyEnvironmentId
       }}
     >
       <WalletInfoComponent />
-    </GelatoMegaDynamicContextProvider>
+    </GelatoMegaPrivyContextProvider>
   );
 }
