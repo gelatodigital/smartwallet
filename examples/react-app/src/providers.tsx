@@ -13,7 +13,7 @@ const WalletInfoComponent = () => {
   const [paymentType, setPaymentType] = useState<string>("sponsored");
   // USDC on sepolia
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
-    "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+    "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
   );
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -118,7 +118,7 @@ const WalletInfoComponent = () => {
                       }}
                       style={{ padding: "5px", borderRadius: "4px" }}
                     >
-                      <option value="0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238">USDC</option>
+                      <option value="0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9">WETH</option>
                     </select>
                   </div>
                 )}
