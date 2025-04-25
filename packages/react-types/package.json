@@ -1,0 +1,22 @@
+{
+  "name": "@gelatomega/react-types",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "description": "Common react types",
+  "main": "./index.ts",
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "react": "catalog:",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:"
+  }
+}
