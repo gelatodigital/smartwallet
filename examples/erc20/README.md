@@ -1,4 +1,4 @@
-# Sponsored Example
+# ERC20 Example
 
 ## Prerequisites
 
