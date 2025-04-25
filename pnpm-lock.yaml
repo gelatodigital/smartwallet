@@ -48,6 +48,28 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
+  examples/erc20:
+    dependencies:
+      '@gelatomega/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      viem:
+        specifier: 'catalog:'
+        version: 2.28.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.3)
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 22.14.1
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      tsx:
+        specifier: ^4.19.3
+        version: 4.19.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
   examples/react-app:
     dependencies:
       '@gelatomega/core':
@@ -87,9 +109,9 @@ importers:
 
   examples/sponsored:
     dependencies:
-      gelatomega:
+      '@gelatomega/core':
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/core
       viem:
         specifier: 'catalog:'
         version: 2.28.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.3)
@@ -97,6 +119,9 @@ importers:
       '@types/node':
         specifier: latest
         version: 22.14.1
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       tsx:
         specifier: ^4.19.3
         version: 4.19.3
@@ -2921,8 +2946,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.140:
-    resolution: {integrity: sha512-o82Rj+ONp4Ip7Cl1r7lrqx/pXhbp/lh9DpKcMNscFJdh8ebyRofnc7Sh01B4jx403RI0oqTBvlZ7OBIZLMr2+Q==}
+  electron-to-chromium@1.5.142:
+    resolution: {integrity: sha512-Ah2HgkTu/9RhTDNThBtzu2Wirdy4DC9b0sMT1pUhbkZQ5U/iwmE+PHZX1MpjD5IkJCc2wSghgGG/B04szAx07w==}
 
   elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -9161,7 +9186,7 @@ snapshots:
   browserslist@4.24.4:
     dependencies:
       caniuse-lite: 1.0.30001715
-      electron-to-chromium: 1.5.140
+      electron-to-chromium: 1.5.142
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
@@ -9511,7 +9536,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.140: {}
+  electron-to-chromium@1.5.142: {}
 
   elliptic@6.6.1:
     dependencies:

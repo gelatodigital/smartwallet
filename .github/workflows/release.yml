@@ -13,12 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js 18.17.x
-        uses: actions/setup-node@v2
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
-          node-version: 18.17.x
+          version: 10
+          run_install: false
+
+      - name: Setup Node.js v23
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'pnpm'
 
       - name: Creating .npmrc
         run: |
