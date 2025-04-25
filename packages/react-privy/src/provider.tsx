@@ -1,4 +1,6 @@
+import type { wallet } from "@gelatomega/react-types";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
+import { ChainId } from "caip";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
@@ -13,11 +15,7 @@ import {
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 
-interface GelatoMegaPrivyContextType {
-  walletClient: WalletClient<Transport, Chain, Account> | null;
-  handleLogOut: () => void;
-  switchNetwork: (chainId: number) => Promise<void>;
-}
+type GelatoMegaPrivyContextType = wallet.ProviderContext;
 
 const GelatoMegaPrivyProviderContext = createContext<GelatoMegaPrivyContextType | undefined>(
   undefined
@@ -31,12 +29,7 @@ export const useGelatoMegaPrivyContext = () => {
   return context;
 };
 
-interface GelatoMegaPrivyContextProps {
-  children: ReactNode;
-  settings: {
-    environmentId: string;
-  };
-}
+type GelatoMegaPrivyContextProps = wallet.ProviderProps;
 
 const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
   const { ready, authenticated, logout } = usePrivy();
@@ -45,73 +38,42 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
 
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
 
-  const customHandleLogOut = async () => {
-    const disableLogout = !ready || (ready && !authenticated);
-
-    if (!disableLogout) {
-      setWalletClient(null);
-      logout();
-    }
-  };
-
-  const switchNetwork = async (chainId: number) => {
-    if (!walletsReady || !wallets || wallets.length === 0) {
+  const logoutWrapper = async () => {
+    if (!walletClient) {
       return;
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const chain = extractChain({ chains: Object.values(chains), id: chainId as any });
+    setWalletClient(null);
+    await logout();
+  };
 
-    if (!chain) {
+  const switchNetwork = async (chain: Chain) => {
+    if (!walletClient) {
       return;
     }
 
     const primaryWallet = wallets[0];
 
     await primaryWallet.switchChain(chain.id);
-
-    if (walletClient) {
-      walletClient.switchChain({ id: chain.id });
-    } else {
-      const provider = await primaryWallet.getEthereumProvider();
-      const walletClient = createWalletClient({
-        account: primaryWallet.address as Hex,
-        chain,
-        transport: custom(provider)
-      });
-
-      walletClient.signAuthorization = async (parameters) => {
-        const { chainId, nonce } = parameters;
-        const contractAddress = parameters.contractAddress ?? parameters.address;
-
-        if (!contractAddress) {
-          throw new Error("Contract address is required");
-        }
-
-        const signedAuthorization = await signAuthorization({
-          contractAddress,
-          chainId,
-          nonce
-        });
-
-        return signedAuthorization;
-      };
-
-      setWalletClient(walletClient);
-    }
+    walletClient.switchChain({ id: chain.id });
   };
 
   useEffect(() => {
-    const fetchWalletClient = async () => {
-      if (!walletsReady) {
-        return;
-      }
+    if (!ready || !walletsReady) {
+      return;
+    }
 
+    if (!authenticated || !wallets || wallets.length === 0) {
+      setWalletClient(null);
+      return;
+    }
+
+    const fetchWalletClient = async () => {
       const primaryWallet = wallets[0];
 
       try {
-        const chainId = primaryWallet.chainId;
-
+        // Privy wallet provides chainId in CAIP2 format
+        const { reference: chainId } = ChainId.parse(primaryWallet.chainId);
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         const chain = extractChain({ chains: Object.values(chains), id: Number(chainId) as any });
 
@@ -126,6 +88,23 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
           transport: custom(provider)
         });
 
+        walletClient.signAuthorization = async (parameters) => {
+          const { chainId, nonce } = parameters;
+          const contractAddress = parameters.contractAddress ?? parameters.address;
+
+          if (!contractAddress) {
+            throw new Error("Contract address is required");
+          }
+
+          const signedAuthorization = await signAuthorization({
+            contractAddress,
+            chainId,
+            nonce
+          });
+
+          return signedAuthorization;
+        };
+
         setWalletClient(walletClient);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
@@ -133,13 +112,13 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
     };
 
     fetchWalletClient();
-  }, [wallets, walletsReady]);
+  }, [ready, wallets, walletsReady, authenticated, signAuthorization]);
 
   return (
     <GelatoMegaPrivyProviderContext.Provider
       value={{
         walletClient: walletClient as WalletClient<Transport, Chain, Account>,
-        handleLogOut: customHandleLogOut,
+        logout: logoutWrapper,
         switchNetwork
       }}
     >
@@ -153,7 +132,12 @@ export const GelatoMegaPrivyContextProvider: FC<GelatoMegaPrivyContextProps> = (
   settings
 }) => {
   return (
-    <PrivyProvider appId={settings.environmentId}>
+    <PrivyProvider
+      appId={settings.appId}
+      config={{
+        defaultChain: settings.defaultChain ?? chains.sepolia
+      }}
+    >
       <GelatoMegaPrivyInternal>{children}</GelatoMegaPrivyInternal>
     </PrivyProvider>
   );

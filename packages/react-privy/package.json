@@ -13,11 +13,13 @@
     }
   },
   "dependencies": {
+    "@gelatomega/react-types": "workspace:*",
     "@privy-io/react-auth": "^2.10.0",
     "react": "catalog:",
     "viem": "catalog:",
     "zod": "^3.24.3",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "caip": "^1"
   },
   "devDependencies": {
     "@types/react": "catalog:",
