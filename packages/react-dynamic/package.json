@@ -2,10 +2,12 @@
   "name": "@gelatomega/react-dynamic",
   "version": "0.0.1",
   "author": "Gelato",
+  "type": "module",
   "description": "Context provider supporting Dynamic WaaS",
   "main": "./index.ts",
   "peerDependencies": {
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "viem": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -13,6 +15,7 @@
     }
   },
   "dependencies": {
+    "@gelatomega/react-types": "workspace:*",
     "@dynamic-labs/ethereum": "^4.12.4",
     "@dynamic-labs/sdk-react-core": "^4.12.4",
     "react": "catalog:",

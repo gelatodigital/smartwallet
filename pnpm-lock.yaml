@@ -146,6 +146,9 @@ importers:
       '@dynamic-labs/sdk-react-core':
         specifier: ^4.12.4
         version: 4.12.4(@types/react@18.3.20)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.0(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.20)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.2.0)(utf-8-validate@5.0.10))(react@18.2.0)
+      '@gelatomega/react-types':
+        specifier: workspace:*
+        version: link:../react-types
       react:
         specifier: 'catalog:'
         version: 18.2.0
