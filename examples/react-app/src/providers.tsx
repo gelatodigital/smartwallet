@@ -1,4 +1,4 @@
-import { createMegaClient, sponsored } from "@gelatomega/core";
+import { createMegaClient, erc20, native, sponsored } from "@gelatomega/core";
 import {
   GelatoMegaPrivyConnectButton,
   GelatoMegaPrivyContextProvider,
@@ -10,7 +10,11 @@ const WalletInfoComponent = () => {
   const { walletClient, logout } = useGelatoMegaPrivyContext();
   // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define MegaClient type
   const [mega, setMega] = useState<any | null>(null);
-
+  const [paymentType, setPaymentType] = useState<string>("sponsored");
+  // USDC on sepolia
+  const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
+    "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+  );
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -21,9 +25,15 @@ const WalletInfoComponent = () => {
 
     setIsLoading(true);
     try {
+      const payment =
+        paymentType === "sponsored"
+          ? sponsored(sponsorApiKey)
+          : paymentType === "erc20"
+            ? erc20(erc20TokenAddress)
+            : native();
       // Example transaction - sending a simple call
       const hash = await mega.execute({
-        payment: sponsored(sponsorApiKey),
+        payment,
         calls: [
           {
             to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
@@ -62,7 +72,7 @@ const WalletInfoComponent = () => {
 
   return (
     <div>
-      <h2>Wallet Information</h2>
+      <h2>Gelato Mega</h2>
       {walletClient ? (
         <div>
           <p>Wallet connected!</p>
@@ -70,6 +80,38 @@ const WalletInfoComponent = () => {
             <h3>Mega Transaction</h3>
             {mega ? (
               <div>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="paymentType" style={{ marginRight: "10px" }}>
+                    Payment Type:
+                  </label>
+                  <select
+                    id="paymentType"
+                    onChange={(e) => {
+                      setPaymentType(e.target.value);
+                    }}
+                    style={{ padding: "5px", borderRadius: "4px" }}
+                  >
+                    <option value="sponsored">Sponsored</option>
+                    <option value="erc20">ERC20</option>
+                    <option value="native">Native</option>
+                  </select>
+                </div>
+                {paymentType === "erc20" && (
+                  <div style={{ marginBottom: "15px" }}>
+                    <label htmlFor="tokenSelect" style={{ marginRight: "10px" }}>
+                      Select Token:
+                    </label>
+                    <select
+                      id="tokenSelect"
+                      onChange={(e) => {
+                        setErc20TokenAddress(e.target.value as `0x${string}`);
+                      }}
+                      style={{ padding: "5px", borderRadius: "4px" }}
+                    >
+                      <option value="0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238">USDC</option>
+                    </select>
+                  </div>
+                )}
                 <button type="button" onClick={executeTransaction} disabled={isLoading}>
                   {isLoading ? "Processing..." : "Execute Transaction"}
                 </button>
