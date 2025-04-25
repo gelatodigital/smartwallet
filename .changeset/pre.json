@@ -2,7 +2,10 @@
   "mode": "pre",
   "tag": "alpha",
   "initialVersions": {
-    "@gelatomega/core": "0.0.1"
+    "@gelatomega/core": "0.0.1",
+    "mega-sponsored": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "eight-bears-act"
+  ]
 }
