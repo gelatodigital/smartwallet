@@ -26,6 +26,8 @@ export const erc20 = (token: Address): ERC20Payment => ({
 
 export const isErc20 = (payment: Payment): payment is ERC20Payment => payment.type === "erc20";
 
+export const isNative = (payment: Payment): payment is NativePayment => payment.type === "native";
+
 export const sponsored = (apiKey: string): SponsoredPayment => ({
   type: "sponsored",
   apiKey

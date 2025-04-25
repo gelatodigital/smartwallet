@@ -1,6 +1,14 @@
-import type { Account, Call, Chain, PublicActions, Transport, WalletClient } from "viem";
+import {
+  type Account,
+  type Call,
+  type Chain,
+  type PublicActions,
+  type Transport,
+  type WalletClient,
+  hexToBigInt
+} from "viem";
 
-import { abi as accountAbi } from "../../abis/account.js";
+import { NONCE_STORAGE_SLOT } from "../../constants/index.js";
 import type { Payment } from "../../payment/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
 
@@ -11,18 +19,19 @@ export async function getOpData<
 >(
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   calls: Call[],
-  payment: Payment,
-  isDelegation: boolean
+  payment: Payment
 ) {
   if (payment.type !== "native") {
-    let nonce = 0n;
-    if (!isDelegation) {
-      nonce = (await client.readContract({
-        address: client.account.address,
-        abi: accountAbi,
-        functionName: "getNonce"
-      })) as bigint;
+    const nonceHex = await client.getStorageAt({
+      address: client.account.address,
+      slot: NONCE_STORAGE_SLOT
+    });
+
+    if (!nonceHex) {
+      throw new Error("Failed to get nonce");
     }
+
+    const nonce = hexToBigInt(nonceHex);
 
     const typedData = serializeTypedData(client.chain.id, client.account.address, calls, nonce);
 

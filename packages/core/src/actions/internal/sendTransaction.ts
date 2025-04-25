@@ -1,12 +1,13 @@
-import type {
-  Account,
-  Call,
-  Chain,
-  Hex,
-  PublicActions,
-  SignedAuthorizationList,
-  Transport,
-  WalletClient
+import {
+  type Account,
+  type Call,
+  type Chain,
+  type Hex,
+  type PublicActions,
+  type SignedAuthorizationList,
+  type Transport,
+  type WalletClient,
+  ethAddress
 } from "viem";
 
 import { encodeExecuteData } from "viem/experimental/erc7821";
@@ -26,18 +27,16 @@ export async function sendTransaction<
 ) {
   switch (payment.type) {
     case "native": {
-      return await client.sendTransaction({
-        account: client.account,
-        to: client.account.address,
-        from: client.account.address,
-        chain: client.chain,
-        authorizationList,
+      return await callGelatoAccount({
+        chainId: client.chain.id,
+        target: client.account.address,
         data: encodeExecuteData({
           calls,
           opData
-        })
-        // TODO: fix type
-      } as any);
+        }),
+        feeToken: ethAddress,
+        authorizationList
+      });
     }
     case "sponsored": {
       return await sponsoredCall({
