@@ -1,4 +1,4 @@
-import { PrivyProvider, usePrivy, useWallets } from "@privy-io/react-auth";
+import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
@@ -11,7 +11,7 @@ import {
   custom
 } from "viem";
 import * as chains from "viem/chains";
-import { extractChain, hashAuthorization } from "viem/utils";
+import { extractChain } from "viem/utils";
 
 interface GelatoMegaPrivyContextType {
   walletClient: WalletClient<Transport, Chain, Account> | null;
@@ -41,6 +41,8 @@ interface GelatoMegaPrivyContextProps {
 const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
+  const { signAuthorization } = useSignAuthorization();
+
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
 
   const customHandleLogOut = async () => {
@@ -53,7 +55,7 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const switchNetwork = async (chainId: number) => {
-    if (!walletsReady) {
+    if (!walletsReady || !wallets || wallets.length === 0) {
       return;
     }
 
@@ -68,14 +70,35 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
 
     await primaryWallet.switchChain(chain.id);
 
-    const provider = await primaryWallet.getEthereumProvider();
-    const walletClient = createWalletClient({
-      account: primaryWallet.address as Hex,
-      chain,
-      transport: custom(provider)
-    });
+    if (walletClient) {
+      walletClient.switchChain({ id: chain.id });
+    } else {
+      const provider = await primaryWallet.getEthereumProvider();
+      const walletClient = createWalletClient({
+        account: primaryWallet.address as Hex,
+        chain,
+        transport: custom(provider)
+      });
 
-    setWalletClient(walletClient);
+      walletClient.signAuthorization = async (parameters) => {
+        const { chainId, nonce } = parameters;
+        const contractAddress = parameters.contractAddress ?? parameters.address;
+
+        if (!contractAddress) {
+          throw new Error("Contract address is required");
+        }
+
+        const signedAuthorization = await signAuthorization({
+          contractAddress,
+          chainId,
+          nonce
+        });
+
+        return signedAuthorization;
+      };
+
+      setWalletClient(walletClient);
+    }
   };
 
   useEffect(() => {
