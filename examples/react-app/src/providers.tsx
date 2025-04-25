@@ -76,7 +76,16 @@ const WalletInfoComponent = () => {
       {walletClient ? (
         <div>
           <p>Wallet connected!</p>
-          <p>Wallet Address: {walletClient.account.address}</p>
+          <p>
+            Wallet Address:{" "}
+            <a
+              href={`https://sepolia.etherscan.io/address/${walletClient.account.address}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {walletClient.account.address}
+            </a>
+          </p>
           <div style={{ marginTop: "20px" }}>
             <h3>Mega Transaction</h3>
             {mega ? (
