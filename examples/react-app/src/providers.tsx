@@ -5,6 +5,8 @@ import {
   useGelatoMegaProviderContext
 } from "@gelatomega/react-sdk";
 import { useEffect, useState } from "react";
+import { sepolia } from "viem/chains";
+import { http, createConfig } from "wagmi";
 
 const WalletInfoComponent = () => {
   const { walletClient, logout } = useGelatoMegaProviderContext();
@@ -161,6 +163,13 @@ export default function Providers() {
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
   const waasAppId = import.meta.env.VITE_WAAS_APP_ID;
 
+  const wagmiConfig = createConfig({
+    chains: [sepolia],
+    transports: {
+      [sepolia.id]: http()
+    }
+  });
+
   if (!waasAppId || !sponsorApiKey) {
     return (
       <div>
@@ -180,7 +189,8 @@ export default function Providers() {
       // VITE_WAAS_APP_ID also needs to be set accordingly
       type="dynamic"
       settings={{
-        appId: waasAppId
+        appId: waasAppId,
+        wagmiConfig
       }}
     >
       <WalletInfoComponent />

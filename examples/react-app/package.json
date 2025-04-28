@@ -12,7 +12,9 @@
     "@gelatomega/react-sdk": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "wagmi": "catalog:",
+    "@wagmi/core": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
