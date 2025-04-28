@@ -9,6 +9,9 @@ catalogs:
     typescript:
       specifier: ^5.3.3
       version: 5.8.3
+    viem:
+      specifier: ^2.28.0
+      version: 2.28.0
 
 overrides:
   mega: workspace:*
@@ -42,6 +45,28 @@ importers:
       '@types/node':
         specifier: latest
         version: 22.14.1
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      tsx:
+        specifier: ^4.19.3
+        version: 4.19.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  examples/native:
+    dependencies:
+      '@gelatomega/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      viem:
+        specifier: 'catalog:'
+        version: 2.28.0(typescript@5.8.3)
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 22.15.2
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
@@ -390,6 +415,9 @@ packages:
 
   '@types/node@22.14.1':
     resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
+
+  '@types/node@22.15.2':
+    resolution: {integrity: sha512-uKXqKN9beGoMdBfcaTY1ecwz6ctxuJAcUlwE55938g0ZJ8lRxwAZqRz2AJ4pzpt5dHdTPMB863UZ0ESiFUcP7A==}
 
   abitype@1.0.8:
     resolution: {integrity: sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==}
@@ -1079,6 +1107,10 @@ snapshots:
   '@types/node@12.20.55': {}
 
   '@types/node@22.14.1':
+    dependencies:
+      undici-types: 6.21.0
+
+  '@types/node@22.15.2':
     dependencies:
       undici-types: 6.21.0
 
