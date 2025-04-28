@@ -5,11 +5,13 @@ import {
   type PublicActions,
   type Transport,
   type WalletClient,
-  hexToBigInt
+  encodeAbiParameters,
+  encodePacked,
+  hexToBigInt,
+  keccak256,
+  parseAbiParameters
 } from "viem";
-
-import { NONCE_STORAGE_SLOT } from "../../constants/index.js";
-import type { Payment } from "../../payment/index.js";
+import { STORAGE_LOCATION } from "../../constants/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
 
 export async function getOpData<
@@ -20,22 +22,31 @@ export async function getOpData<
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   calls: Call[]
 ) {
-  const nonceHex = await client.getStorageAt({
+  const nonceKey = 0n; //TODO: support custom nonce key
+
+  // Get the storage slot for nonceSequenceNumber[nonceKey]
+  const nonceSequenceNumberSlot = keccak256(
+    encodeAbiParameters(parseAbiParameters("uint192, bytes32"), [nonceKey, STORAGE_LOCATION])
+  );
+
+  const sequenceNumberHex = await client.getStorageAt({
     address: client.account.address,
-    slot: NONCE_STORAGE_SLOT
+    slot: nonceSequenceNumberSlot
   });
 
-  if (!nonceHex) {
+  if (!sequenceNumberHex) {
     throw new Error("Failed to get nonce");
   }
-
-  const nonce = hexToBigInt(nonceHex);
+  const sequenceNumber = hexToBigInt(sequenceNumberHex);
+  const nonce = sequenceNumber;
 
   const typedData = serializeTypedData(client.chain.id, client.account.address, calls, nonce);
 
   // TODO: add support for passkey signers
-  return await client.signTypedData({
+  const signature = await client.signTypedData({
     account: client.account,
     ...typedData
   });
+
+  return encodePacked(["uint256", "bytes"], [nonce, signature]);
 }
