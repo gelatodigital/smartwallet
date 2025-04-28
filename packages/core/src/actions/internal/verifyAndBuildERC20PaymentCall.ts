@@ -14,15 +14,9 @@ export async function verifyAndBuildERC20PaymentCall<
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   payment: ERC20Payment
 ) {
-  const [tokens, estimatedFee, [balance, decimals, symbol]] = await Promise.all([
+
+  const [tokens, [balance, decimals, symbol]] = await Promise.all([
     getPaymentTokens(client.chain.id),
-    getEstimatedFee(
-      client.chain.id,
-      payment.token,
-      // TODO: dynamic gas limit
-      200000n,
-      0n
-    ),
     client.multicall({
       contracts: [
         {
@@ -48,15 +42,19 @@ export async function verifyAndBuildERC20PaymentCall<
     })
   ]);
 
-  const isPaymentTokenAllowed = tokens.some(
-    (token) => lowercase(token) === lowercase(payment.token)
-  );
-
-  if (!isPaymentTokenAllowed) {
+  if (!tokens.some((token) => lowercase(token) === lowercase(payment.token))) {
     throw new Error(
       `Token ${symbol} (${payment.token}) is not allowed to be used as a payment token on ${client.chain.name}. Available tokens: ${tokens.join(", ")}`
     );
   }
+
+  const estimatedFee = await getEstimatedFee(
+    client.chain.id,
+    payment.token,
+    // TODO: dynamic gas limit
+    200000n,
+    0n
+  );
 
   if (balance < estimatedFee) {
     throw new Error(
