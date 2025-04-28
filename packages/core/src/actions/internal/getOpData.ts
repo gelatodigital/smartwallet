@@ -9,7 +9,6 @@ import {
 } from "viem";
 
 import { NONCE_STORAGE_SLOT } from "../../constants/index.js";
-import type { Payment } from "../../payment/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
 
 export async function getOpData<
