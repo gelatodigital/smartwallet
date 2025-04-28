@@ -1,0 +1,48 @@
+name: Create GitHub Release
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  create-release:
+    name: Create Release with tgz files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - name: Setup Node.js v23
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Packages
+        run: pnpm build
+
+      - name: Create tgz files
+        run: |
+          cd packages/core
+          pnpm pack
+          cd ../react-sdk
+          pnpm pack
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            packages/core/gelatomega-core-*.tgz
+            packages/react-sdk/gelatomega-react-sdk-*.tgz
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
