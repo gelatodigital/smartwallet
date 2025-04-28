@@ -139,6 +139,9 @@ export const GelatoMegaPrivyContextProvider: FC<GelatoMegaPrivyContextProps> = (
   settings
 }) => {
   const queryClient = new QueryClient();
+  const wagmiConfig = settings.wagmiConfigParameters
+    ? createConfig(settings.wagmiConfigParameters)
+    : undefined;
   return (
     <PrivyProvider
       appId={settings.appId}
@@ -146,10 +149,10 @@ export const GelatoMegaPrivyContextProvider: FC<GelatoMegaPrivyContextProps> = (
         defaultChain: settings.defaultChain ?? chains.sepolia
       }}
     >
-      <GelatoMegaPrivyInternal wagmiConfig={settings.wagmiConfig}>
-        {settings.wagmiConfig ? (
+      <GelatoMegaPrivyInternal wagmiConfig={wagmiConfig}>
+        {wagmiConfig ? (
           <QueryClientProvider client={queryClient}>
-            <WagmiProvider config={settings.wagmiConfig}>{children}</WagmiProvider>
+            <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
           </QueryClientProvider>
         ) : (
           children

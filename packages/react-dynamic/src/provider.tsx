@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
-import { type Config as WagmiConfig, WagmiProvider } from "wagmi";
+import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
 type GelatoMegaDynamicContextType = wallet.ProviderContext;
 
@@ -112,6 +112,9 @@ export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps>
   settings
 }) => {
   const queryClient = new QueryClient();
+  const wagmiConfig = settings.wagmiConfigParameters
+    ? createConfig(settings.wagmiConfigParameters)
+    : undefined;
   return (
     <DynamicContextProvider
       settings={{
@@ -119,12 +122,9 @@ export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps>
         walletConnectors: [EthereumWalletConnectors]
       }}
     >
-      <GelatoMegaDynamicInternal
-        defaultChain={settings.defaultChain}
-        wagmiConfig={settings.wagmiConfig}
-      >
-        {settings.wagmiConfig ? (
-          <WagmiProvider config={settings.wagmiConfig}>
+      <GelatoMegaDynamicInternal defaultChain={settings.defaultChain} wagmiConfig={wagmiConfig}>
+        {wagmiConfig ? (
+          <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
               <DynamicWagmiConnector>{children}</DynamicWagmiConnector>
             </QueryClientProvider>

@@ -1,4 +1,4 @@
-import type { Config } from "@wagmi/core";
+import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
 
@@ -14,6 +14,6 @@ export interface ProviderProps {
   settings: {
     appId: string;
     defaultChain?: Chain;
-    wagmiConfig?: Config;
+    wagmiConfigParameters?: CreateConfigParameters;
   };
 }
