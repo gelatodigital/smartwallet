@@ -17,11 +17,14 @@
   "dependencies": {
     "@gelatomega/react-types": "workspace:*",
     "@privy-io/react-auth": "^2.10.0",
+    "@privy-io/wagmi": "^1.0.3",
+    "@tanstack/react-query": "catalog:",
+    "caip": "^1",
     "react": "catalog:",
-    "viem": "catalog:",
-    "zod": "^3.24.3",
     "react-dom": "catalog:",
-    "caip": "^1"
+    "viem": "catalog:",
+    "wagmi": "catalog:",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/react": "catalog:",

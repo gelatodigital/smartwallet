@@ -1,5 +1,7 @@
 import type { wallet } from "@gelatomega/react-types";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
+import { WagmiProvider, createConfig } from "@privy-io/wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -14,6 +16,7 @@ import {
 } from "viem";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
+import type { Config as WagmiConfig } from "wagmi";
 
 type GelatoMegaPrivyContextType = wallet.ProviderContext;
 
@@ -31,7 +34,10 @@ export const useGelatoMegaPrivyContext = () => {
 
 type GelatoMegaPrivyContextProps = wallet.ProviderProps;
 
-const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
+const GelatoMegaPrivyInternal: FC<{
+  children: ReactNode;
+  wagmiConfig: WagmiConfig | undefined;
+}> = ({ children, wagmiConfig }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
@@ -118,6 +124,7 @@ const GelatoMegaPrivyInternal: FC<{ children: ReactNode }> = ({ children }) => {
     <GelatoMegaPrivyProviderContext.Provider
       value={{
         walletClient: walletClient as WalletClient<Transport, Chain, Account>,
+        wagmiConfig,
         logout: logoutWrapper,
         switchNetwork
       }}
@@ -131,6 +138,7 @@ export const GelatoMegaPrivyContextProvider: FC<GelatoMegaPrivyContextProps> = (
   children,
   settings
 }) => {
+  const queryClient = new QueryClient();
   return (
     <PrivyProvider
       appId={settings.appId}
@@ -138,7 +146,15 @@ export const GelatoMegaPrivyContextProvider: FC<GelatoMegaPrivyContextProps> = (
         defaultChain: settings.defaultChain ?? chains.sepolia
       }}
     >
-      <GelatoMegaPrivyInternal>{children}</GelatoMegaPrivyInternal>
+      <GelatoMegaPrivyInternal wagmiConfig={settings.wagmiConfig}>
+        {settings.wagmiConfig ? (
+          <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={settings.wagmiConfig}>{children}</WagmiProvider>
+          </QueryClientProvider>
+        ) : (
+          children
+        )}
+      </GelatoMegaPrivyInternal>
     </PrivyProvider>
   );
 };
