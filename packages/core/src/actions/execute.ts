@@ -19,9 +19,9 @@ export async function execute<
   account extends Account = Account
 >(
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[] }
+  parameters: { payment: Payment; calls: Call[]; nonceKey?: string }
 ): Promise<Hash> {
-  const { payment, calls } = parameters;
+  const { payment, calls, nonceKey } = parameters;
 
   const authorizationList = await getAuthorizationList(client, payment);
 
@@ -31,7 +31,7 @@ export async function execute<
     calls.push(await verifyAndBuildNativePaymentCall(client));
   }
 
-  const opData = await getOpData(client, calls);
+  const opData = await getOpData(client, calls, nonceKey);
 
   return await sendTransaction(client, calls, payment, authorizationList, opData);
 }

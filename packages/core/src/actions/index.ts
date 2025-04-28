@@ -4,7 +4,11 @@ import type { Payment } from "../payment/index.js";
 import { execute } from "./execute.js";
 
 export type MegaActions = {
-  execute: (args: { payment: Payment; calls: Call[] }) => Promise<Hash>;
+  execute: (args: {
+    payment: Payment;
+    calls: Call[];
+    nonceKey?: string;
+  }) => Promise<Hash>;
 };
 
 export function actions<
