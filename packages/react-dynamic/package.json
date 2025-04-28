@@ -15,13 +15,16 @@
     }
   },
   "dependencies": {
-    "@gelatomega/react-types": "workspace:*",
     "@dynamic-labs/ethereum": "^4.12.4",
     "@dynamic-labs/sdk-react-core": "^4.12.4",
+    "@dynamic-labs/wagmi-connector": "^4.12.4",
     "@dynamic-labs/wallet-connector-core": "^4.12.4",
+    "@gelatomega/react-types": "workspace:*",
+    "@tanstack/react-query": "catalog:",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "viem": "catalog:",
-    "react-dom": "catalog:"
+    "wagmi": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",

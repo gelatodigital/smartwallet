@@ -1,10 +1,13 @@
 import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethereum";
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import type { wallet } from "@gelatomega/react-types";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
+import { type Config as WagmiConfig, WagmiProvider } from "wagmi";
 
 type GelatoMegaDynamicContextType = wallet.ProviderContext;
 
@@ -22,10 +25,11 @@ export const useGelatoMegaDynamicContext = () => {
 
 type GelatoMegaDynamicContextProps = wallet.ProviderProps;
 
-const GelatoMegaDynamicInternal: FC<{ children: ReactNode; defaultChain: Chain | undefined }> = ({
-  children,
-  defaultChain
-}) => {
+const GelatoMegaDynamicInternal: FC<{
+  children: ReactNode;
+  defaultChain: Chain | undefined;
+  wagmiConfig: WagmiConfig | undefined;
+}> = ({ children, defaultChain, wagmiConfig }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
 
@@ -93,6 +97,7 @@ const GelatoMegaDynamicInternal: FC<{ children: ReactNode; defaultChain: Chain |
     <GelatoMegaDynamicProviderContext.Provider
       value={{
         walletClient: walletClient as WalletClient<Transport, Chain, Account>,
+        wagmiConfig,
         logout: logoutHandler,
         switchNetwork
       }}
@@ -106,6 +111,8 @@ export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps>
   children,
   settings
 }) => {
+  const queryClient = new QueryClient();
+  console.log("wagmiConnector", !!settings.wagmiConfig);
   return (
     <DynamicContextProvider
       settings={{
@@ -113,8 +120,19 @@ export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps>
         walletConnectors: [EthereumWalletConnectors]
       }}
     >
-      <GelatoMegaDynamicInternal defaultChain={settings.defaultChain}>
-        {children}
+      <GelatoMegaDynamicInternal
+        defaultChain={settings.defaultChain}
+        wagmiConfig={settings.wagmiConfig}
+      >
+        {settings.wagmiConfig ? (
+          <WagmiProvider config={settings.wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+              <DynamicWagmiConnector>{children}</DynamicWagmiConnector>
+            </QueryClientProvider>
+          </WagmiProvider>
+        ) : (
+          children
+        )}
       </GelatoMegaDynamicInternal>
     </DynamicContextProvider>
   );
