@@ -51,7 +51,8 @@ export const GelatoMegaContextProvider: React.FC<GelatoMegaProviderProps> = ({
         <GelatoMegaDynamicContextProvider
           settings={{
             appId: settings.appId,
-            defaultChain: settings.defaultChain ?? sepolia
+            defaultChain: settings.defaultChain ?? sepolia,
+            wagmiConfig: settings.wagmiConfig
           }}
         >
           <GelatoMegaProviderInner>{children}</GelatoMegaProviderInner>
@@ -60,7 +61,8 @@ export const GelatoMegaContextProvider: React.FC<GelatoMegaProviderProps> = ({
         <GelatoMegaPrivyContextProvider
           settings={{
             appId: settings.appId,
-            defaultChain: settings.defaultChain ?? sepolia
+            defaultChain: settings.defaultChain ?? sepolia,
+            wagmiConfig: settings.wagmiConfig
           }}
         >
           <GelatoMegaProviderInner>{children}</GelatoMegaProviderInner>
