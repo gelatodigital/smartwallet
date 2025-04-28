@@ -6,7 +6,7 @@ import {
 } from "@gelatomega/react-sdk";
 import { useEffect, useState } from "react";
 import { sepolia } from "viem/chains";
-import { http, createConfig } from "wagmi";
+import { http, useAccount } from "wagmi";
 
 const WalletInfoComponent = () => {
   const { walletClient, logout } = useGelatoMegaProviderContext();
@@ -19,7 +19,7 @@ const WalletInfoComponent = () => {
   );
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const { address: walletAddress } = useAccount();
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
   const executeTransaction = async () => {
@@ -81,11 +81,11 @@ const WalletInfoComponent = () => {
           <p>
             Wallet Address:{" "}
             <a
-              href={`https://sepolia.etherscan.io/address/${walletClient.account.address}`}
+              href={`https://sepolia.etherscan.io/address/${walletAddress}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {walletClient.account.address}
+              {walletAddress}
             </a>
           </p>
           <div style={{ marginTop: "20px" }}>
@@ -163,13 +163,6 @@ export default function Providers() {
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
   const waasAppId = import.meta.env.VITE_WAAS_APP_ID;
 
-  const wagmiConfig = createConfig({
-    chains: [sepolia],
-    transports: {
-      [sepolia.id]: http()
-    }
-  });
-
   if (!waasAppId || !sponsorApiKey) {
     return (
       <div>
@@ -190,7 +183,12 @@ export default function Providers() {
       type="dynamic"
       settings={{
         appId: waasAppId,
-        wagmiConfig
+        wagmiConfigParameters: {
+          chains: [sepolia],
+          transports: {
+            [sepolia.id]: http()
+          }
+        }
       }}
     >
       <WalletInfoComponent />
