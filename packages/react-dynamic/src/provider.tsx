@@ -112,7 +112,6 @@ export const GelatoMegaDynamicContextProvider: FC<GelatoMegaDynamicContextProps>
   settings
 }) => {
   const queryClient = new QueryClient();
-  console.log("wagmiConnector", !!settings.wagmiConfig);
   return (
     <DynamicContextProvider
       settings={{
