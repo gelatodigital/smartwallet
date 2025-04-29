@@ -4,15 +4,18 @@
   "author": "Gelato",
   "type": "module",
   "description": "Gelato SmartWallet React SDK",
-  "main": "./_dist/index.js",
-  "types": "./_dist/index.d.ts",
-  "typings": "./_dist/index.d.ts",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "typings": "./src/index.d.ts",
   "scripts": {
     "build": "tsc --project ./tsconfig.build.json"
   },
   "peerDependencies": {
     "typescript": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@gelatodigital/smartwallet-react-dynamic": "workspace:*",
+    "@gelatodigital/smartwallet-react-privy": "workspace:*"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -20,9 +23,6 @@
     }
   },
   "dependencies": {
-    "@gelatodigital/smartwallet-react-types": "workspace:*",
-    "@gelatodigital/smartwallet-react-dynamic": "workspace:*",
-    "@gelatodigital/smartwallet-react-privy": "workspace:*",
     "react": "catalog:",
     "viem": "catalog:"
   },
