@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "lib": ["ES2024", "DOM"],
+    "moduleResolution": "NodeNext",
+    "rootDir": "./"
+  }
+}
