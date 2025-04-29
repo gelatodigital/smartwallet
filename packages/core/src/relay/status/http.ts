@@ -7,7 +7,7 @@ export const getTaskStatus = async (
 ): Promise<TransactionStatusResponse | undefined> => {
   try {
     return (await fetch(`${GELATO_API}/tasks/status/${taskId}`).then((response) => response.json()))
-      .data.task;
+      .task;
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {
     throw new Error(
