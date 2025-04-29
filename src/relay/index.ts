@@ -15,7 +15,7 @@ export interface SponsoredCallRequest extends BaseCallRequest {
   sponsorApiKey: string;
 }
 
-export interface CallGelatoAccountRequest extends BaseCallRequest {
+export interface SmartWalletCallRequest extends BaseCallRequest {
   feeToken: string;
 }
 
@@ -45,5 +45,5 @@ const callGelatoApi = async <T extends object>(endpoint: string, request: T): Pr
 export const sponsoredCall = (request: SponsoredCallRequest): Promise<Hash> =>
   callGelatoApi("/relays/v2/sponsored-call-eip7702", request);
 
-export const callGelatoAccount = (request: CallGelatoAccountRequest): Promise<Hash> =>
-  callGelatoApi("/relays/v2/call-gelato-account", request);
+export const smartWalletCall = (request: SmartWalletCallRequest): Promise<Hash> =>
+  callGelatoApi("/relays/v2/smart-wallet-call", request);
