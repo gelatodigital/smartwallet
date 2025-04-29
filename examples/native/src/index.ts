@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createMegaClient, native } from "@gelatomega/core";
+import { createGelatoSmartWalletClient, native } from "@gelatodigital/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
@@ -13,7 +13,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createMegaClient(client)
+createGelatoSmartWalletClient(client)
   .execute({
     payment: native(),
     calls: [

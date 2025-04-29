@@ -1,0 +1,24 @@
+{
+  "name": "@gelatodigital/smartwallet",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "description": "Gelato SmartWallet: A Modern Account Abstraction SDK",
+  "main": "./_dist/index.js",
+  "types": "./_dist/index.d.ts",
+  "typings": "./_dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "viem": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "viem": "catalog:"
+  }
+}

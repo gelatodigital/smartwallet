@@ -2,7 +2,7 @@
   "mode": "pre",
   "tag": "alpha",
   "initialVersions": {
-    "@gelatomega/core": "0.0.1"
+    "@gelatodigital/smartwallet": "0.0.1"
   },
   "changesets": []
 }

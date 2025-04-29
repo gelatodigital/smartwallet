@@ -1,12 +1,12 @@
 {
-  "name": "mega-sponsored",
+  "name": "erc20-payment",
   "private": true,
   "version": "0.0.1",
   "scripts": {
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "@gelatomega/core": "workspace:*",
+    "@gelatodigital/smartwallet": "workspace:*",
     "viem": "catalog:"
   },
   "devDependencies": {

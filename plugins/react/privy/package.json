@@ -1,0 +1,38 @@
+{
+  "name": "@gelatodigital/smartwallet-react-privy",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "type": "module",
+  "description": "Context provider supporting Privy WaaS",
+  "main": "./_dist/index.js",
+  "types": "./_dist/index.d.ts",
+  "typings": "./_dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "viem": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@privy-io/react-auth": "^2.10.0",
+    "@privy-io/wagmi": "^1.0.3",
+    "@tanstack/react-query": "catalog:",
+    "caip": "^1",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}

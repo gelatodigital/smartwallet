@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createMegaClient, sponsored } from "@gelatomega/core";
+import { createGelatoSmartWalletClient, sponsored } from "@gelatodigital/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
@@ -17,10 +17,16 @@ const client = createWalletClient({
   transport: http()
 });
 
-createMegaClient(client)
+createGelatoSmartWalletClient(client)
   .execute({
     payment: sponsored(process.env.SPONSOR_API_KEY),
-    calls: [{ to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E", data: "0xd09de08a", value: 0n }]
+    calls: [
+      {
+        to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+        data: "0xd09de08a",
+        value: 0n
+      }
+    ]
   })
   .then((id) => {
     console.log(`Your Gelato sponsored id is: ${id}`);

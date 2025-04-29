@@ -1,0 +1,38 @@
+{
+  "name": "@gelatodigital/smartwallet-react-dynamic",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "type": "module",
+  "description": "Context provider supporting Dynamic WaaS",
+  "main": "./_dist/index.js",
+  "types": "./_dist/index.d.ts",
+  "typings": "./_dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:",
+    "viem": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@dynamic-labs/ethereum": "^4.12.4",
+    "@dynamic-labs/sdk-react-core": "^4.12.4",
+    "@dynamic-labs/wagmi-connector": "^4.12.4",
+    "@dynamic-labs/wallet-connector-core": "^4.12.4",
+    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}
