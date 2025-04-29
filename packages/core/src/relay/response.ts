@@ -54,34 +54,42 @@ export class GelatoResponse {
     this.taskId = taskId;
   }
 
+  private async _waitHttp(): Promise<Hash | undefined> {
+    const taskStatus = await getTaskStatus(this.taskId);
+
+    if (!taskStatus) {
+      throw new InternalError(this.taskId);
+    }
+
+    if (taskStatus.taskState === TaskState.ExecReverted) {
+      throw new ExecutionRevertedError(
+        this.taskId,
+        taskStatus.transactionHash ? (taskStatus.transactionHash as Hash) : undefined
+      );
+    }
+
+    if (taskStatus.taskState === TaskState.Cancelled) {
+      throw new ExecutionCancelledError(this.taskId);
+    }
+
+    if (taskStatus.taskState === TaskState.ExecSuccess) {
+      if (taskStatus.transactionHash) {
+        return taskStatus.transactionHash as Hash;
+      }
+
+      throw new InternalError(this.taskId);
+    }
+  }
+
   private async _waitPolling(pollInterval?: number, maxRetries?: number): Promise<Hash> {
     const _pollInterval = pollInterval ?? GELATO_STATUS_API_POLLING_INTERVAL;
     const _maxRetries = maxRetries ?? GELATO_STATUS_API_POLLING_MAX_RETRIES;
 
     for (let attempt = 0; attempt < _maxRetries; attempt++) {
-      const taskStatus = await getTaskStatus(this.taskId);
+      const transactionHash = await this._waitHttp();
 
-      if (!taskStatus) {
-        throw new InternalError(this.taskId);
-      }
-
-      if (taskStatus.taskState === TaskState.ExecReverted) {
-        throw new ExecutionRevertedError(
-          this.taskId,
-          taskStatus.transactionHash ? (taskStatus.transactionHash as Hash) : undefined
-        );
-      }
-
-      if (taskStatus.taskState === TaskState.Cancelled) {
-        throw new ExecutionCancelledError(this.taskId);
-      }
-
-      if (taskStatus.taskState === TaskState.ExecSuccess) {
-        if (taskStatus.transactionHash) {
-          return taskStatus.transactionHash as Hash;
-        }
-
-        throw new InternalError(this.taskId);
+      if (transactionHash) {
+        return transactionHash;
       }
 
       // If not in a final state, wait before polling again
@@ -95,6 +103,13 @@ export class GelatoResponse {
     pollingInterval?: number;
     maxRetries?: number;
   }): Promise<Hash> {
+    // Check with HTTP first
+    const transactionHash = await this._waitHttp();
+
+    if (transactionHash) {
+      return transactionHash;
+    }
+
     let resolvePromise: (value: Hash) => void;
     let rejectPromise: (reason: Error) => void;
 
