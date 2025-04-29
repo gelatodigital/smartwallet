@@ -1,6 +1,6 @@
 {
   "name": "@gelatomega/react-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "author": "Gelato",
   "type": "module",
   "description": "Gelato Mega React SDK",

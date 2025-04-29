@@ -2,7 +2,16 @@
   "mode": "pre",
   "tag": "alpha",
   "initialVersions": {
-    "@gelatomega/core": "0.0.1"
+    "@gelatomega/core": "0.0.1",
+    "mega-sponsored": "0.0.1",
+    "mega-react-app": "0.0.1",
+    "@gelatomega/react-dynamic": "0.0.1",
+    "@gelatomega/react-privy": "0.0.1",
+    "@gelatomega/react-sdk": "0.0.1",
+    "@gelatomega/react-types": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "better-walls-talk",
+    "eight-bears-act"
+  ]
 }
