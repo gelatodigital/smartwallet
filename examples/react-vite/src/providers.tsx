@@ -1,7 +1,7 @@
 import {
+  type GelatoTaskStatus,
   createGelatoSmartWalletClient,
   erc20,
-  type GelatoTaskStatus,
   native,
   sponsored
 } from "@gelatodigital/smartwallet";
