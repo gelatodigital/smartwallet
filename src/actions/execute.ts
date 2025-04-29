@@ -1,7 +1,7 @@
 import type { Account, Call, Chain, Hash, PublicActions, Transport, WalletClient } from "viem";
 
 import { type Payment, isErc20, isNative } from "../payment/index.js";
-import type { GelatoResponse } from "../relay/response.js";
+import type { GelatoResponse } from "../relay/index.js";
 import { getAuthorizationList } from "./internal/getAuthorizationList.js";
 import { getOpData } from "./internal/getOpData.js";
 import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";

@@ -1,4 +1,5 @@
 export { erc20, native, sponsored } from "./payment/index.js";
+export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
 
 import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";

@@ -1,11 +1,11 @@
 import type { Account, Call, Chain, PublicActions, Transport, WalletClient } from "viem";
 
 import type { Payment } from "../payment/index.js";
-import type { GelatoResponse } from "../relay/response.js";
+import type { GelatoResponse } from "../relay/index.js";
 import { execute } from "./execute.js";
 
 export type GelatoSmartWalletActions = {
-  execute: (args: { payment: Payment; calls: Call[] }) => Promise<Hash>;
+  execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
 };
 
 export function actions<

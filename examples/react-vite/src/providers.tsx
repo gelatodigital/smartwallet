@@ -1,6 +1,7 @@
 import {
   createGelatoSmartWalletClient,
   erc20,
+  type GelatoTaskStatus,
   native,
   sponsored
 } from "@gelatodigital/smartwallet";
@@ -48,6 +49,10 @@ const WalletInfoComponent = () => {
             value: 0n
           }
         ]
+      });
+
+      megaResponse.on("success", (status: GelatoTaskStatus) => {
+        console.log("Transaction successful:", status.transactionHash);
       });
 
       const megaTransactionHash = await megaResponse.wait();

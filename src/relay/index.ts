@@ -1,8 +1,8 @@
-import type { Hash, SignedAuthorizationList } from "viem";
+import type { SignedAuthorizationList } from "viem";
 
-import { GelatoResponse } from "./response.js";
-import { WebsocketHandler } from "./status/index.js";
-import { api, apiWs } from "../constants/index.js";
+import { api } from "../constants/index.js";
+import { on, wait } from "./actions/index.js";
+import type { GelatoTaskEvent, TransactionStatusResponse } from "./status/index.js";
 
 interface BaseCallRequest {
   chainId: number;
@@ -19,6 +19,15 @@ export interface SponsoredCallRequest extends BaseCallRequest {
 
 export interface CallGelatoAccountRequest extends BaseCallRequest {
   feeToken: string;
+}
+
+export interface GelatoResponse {
+  id: string;
+  wait: () => Promise<string>;
+  on: (
+    update: GelatoTaskEvent,
+    callback: (parameter: TransactionStatusResponse | Error) => void
+  ) => () => void;
 }
 
 const callGelatoApi = async <T extends object>(
@@ -44,7 +53,11 @@ const callGelatoApi = async <T extends object>(
 
   if (message) throw new Error(message);
 
-  return new GelatoResponse(taskId);
+  return {
+    id: taskId,
+    wait: () => wait(taskId),
+    on: (update, callback) => on(taskId, { update, callback })
+  };
 };
 
 export const sponsoredCall = (request: SponsoredCallRequest): Promise<GelatoResponse> =>
