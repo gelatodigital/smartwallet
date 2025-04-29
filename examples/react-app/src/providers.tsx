@@ -17,7 +17,7 @@ const WalletInfoComponent = () => {
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
     "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
   );
-  const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
@@ -34,7 +34,7 @@ const WalletInfoComponent = () => {
             ? erc20(erc20TokenAddress)
             : native();
       // Example transaction - sending a simple call
-      const hash = await mega.execute({
+      const megaTaskId = await mega.execute({
         payment,
         calls: [
           {
@@ -45,7 +45,7 @@ const WalletInfoComponent = () => {
         ]
       });
 
-      setTransactionHash(hash);
+      setTaskId(megaTaskId);
     } catch (error) {
       console.error("Transaction failed:", error);
     } finally {
@@ -127,18 +127,7 @@ const WalletInfoComponent = () => {
                 <button type="button" onClick={executeTransaction} disabled={isLoading}>
                   {isLoading ? "Processing..." : "Execute Transaction"}
                 </button>
-                {transactionHash && (
-                  <p>
-                    Transaction Executed:{" "}
-                    <a
-                      href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      view on explorer
-                    </a>
-                  </p>
-                )}
+                {taskId && <p>Gelato Task Created Task Id: {taskId}</p>}
               </div>
             ) : (
               <p>Mega not initialized</p>
