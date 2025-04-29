@@ -6,9 +6,6 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: [
-      "@gelatodigital/smartwallet",
-      "@gelatodigital/smartwallet-react-sdk",
-    ],
-  },
+    include: ["@gelatodigital/smartwallet", "@gelatodigital/smartwallet-react-sdk"]
+  }
 });
