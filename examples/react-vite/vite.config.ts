@@ -7,10 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@gelatodigital/smartwallet": path.resolve(
-        __dirname,
-        "../../src/index.ts"
-      ),
+      "@gelatodigital/smartwallet": path.resolve(__dirname, "../../src/index.ts"),
       "@gelatodigital/smartwallet-react-dynamic": path.resolve(
         __dirname,
         "../../plugins/react/dynamic/src/index.ts"
@@ -22,15 +19,15 @@ export default defineConfig({
       "@gelatodigital/smartwallet-react-sdk": path.resolve(
         __dirname,
         "../../plugins/react/sdk/src/index.ts"
-      ),
-    },
+      )
+    }
   },
   optimizeDeps: {
     include: [
       "@gelatodigital/smartwallet",
       "@gelatodigital/smartwallet-react-dynamic",
       "@gelatodigital/smartwallet-react-privy",
-      "@gelatodigital/smartwallet-react-sdk",
-    ],
-  },
+      "@gelatodigital/smartwallet-react-sdk"
+    ]
+  }
 });
