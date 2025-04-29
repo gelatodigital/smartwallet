@@ -12,10 +12,14 @@
   },
   "peerDependencies": {
     "typescript": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "wagmi": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {
+      "optional": true
+    },
+    "wagmi": {
       "optional": true
     }
   },

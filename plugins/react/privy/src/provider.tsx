@@ -1,9 +1,7 @@
-import type { wallet } from "@gelatodigital/smartwallet-react-types";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
-import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   type Account,
@@ -16,6 +14,9 @@ import {
 } from "viem";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
+
+import type { wallet } from "@gelatodigital/smartwallet-react-types";
+import type { FC, ReactNode } from "react";
 import type { Config as WagmiConfig } from "wagmi";
 
 type GelatoSmartWalletPrivyContextType = wallet.ProviderContext;
@@ -38,8 +39,8 @@ type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
-  wagmiConfig: WagmiConfig | undefined;
-}> = ({ children, wagmiConfig }) => {
+  wagmi: { config: WagmiConfig | undefined };
+}> = ({ children, wagmi }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
@@ -125,8 +126,10 @@ const GelatoSmartWalletPrivyInternal: FC<{
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider
       value={{
-        walletClient: walletClient as WalletClient<Transport, Chain, Account>,
-        wagmiConfig,
+        wagmi: {
+          config: wagmi.config,
+          client: walletClient as WalletClient<Transport, Chain, Account>
+        },
         logout: logoutWrapper,
         switchNetwork
       }}
@@ -141,20 +144,18 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
   settings
 }) => {
   const queryClient = new QueryClient();
-  const wagmiConfig = settings.wagmiConfigParameters
-    ? createConfig(settings.wagmiConfigParameters)
-    : undefined;
+
   return (
     <PrivyProvider
-      appId={settings.appId}
+      appId={settings.waas.appId}
       config={{
         defaultChain: settings.defaultChain ?? chains.sepolia
       }}
     >
-      <GelatoSmartWalletPrivyInternal wagmiConfig={wagmiConfig}>
-        {wagmiConfig ? (
+      <GelatoSmartWalletPrivyInternal wagmi={{ config: settings.wagmi?.config }}>
+        {settings.wagmi ? (
           <QueryClientProvider client={queryClient}>
-            <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
+            <WagmiProvider config={settings.wagmi.config}>{children}</WagmiProvider>
           </QueryClientProvider>
         ) : (
           children

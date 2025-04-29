@@ -9,12 +9,11 @@ import {
 import type { wallet } from "@gelatodigital/smartwallet-react-types";
 import type React from "react";
 import { type ReactNode, createContext, useContext } from "react";
-import { sepolia } from "viem/chains";
 
-type ProviderType = "dynamic" | "privy";
+import { isDynamic } from "./utils/index.js";
 
 interface GelatoSmartWalletProviderContextType extends wallet.ProviderContext {
-  type: ProviderType;
+  type: wallet.ProviderType;
 }
 
 const GelatoSmartWalletProviderContext = createContext<
@@ -23,30 +22,29 @@ const GelatoSmartWalletProviderContext = createContext<
 
 export const useGelatoSmartWalletProviderContext = () => {
   const context = useContext(GelatoSmartWalletProviderContext);
+
   if (!context) {
     throw new Error(
       "useGelatoSmartWalletProviderContext must be used within a GelatoSmartWalletContextProvider"
     );
   }
+
   return context;
 };
 
-interface GelatoSmartWalletProviderProps extends wallet.ProviderProps {
-  type: ProviderType;
-}
+type GelatoSmartWalletProviderProps = wallet.ProviderProps;
 
 export const GelatoSmartWalletContextProvider: React.FC<GelatoSmartWalletProviderProps> = ({
   children,
-  type,
   settings
 }) => {
   const GelatoSmartWalletProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const context =
-      type === "dynamic"
-        ? useGelatoSmartWalletDynamicContext()
-        : useGelatoSmartWalletPrivyContext();
+    const context = isDynamic(settings.waas.type)
+      ? useGelatoSmartWalletDynamicContext()
+      : useGelatoSmartWalletPrivyContext();
+
     return (
-      <GelatoSmartWalletProviderContext.Provider value={{ ...context, type }}>
+      <GelatoSmartWalletProviderContext.Provider value={{ ...context, type: settings.waas.type }}>
         {children}
       </GelatoSmartWalletProviderContext.Provider>
     );
@@ -54,24 +52,12 @@ export const GelatoSmartWalletContextProvider: React.FC<GelatoSmartWalletProvide
 
   return (
     <>
-      {type === "dynamic" ? (
-        <GelatoSmartWalletDynamicContextProvider
-          settings={{
-            appId: settings.appId,
-            defaultChain: settings.defaultChain ?? sepolia,
-            wagmiConfigParameters: settings.wagmiConfigParameters
-          }}
-        >
+      {isDynamic(settings.waas.type) ? (
+        <GelatoSmartWalletDynamicContextProvider settings={settings}>
           <GelatoSmartWalletProviderInner>{children}</GelatoSmartWalletProviderInner>
         </GelatoSmartWalletDynamicContextProvider>
       ) : (
-        <GelatoSmartWalletPrivyContextProvider
-          settings={{
-            appId: settings.appId,
-            defaultChain: settings.defaultChain ?? sepolia,
-            wagmiConfigParameters: settings.wagmiConfigParameters
-          }}
-        >
+        <GelatoSmartWalletPrivyContextProvider settings={settings}>
           <GelatoSmartWalletProviderInner>{children}</GelatoSmartWalletProviderInner>
         </GelatoSmartWalletPrivyContextProvider>
       )}

@@ -7,14 +7,20 @@ import {
 import {
   GelatoSmartWalletConnectButton,
   GelatoSmartWalletContextProvider,
-  useGelatoSmartWalletProviderContext
+  dynamic,
+  useGelatoSmartWalletProviderContext,
+  wagmi
 } from "@gelatodigital/smartwallet-react-sdk";
 import { useEffect, useState } from "react";
-import { sepolia } from "viem/chains";
-import { http, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
+
+import { config } from "./wagmi.js";
 
 const WalletInfoComponent = () => {
-  const { walletClient, logout } = useGelatoSmartWalletProviderContext();
+  const {
+    wagmi: { client: walletClient },
+    logout
+  } = useGelatoSmartWalletProviderContext();
   // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define SmartWalletClient type
   const [gelatoSmartWallet, setGelatoSmartWallet] = useState<any | null>(null);
   const [paymentType, setPaymentType] = useState<string>("sponsored");
@@ -174,15 +180,9 @@ export default function Providers() {
     <GelatoSmartWalletContextProvider
       // Changing this to `dynamic` or `privy` is enough to change WaaS provider
       // VITE_WAAS_APP_ID also needs to be set accordingly
-      type="dynamic"
       settings={{
-        appId: waasAppId,
-        wagmiConfigParameters: {
-          chains: [sepolia],
-          transports: {
-            [sepolia.id]: http()
-          }
-        }
+        waas: dynamic(waasAppId),
+        wagmi: wagmi(config)
       }}
     >
       <WalletInfoComponent />

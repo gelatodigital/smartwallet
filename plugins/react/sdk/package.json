@@ -30,7 +30,11 @@
   },
   "dependencies": {
     "react": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "wagmi": "catalog:",
+    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@gelatodigital/smartwallet-react-dynamic": "workspace:*",
+    "@gelatodigital/smartwallet-react-privy": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "catalog:"
