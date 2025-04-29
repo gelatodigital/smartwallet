@@ -10,6 +10,7 @@ export const GelatoSmartWalletPrivyConnectButton: FC<GelatoSmartWalletPrivyConne
 }) => {
   const { ready, authenticated } = usePrivy();
   const { login } = useLogin();
+
   const disableLogin = !ready || (ready && authenticated);
 
   return (
