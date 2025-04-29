@@ -1,10 +1,11 @@
 import type { Address, Call, TypedDataDefinition } from "viem";
 
-import { EXECUTION_MODE } from "../constants/index.js";
+import { type Mode, mode } from "../constants/index.js";
 
 export const serializeTypedData = (
   chainId: number,
-  accountAddress: Address,
+  account: Address,
+  executionMode: Mode,
   calls: Call[],
   nonce: bigint
 ): TypedDataDefinition => ({
@@ -12,7 +13,7 @@ export const serializeTypedData = (
     name: "Delegation",
     version: "0.0.1",
     chainId,
-    verifyingContract: accountAddress
+    verifyingContract: account
   },
   types: {
     Execute: [
@@ -28,7 +29,7 @@ export const serializeTypedData = (
   },
   primaryType: "Execute",
   message: {
-    mode: EXECUTION_MODE.opData as `0x{string}`,
+    mode: mode(executionMode),
     calls: calls.map((call) => ({
       to: call.to,
       value: call.value ?? 0n,

@@ -1,6 +1,6 @@
 import type { Hash, SignedAuthorizationList } from "viem";
 
-import { GELATO_API } from "../constants/index.js";
+import { api } from "../constants/index.js";
 
 interface BaseCallRequest {
   chainId: number;
@@ -28,7 +28,7 @@ const callGelatoApi = async <T extends object>(endpoint: string, request: T): Pr
     }
   }
 
-  const { taskId, message } = await fetch(`${GELATO_API}${endpoint}`, {
+  const { taskId, message } = await fetch(`${api()}${endpoint}`, {
     method: "POST",
     headers: {
       Accept: "application/json",

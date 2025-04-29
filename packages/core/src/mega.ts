@@ -2,7 +2,7 @@ import type { Account, Chain, PublicActions, Transport, WalletClient } from "vie
 import { publicActions } from "viem";
 
 import { type MegaActions, actions } from "./actions/index.js";
-import { DELEGATION_ADDRESSES } from "./constants/index.js";
+import { delegation } from "./constants/index.js";
 
 export type MegaClient<
   transport extends Transport,
@@ -19,8 +19,7 @@ export const createMegaClient = <
 >(
   client: WalletClient<transport, chain, account>
 ) => {
-  if (!DELEGATION_ADDRESSES[client.chain.id])
-    throw new Error(`Chain not supported: ${client.chain.id}`);
+  if (!delegation(client.chain.id)) throw new Error(`Chain not supported: ${client.chain.id}`);
 
   return client.extend(publicActions).extend(actions) as MegaClient<transport, chain, account>;
 };

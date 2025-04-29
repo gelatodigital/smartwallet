@@ -2,7 +2,7 @@ import { getCode } from "viem/actions";
 
 import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
 
-import { DELEGATION_ADDRESSES } from "../../constants/index.js";
+import { delegation } from "../../constants/index.js";
 import type { Payment } from "../../payment/index.js";
 import { lowercase } from "../../utils/index.js";
 
@@ -16,10 +16,11 @@ export async function getAuthorizationList<
 ) {
   const address = client.account.address;
   const bytecode = await getCode(client, { address });
+
   const isEip7702Authorized = Boolean(
     bytecode?.length &&
       bytecode.length > 0 &&
-      lowercase(bytecode) === lowercase(`0xef0100${DELEGATION_ADDRESSES[client.chain.id].slice(2)}`)
+      lowercase(bytecode) === lowercase(`0xef0100${delegation(client.chain.id).slice(2)}`)
   );
 
   return isEip7702Authorized
@@ -27,7 +28,7 @@ export async function getAuthorizationList<
     : [
         await client.signAuthorization({
           account: client.account,
-          contractAddress: DELEGATION_ADDRESSES[client.chain.id],
+          contractAddress: delegation(client.chain.id),
           executor: payment.type === "native" ? "self" : undefined
         })
       ];
