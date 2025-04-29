@@ -8,8 +8,6 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       "@gelatodigital/smartwallet",
-      "@gelatodigital/smartwallet-react-dynamic",
-      "@gelatodigital/smartwallet-react-privy",
       "@gelatodigital/smartwallet-react-sdk",
     ],
   },

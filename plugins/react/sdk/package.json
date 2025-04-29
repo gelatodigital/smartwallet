@@ -20,6 +20,12 @@
   "peerDependenciesMeta": {
     "typescript": {
       "optional": true
+    },
+    "@gelatodigital/smartwallet-react-dynamic": {
+      "optional": true
+    },
+    "@gelatodigital/smartwallet-react-privy": {
+      "optional": true
     }
   },
   "dependencies": {
