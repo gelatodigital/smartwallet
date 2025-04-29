@@ -12,7 +12,7 @@ A Modern Account Abstraction SDK for building and interacting with smart wallets
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/gelatodigital/smartwallet.git
+git clone --recurse-submodules https://github.com/gelatodigital/smartwallet.git
 cd smartwallet
 ```
 
