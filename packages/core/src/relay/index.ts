@@ -1,6 +1,8 @@
 import type { Hash, SignedAuthorizationList } from "viem";
 
-import { GELATO_API } from "../constants/index.js";
+import { GELATO_API, GELATO_API_WS } from "../constants/index.js";
+import { GelatoResponse } from "./response.js";
+import { WebsocketHandler } from "./status/index.js";
 
 interface BaseCallRequest {
   chainId: number;
@@ -19,7 +21,10 @@ export interface CallGelatoAccountRequest extends BaseCallRequest {
   feeToken: string;
 }
 
-const callGelatoApi = async <T extends object>(endpoint: string, request: T): Promise<Hash> => {
+const callGelatoApi = async <T extends object>(
+  endpoint: string,
+  request: T
+): Promise<GelatoResponse> => {
   if ("authorizationList" in request && Array.isArray(request.authorizationList)) {
     if (request.authorizationList.length > 0) {
       delete request.authorizationList[0].v;
@@ -39,11 +44,11 @@ const callGelatoApi = async <T extends object>(endpoint: string, request: T): Pr
 
   if (message) throw new Error(message);
 
-  return taskId;
+  return new GelatoResponse(taskId);
 };
 
-export const sponsoredCall = (request: SponsoredCallRequest): Promise<Hash> =>
+export const sponsoredCall = (request: SponsoredCallRequest): Promise<GelatoResponse> =>
   callGelatoApi("/relays/v2/sponsored-call-eip7702", request);
 
-export const callGelatoAccount = (request: CallGelatoAccountRequest): Promise<Hash> =>
+export const callGelatoAccount = (request: CallGelatoAccountRequest): Promise<GelatoResponse> =>
   callGelatoApi("/relays/v2/call-gelato-account", request);
