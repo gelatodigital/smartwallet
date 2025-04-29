@@ -1,0 +1,26 @@
+{
+  "name": "mega-react-app",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@gelatomega/core": "workspace:*",
+    "@gelatomega/react-sdk": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:",
+    "@wagmi/core": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "catalog:",
+    "vite": "^6.3.2"
+  }
+}
