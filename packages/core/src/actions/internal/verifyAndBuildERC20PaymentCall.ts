@@ -14,7 +14,6 @@ export async function verifyAndBuildERC20PaymentCall<
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   payment: ERC20Payment
 ) {
-
   const [tokens, [balance, decimals, symbol]] = await Promise.all([
     getPaymentTokens(client.chain.id),
     client.multicall({
