@@ -119,6 +119,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
   settings
 }) => {
   const queryClient = new QueryClient();
+  const wagmiConfig = settings.wagmi ? createConfig(settings.wagmi.config) : undefined;
 
   return (
     <DynamicContextProvider
@@ -130,11 +131,11 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
       <GelatoSmartWalletDynamicInternal
         defaultChain={settings.defaultChain}
         wagmi={{
-          config: settings.wagmi?.config
+          config: wagmiConfig
         }}
       >
-        {settings.wagmi ? (
-          <WagmiProvider config={settings.wagmi.config}>
+        {wagmiConfig ? (
+          <WagmiProvider config={wagmiConfig}>
             <QueryClientProvider client={queryClient}>
               <DynamicWagmiConnector>{children}</DynamicWagmiConnector>
             </QueryClientProvider>

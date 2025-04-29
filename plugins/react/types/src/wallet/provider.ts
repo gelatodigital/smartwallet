@@ -1,8 +1,10 @@
-import type { Config } from "@wagmi/core";
+import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
 
 export type ProviderType = "dynamic" | "privy";
+
+export type WagmiCreateConfigParameters = CreateConfigParameters;
 
 export interface ProviderContext {
   wagmi: {
@@ -22,7 +24,7 @@ export interface ProviderProps {
     };
     defaultChain?: Chain;
     wagmi?: {
-      config: Config;
+      config: CreateConfigParameters;
     };
   };
 }

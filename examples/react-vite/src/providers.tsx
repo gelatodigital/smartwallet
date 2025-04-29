@@ -12,9 +12,9 @@ import {
   wagmi
 } from "@gelatodigital/smartwallet-react-sdk";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { http, useAccount } from "wagmi";
 
-import { config } from "./wagmi.js";
+import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
   const {
@@ -182,7 +182,12 @@ export default function Providers() {
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
         waas: dynamic(waasAppId),
-        wagmi: wagmi(config)
+        wagmi: wagmi({
+          chains: [sepolia],
+          transports: {
+            [sepolia.id]: http()
+          }
+        })
       }}
     >
       <WalletInfoComponent />

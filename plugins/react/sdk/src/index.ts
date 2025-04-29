@@ -1,5 +1,4 @@
 import type { wallet } from "@gelatodigital/smartwallet-react-types";
-import type { createConfig } from "wagmi";
 
 export {
   GelatoSmartWalletContextProvider,
@@ -21,7 +20,7 @@ export const privy = (appId: string) => {
   };
 };
 
-export const wagmi = (config: ReturnType<typeof createConfig>) => {
+export const wagmi = (config: wallet.WagmiCreateConfigParameters) => {
   return {
     config
   };

@@ -144,6 +144,7 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
   settings
 }) => {
   const queryClient = new QueryClient();
+  const wagmiConfig = settings.wagmi ? createConfig(settings.wagmi.config) : undefined;
 
   return (
     <PrivyProvider
@@ -152,10 +153,10 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
         defaultChain: settings.defaultChain ?? chains.sepolia
       }}
     >
-      <GelatoSmartWalletPrivyInternal wagmi={{ config: settings.wagmi?.config }}>
-        {settings.wagmi ? (
+      <GelatoSmartWalletPrivyInternal wagmi={{ config: wagmiConfig }}>
+        {wagmiConfig ? (
           <QueryClientProvider client={queryClient}>
-            <WagmiProvider config={settings.wagmi.config}>{children}</WagmiProvider>
+            <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
           </QueryClientProvider>
         ) : (
           children
