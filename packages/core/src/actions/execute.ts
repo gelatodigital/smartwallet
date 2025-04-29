@@ -3,9 +3,9 @@ import type { Account, Call, Chain, Hash, PublicActions, Transport, WalletClient
 import { type Payment, isErc20, isNative } from "../payment/index.js";
 import { getAuthorizationList } from "./internal/getAuthorizationList.js";
 import { getOpData } from "./internal/getOpData.js";
+import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
+import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
-import { verifyAndBuildERC20PaymentCall } from "./internal/verifyAndBuildERC20PaymentCall.js";
-import { verifyAndBuildNativePaymentCall } from "./internal/verifyAndBuildNativePaymentCall.js";
 
 /**
  *
@@ -26,12 +26,18 @@ export async function execute<
   const authorizationList = await getAuthorizationList(client, payment);
 
   if (isErc20(payment)) {
-    calls.push(await verifyAndBuildERC20PaymentCall(client, payment));
+    calls.push(await resolveERC20PaymentCall(client, payment, calls));
   } else if (isNative(payment)) {
-    calls.push(await verifyAndBuildNativePaymentCall(client));
+    calls.push(await resolveNativePaymentCall(client, calls));
   }
 
   const opData = await getOpData(client, calls);
 
-  return await sendTransaction(client, calls, payment, authorizationList, opData);
+  // TODO: add support for passkey signers
+  const signed = await client.signTypedData({
+    account: client.account,
+    ...opData
+  });
+
+  return await sendTransaction(client, calls, payment, authorizationList, signed);
 }

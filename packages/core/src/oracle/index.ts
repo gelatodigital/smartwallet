@@ -1,4 +1,4 @@
-import { GELATO_API } from "../constants/index.js";
+import { api } from "../constants/index.js";
 
 export const isOracleActive = async (chainId: number): Promise<boolean> => {
   const oracles = await getGelatoOracles();
@@ -7,7 +7,7 @@ export const isOracleActive = async (chainId: number): Promise<boolean> => {
 
 export const getGelatoOracles = async (): Promise<string[]> => {
   try {
-    const response = await fetch(`${GELATO_API}/oracles/`);
+    const response = await fetch(`${api()}/oracles/`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -20,7 +20,7 @@ export const getGelatoOracles = async (): Promise<string[]> => {
 
 export const getPaymentTokens = async (chainId: number): Promise<string[]> => {
   try {
-    const response = await fetch(`${GELATO_API}/oracles/${chainId.toString()}/paymentTokens/`);
+    const response = await fetch(`${api()}/oracles/${chainId.toString()}/paymentTokens/`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -42,7 +42,7 @@ export const getEstimatedFee = async (
     gasLimit: gasLimit.toString(),
     gasLimitL1: gasLimitL1.toString()
   });
-  const url = `${GELATO_API}/oracles/${chainId.toString()}/estimate?${queryParams.toString()}`;
+  const url = `${api()}/oracles/${chainId.toString()}/estimate?${queryParams.toString()}`;
 
   try {
     const response = await fetch(url);
