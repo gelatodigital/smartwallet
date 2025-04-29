@@ -2,6 +2,7 @@ import type { Address } from "viem";
 import { sepolia } from "viem/chains";
 
 export const GELATO_API = "https://api.dev.gelato.digital";
+export const GELATO_API_WS = "wss://api.dev.gelato.digital";
 
 export const EXECUTION_MODE = {
   opData: "0x0100000000007821000100000000000000000000000000000000000000000000"
