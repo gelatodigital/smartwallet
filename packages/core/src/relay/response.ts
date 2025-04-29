@@ -1,6 +1,10 @@
 import type { Hash } from "viem";
 
-import { TaskState, type TransactionStatusResponse } from "./status/index.js";
+import {
+  GELATO_STATUS_API_POLLING_INTERVAL,
+  GELATO_STATUS_API_POLLING_MAX_RETRIES
+} from "../constants/index.js";
+import { TaskState, type TransactionStatusResponse, getTaskStatus } from "./status/index.js";
 import { statusApiWebSocket } from "./ws.js";
 
 export class GelatoTaskError extends Error {
@@ -29,6 +33,13 @@ export class ExecutionCancelledError extends GelatoTaskError {
   }
 }
 
+export class ExecutionTimeoutError extends GelatoTaskError {
+  constructor(taskId: string, message?: string) {
+    super(taskId, message || `Task ${taskId} execution timed out`);
+    this.name = "ExecutionTimeoutError";
+  }
+}
+
 export class InternalError extends GelatoTaskError {
   constructor(taskId: string, message?: string) {
     super(taskId, message || `Task ${taskId} failed with internal error`);
@@ -43,7 +54,47 @@ export class GelatoResponse {
     this.taskId = taskId;
   }
 
-  async wait(): Promise<Hash> {
+  private async _waitPolling(pollInterval?: number, maxRetries?: number): Promise<Hash> {
+    const _pollInterval = pollInterval ?? GELATO_STATUS_API_POLLING_INTERVAL;
+    const _maxRetries = maxRetries ?? GELATO_STATUS_API_POLLING_MAX_RETRIES;
+
+    for (let attempt = 0; attempt < _maxRetries; attempt++) {
+      const taskStatus = await getTaskStatus(this.taskId);
+
+      if (!taskStatus) {
+        throw new InternalError(this.taskId);
+      }
+
+      if (taskStatus.taskState === TaskState.ExecReverted) {
+        throw new ExecutionRevertedError(
+          this.taskId,
+          taskStatus.transactionHash ? (taskStatus.transactionHash as Hash) : undefined
+        );
+      }
+
+      if (taskStatus.taskState === TaskState.Cancelled) {
+        throw new ExecutionCancelledError(this.taskId);
+      }
+
+      if (taskStatus.taskState === TaskState.ExecSuccess) {
+        if (taskStatus.transactionHash) {
+          return taskStatus.transactionHash as Hash;
+        }
+
+        throw new InternalError(this.taskId);
+      }
+
+      // If not in a final state, wait before polling again
+      await new Promise((resolve) => setTimeout(resolve, _pollInterval));
+    }
+
+    throw new ExecutionTimeoutError(this.taskId);
+  }
+
+  async wait(parameters?: {
+    pollingInterval?: number;
+    maxRetries?: number;
+  }): Promise<Hash> {
     let resolvePromise: (value: Hash) => void;
     let rejectPromise: (reason: Error) => void;
 
@@ -57,12 +108,10 @@ export class GelatoResponse {
             taskStatus.transactionHash ? (taskStatus.transactionHash as Hash) : undefined
           )
         );
-        return;
       }
 
       if (taskStatus.taskState === TaskState.Cancelled) {
         rejectPromise(new ExecutionCancelledError(this.taskId));
-        return;
       }
 
       if (taskStatus.taskState === TaskState.ExecSuccess) {
@@ -87,6 +136,18 @@ export class GelatoResponse {
 
       await statusApiWebSocket.subscribe(this.taskId);
       return await promise;
+    } catch (error) {
+      if (error instanceof GelatoTaskError) {
+        throw error;
+      }
+
+      statusApiWebSocket.unsubscribe(this.taskId);
+      statusApiWebSocket.offUpdate(updateHandler);
+      statusApiWebSocket.offError(errorHandler);
+
+      // Websocket error happened fallback to HTTP polling
+      console.warn("WebSocket connection failed, falling back to HTTP polling");
+      return await this._waitPolling(parameters?.pollingInterval, parameters?.maxRetries);
     } finally {
       statusApiWebSocket.unsubscribe(this.taskId);
       statusApiWebSocket.offUpdate(updateHandler);

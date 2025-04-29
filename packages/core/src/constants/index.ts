@@ -14,3 +14,6 @@ export const DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
 
 export const NONCE_STORAGE_SLOT =
   "0xf2a7602a6b0fea467fdf81ac322504e60523f80eb506a1ca5e0f3e0d2ac70500";
+
+export const GELATO_STATUS_API_POLLING_INTERVAL = 1000;
+export const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
