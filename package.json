@@ -1,12 +1,12 @@
 {
-  "name": "gelatomega",
+  "name": "smartwallet",
   "private": true,
   "author": "Gelato",
   "description": "Modern Account Abstraction SDK",
-  "homepage": "https://github.com/gelatodigital/mega",
+  "homepage": "https://github.com/gelatodigital/smartwallet",
   "type": "module",
   "scripts": {
-    "build": "tsc --project ./tsconfig.build.json --jsx react-jsx",
+    "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "lint": "biome check --write .",
     "format": "biome format --write .",
@@ -32,11 +32,11 @@
   "packageManager": "pnpm@10.8.1",
   "pnpm": {
     "overrides": {
-      "mega": "workspace:*"
+      "smartwallet": "workspace:*"
     },
     "peerDependencyRules": {
       "allowedVersions": {
-        "mega": "*"
+        "smartwallet": "*"
       }
     }
   }

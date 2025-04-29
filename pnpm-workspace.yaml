@@ -1,10 +1,11 @@
 packages:
-  - 'examples/*'
-  - 'packages/*'
-  - docs
+  - "examples/*"
+  - "plugins/**"
+  - "src"
+  - "docs"
 
 onlyBuiltDependencies:
-  - '@biomejs/biome'
+  - "@biomejs/biome"
 
 catalog:
   "typescript": "^5.3"

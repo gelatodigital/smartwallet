@@ -6,13 +6,11 @@
     "sourceMap": true,
     "composite": true,
     "noEmit": false,
-    "outDir": "./_dist",
-    "rootDir": "src"
+    "outDir": "./_dist"
   },
   "exclude": [
     "node_modules",
-    "dist",
-    "examples",
+    "_dist",
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.test.tsx",
