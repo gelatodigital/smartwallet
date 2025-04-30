@@ -4,9 +4,9 @@
   "author": "Gelato",
   "type": "module",
   "description": "Gelato SmartWallet React SDK",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "typings": "./src/index.d.ts",
+  "main": "./_dist/index.js",
+  "types": "./_dist/index.d.ts",
+  "typings": "./_dist/index.d.ts",
   "scripts": {
     "build": "tsc --project ./tsconfig.build.json"
   },
