@@ -1,4 +1,4 @@
-import type { Address, Hex } from "viem";
+import type { Address, Chain, Hex } from "viem";
 import { baseSepolia, sepolia } from "viem/chains";
 
 const GELATO_API = "https://api.gelato.digital";
@@ -13,7 +13,20 @@ const DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [baseSepolia.id]: "0xa191bcc6055B4d77d577b6A042b940737c8507B3"
 };
 
+const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
+  [sepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
+  [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf"
+};
+
 const NONCE_STORAGE_SLOT = "0xf2a7602a6b0fea467fdf81ac322504e60523f80eb506a1ca5e0f3e0d2ac70500";
+
+export const feeCollector = (chain: Chain): Address => {
+  const feeCollectorAddresses = FEE_COLLECTOR_ADDRESSES[chain.id];
+  if (!feeCollectorAddresses) {
+    throw new Error(`Unsupported chain: ${chain.id}`);
+  }
+  return feeCollectorAddresses;
+};
 
 export type Mode = keyof typeof EXECUTION_MODE;
 

@@ -2,7 +2,7 @@ import type { Account, Call, Chain, PublicActions, Transport, WalletClient } fro
 import { ethAddress, formatEther } from "viem";
 
 import { getEstimatedFee } from "../../oracle/index.js";
-import { feeCollector } from "../../payment/index.js";
+import { feeCollector } from "../../constants/index.js";
 import { estimateGas } from "./estimateGas.js";
 
 export async function resolveNativePaymentCall<
