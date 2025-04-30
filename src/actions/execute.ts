@@ -1,7 +1,8 @@
-import type { Account, Call, Chain, Hash, PublicActions, Transport, WalletClient } from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
 import { type Payment, isErc20, isNative } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
+import type { GelatoWalletClient } from "./index.js";
 import { getAuthorizationList } from "./internal/getAuthorizationList.js";
 import { getOpData } from "./internal/getOpData.js";
 import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
@@ -19,7 +20,7 @@ export async function execute<
   chain extends Chain = Chain,
   account extends Account = Account
 >(
-  client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
+  client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[] }
 ): Promise<GelatoResponse> {
   const { payment, calls } = parameters;
@@ -27,9 +28,11 @@ export async function execute<
   const authorizationList = await getAuthorizationList(client, payment);
 
   if (isErc20(payment)) {
-    calls.push(await resolveERC20PaymentCall(client, payment, calls));
+    const { paymentCall } = await resolveERC20PaymentCall(client, payment, calls);
+    calls.push(paymentCall);
   } else if (isNative(payment)) {
-    calls.push(await resolveNativePaymentCall(client, calls));
+    const { paymentCall } = await resolveNativePaymentCall(client, calls);
+    calls.push(paymentCall);
   }
 
   const opData = await getOpData(client, calls);

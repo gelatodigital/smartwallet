@@ -18,7 +18,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client)
+createGelatoSmartWalletClient(client, process.env.GELATO_API_KEY)
   .execute({
     payment: erc20(token),
     calls: [

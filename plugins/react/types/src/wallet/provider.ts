@@ -21,6 +21,7 @@ export interface ProviderContext {
 export interface ProviderProps {
   children: ReactNode;
   settings: {
+    apiKey?: string;
     waas: {
       type: ProviderType;
       appId: string;

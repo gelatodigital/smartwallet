@@ -13,7 +13,7 @@ import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
   const {
-    gelato: { client: smartWalletClient },
+    gelato: { client },
     logout
   } = useGelatoSmartWalletProviderContext();
   const [paymentType, setPaymentType] = useState<string>("sponsored");
@@ -27,7 +27,7 @@ const WalletInfoComponent = () => {
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
   const executeTransaction = async () => {
-    if (!smartWalletClient) return;
+    if (!client) return;
 
     setIsLoading(true);
     try {
@@ -38,7 +38,7 @@ const WalletInfoComponent = () => {
             ? erc20(erc20TokenAddress)
             : native();
       // Example transaction - sending a simple call
-      const smartWalletResponse = await smartWalletClient.execute({
+      const smartWalletResponse = await client.execute({
         payment,
         calls: [
           {
@@ -66,7 +66,7 @@ const WalletInfoComponent = () => {
   return (
     <div>
       <h2>Gelato SmartWallet</h2>
-      {smartWalletClient ? (
+      {client ? (
         <div>
           <p>Wallet connected!</p>
           <p>
@@ -168,6 +168,7 @@ export default function Providers() {
       // Changing this to `dynamic` or `privy` is enough to change WaaS provider
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
+        apiKey: sponsorApiKey,
         waas: dynamic(waasAppId),
         wagmi: wagmi({
           chains: [sepolia],

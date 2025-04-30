@@ -43,7 +43,8 @@ type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
   wagmi: { config: WagmiConfig | undefined };
-}> = ({ children, wagmi }) => {
+  apiKey?: string | undefined;
+}> = ({ children, wagmi, apiKey }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
@@ -98,13 +99,13 @@ const GelatoSmartWalletPrivyInternal: FC<{
         }
 
         const provider = await primaryWallet.getEthereumProvider();
-        const walletClient = createWalletClient({
+        const client = createWalletClient({
           account: primaryWallet.address as Hex,
           chain,
           transport: custom(provider)
         });
 
-        walletClient.signAuthorization = async (parameters) => {
+        client.signAuthorization = async (parameters) => {
           const { chainId, nonce } = parameters;
           const contractAddress = parameters.contractAddress ?? parameters.address;
 
@@ -122,7 +123,8 @@ const GelatoSmartWalletPrivyInternal: FC<{
         };
 
         const walletClientGelato = createGelatoSmartWalletClient<Transport, Chain, Account>(
-          walletClient
+          client,
+          apiKey
         );
         setSmartWalletClient(walletClientGelato);
       } catch (error) {
@@ -131,7 +133,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [ready, wallets, walletsReady, authenticated, signAuthorization]);
+  }, [ready, wallets, walletsReady, authenticated, signAuthorization, apiKey]);
 
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider

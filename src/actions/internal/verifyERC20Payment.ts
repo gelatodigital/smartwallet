@@ -1,18 +1,16 @@
-import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
+import type { Account, Chain, Transport } from "viem";
 import { parseAbi } from "viem";
 
 import { getPaymentTokens } from "../../oracle/index.js";
 import type { ERC20Payment } from "../../payment/index.js";
 import { lowercase } from "../../utils/index.js";
+import type { GelatoWalletClient } from "../index.js";
 
 export async function verifyERC20Payment<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
->(
-  client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
-  payment: ERC20Payment
-) {
+>(client: GelatoWalletClient<transport, chain, account>, payment: ERC20Payment) {
   const [tokens, [balance, decimals, symbol]] = await Promise.all([
     getPaymentTokens(client.chain.id),
     client.multicall({
