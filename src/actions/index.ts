@@ -44,10 +44,10 @@ export function actions<
   };
 }
 
-export function internal(sponsorApiKey?: string): GelatoSmartWalletInternals {
+export function internal(apiKey?: string): GelatoSmartWalletInternals {
   return {
     _internal: {
-      apiKey: () => sponsorApiKey
+      apiKey: () => apiKey
     }
   };
 }
