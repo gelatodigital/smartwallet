@@ -1,10 +1,12 @@
 import { statusApiWebSocket } from "../../ws.js";
 
+export type ErrorCallback = (error: Error) => void;
+
 export const onError = (
   taskId: string,
   parameters: {
     update: "error";
-    callback: (error: Error) => void;
+    callback: ErrorCallback;
   }
 ) => {
   const { update, callback } = parameters;

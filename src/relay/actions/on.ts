@@ -1,11 +1,9 @@
-import { Hash } from "viem";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
 import { statusApiWebSocket } from "../ws.js";
-import { onError } from "./internal/onError.js";
+import { type ErrorCallback, onError } from "./internal/onError.js";
 
 type SuccessCallback = (data: TransactionStatusResponse) => void;
-type ErrorCallback = (error: Error) => void;
 type Callback = SuccessCallback | ErrorCallback;
 
 export const on = (
