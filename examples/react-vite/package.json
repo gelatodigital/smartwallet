@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gelatodigital/smartwallet": "workspace:*",
-    "@gelatodigital/smartwallet-react-sdk": "workspace:*",
+    "@gelatonetwork/smartwallet": "workspace:*",
+    "@gelatonetwork/smartwallet-react-sdk": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "viem": "catalog:",

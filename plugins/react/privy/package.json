@@ -1,5 +1,5 @@
 {
-  "name": "@gelatodigital/smartwallet-react-privy",
+  "name": "@gelatonetwork/smartwallet-react-privy",
   "version": "0.0.2-alpha.0",
   "author": "Gelato",
   "type": "module",
@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@privy-io/react-auth": "^2.10.0",
     "@privy-io/wagmi": "^1.0.3",
     "@tanstack/react-query": "catalog:",
