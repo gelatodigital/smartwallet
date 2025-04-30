@@ -12,7 +12,10 @@
   },
   "peerDependencies": {
     "typescript": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@gelatodigital/smartwallet-react-dynamic": "workspace:*",
+    "@gelatodigital/smartwallet-react-privy": "workspace:*"
   },
   "peerDependenciesMeta": {
     "typescript": {
