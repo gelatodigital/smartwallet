@@ -11,7 +11,7 @@ export interface ERC20Payment {
 
 export interface SponsoredPayment {
   readonly type: "sponsored";
-  // Optional, if not provided, the sponsorApiKey MUST be provided in the client
+  // Optional, if not provided, the apiKey MUST be provided when instantiating the client
   readonly sponsorApiKey?: string;
 }
 
