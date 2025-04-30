@@ -38,7 +38,7 @@ export async function sendTransaction<
       });
     }
     case "sponsored": {
-      const sponsorApiKey = payment.sponsorApiKey ?? client._internal.sponsorApiKey();
+      const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
 
       if (!sponsorApiKey) {
         throw new Error("Sponsor API key is required");

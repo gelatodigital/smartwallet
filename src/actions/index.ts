@@ -17,7 +17,7 @@ export type GelatoSmartWalletActions = {
 
 export type GelatoSmartWalletInternals = {
   _internal: {
-    sponsorApiKey: () => string | undefined;
+    apiKey: () => string | undefined;
   };
 };
 
@@ -47,7 +47,7 @@ export function actions<
 export function internal(sponsorApiKey?: string): GelatoSmartWalletInternals {
   return {
     _internal: {
-      sponsorApiKey: () => sponsorApiKey
+      apiKey: () => sponsorApiKey
     }
   };
 }
