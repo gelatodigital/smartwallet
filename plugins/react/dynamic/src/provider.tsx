@@ -2,12 +2,15 @@ import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethere
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
+import {
+  type GelatoSmartWalletClient,
+  createGelatoSmartWalletClient
+} from "@gelatonetwork/smartwallet";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
-
-import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type { FC, ReactNode } from "react";
-import type { Account, Chain, Transport, WalletClient } from "viem";
+import type { Account, Chain, Transport } from "viem";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
 type GelatoSmartWalletDynamicContextType = wallet.ProviderContext;
@@ -36,10 +39,14 @@ const GelatoSmartWalletDynamicInternal: FC<{
   wagmi: { config: WagmiConfig | undefined };
 }> = ({ children, defaultChain, wagmi }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
-  const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
+  const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
+    Transport,
+    Chain,
+    Account
+  > | null>(null);
 
   const logoutHandler = async () => {
-    setWalletClient(null);
+    setSmartWalletClient(null);
     await handleLogOut();
   };
 
@@ -89,7 +96,8 @@ const GelatoSmartWalletDynamicInternal: FC<{
           };
         };
 
-        setWalletClient(client);
+        const smartWalletClient = createGelatoSmartWalletClient(client);
+        setSmartWalletClient(smartWalletClient);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
       }
@@ -103,7 +111,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
       value={{
         wagmi: {
           config: wagmi.config,
-          client: walletClient as WalletClient<Transport, Chain, Account>
+          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
         },
         logout: logoutHandler,
         switchNetwork

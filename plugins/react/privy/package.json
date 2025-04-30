@@ -13,7 +13,9 @@
   "peerDependencies": {
     "typescript": "catalog:",
     "viem": "catalog:",
-    "wagmi": "catalog:"
+    "wagmi": "catalog:",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "@gelatonetwork/smartwallet": "workspace:*"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -25,6 +27,7 @@
   },
   "dependencies": {
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "@gelatonetwork/smartwallet": "workspace:*",
     "@privy-io/react-auth": "^2.10.0",
     "@privy-io/wagmi": "^1.0.3",
     "@tanstack/react-query": "catalog:",

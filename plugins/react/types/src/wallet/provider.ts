@@ -1,6 +1,7 @@
+import type { GelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
 import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
-import type { Account, Chain, Transport, WalletClient } from "viem";
+import type { Account, Chain, Transport } from "viem";
 
 export type ProviderType = "dynamic" | "privy";
 
@@ -8,7 +9,7 @@ export type WagmiCreateConfigParameters = CreateConfigParameters;
 
 export interface ProviderContext {
   wagmi: {
-    client?: WalletClient<Transport, Chain, Account> | undefined;
+    client?: GelatoSmartWalletClient<Transport, Chain, Account> | undefined;
     config?: Config | undefined;
   };
   logout: () => void;

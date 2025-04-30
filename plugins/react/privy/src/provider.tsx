@@ -1,8 +1,14 @@
+import {
+  type GelatoSmartWalletClient,
+  createGelatoSmartWalletClient
+} from "@gelatonetwork/smartwallet";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
 import { createContext, useContext, useEffect, useState } from "react";
+import type { FC, ReactNode } from "react";
 import {
   type Account,
   type Chain,
@@ -14,9 +20,6 @@ import {
 } from "viem";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
-
-import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import type { FC, ReactNode } from "react";
 import type { Config as WagmiConfig } from "wagmi";
 
 type GelatoSmartWalletPrivyContextType = wallet.ProviderContext;
@@ -45,26 +48,30 @@ const GelatoSmartWalletPrivyInternal: FC<{
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
 
-  const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
+  const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
+    Transport,
+    Chain,
+    Account
+  > | null>(null);
 
   const logoutWrapper = async () => {
-    if (!walletClient) {
+    if (!smartWalletClient) {
       return;
     }
 
-    setWalletClient(null);
+    setSmartWalletClient(null);
     await logout();
   };
 
   const switchNetwork = async (chain: Chain) => {
-    if (!walletClient) {
+    if (!smartWalletClient) {
       return;
     }
 
     const primaryWallet = wallets[0];
 
     await primaryWallet.switchChain(chain.id);
-    walletClient.switchChain({ id: chain.id });
+    smartWalletClient.switchChain({ id: chain.id });
   };
 
   useEffect(() => {
@@ -73,7 +80,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
     }
 
     if (!authenticated || !wallets || wallets.length === 0) {
-      setWalletClient(null);
+      setSmartWalletClient(null);
       return;
     }
 
@@ -114,7 +121,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
           return signedAuthorization;
         };
 
-        setWalletClient(walletClient);
+        setSmartWalletClient(createGelatoSmartWalletClient(walletClient));
       } catch (error) {
         console.error("Failed to get wallet client:", error);
       }
@@ -128,7 +135,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
       value={{
         wagmi: {
           config: wagmi.config,
-          client: walletClient as WalletClient<Transport, Chain, Account>
+          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
         },
         logout: logoutWrapper,
         switchNetwork
