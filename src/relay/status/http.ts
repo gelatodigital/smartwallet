@@ -11,7 +11,7 @@ export const getTaskStatus = async (
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {
     throw new Error(
-      `GelatoMegaSDK/getTaskStatus: Failed with error: ${
+      `GelatoSmartWalletSDK/getTaskStatus: Failed with error: ${
         error.response?.data?.message ?? error.message ?? "Internal Error"
       }`
     );

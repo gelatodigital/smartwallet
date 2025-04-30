@@ -46,7 +46,7 @@ const WalletInfoComponent = () => {
             ? erc20(erc20TokenAddress)
             : native();
       // Example transaction - sending a simple call
-      const megaResponse = await gelatoSmartWallet.execute({
+      const smartWalletResponse = await gelatoSmartWallet.execute({
         payment,
         calls: [
           {
@@ -57,13 +57,13 @@ const WalletInfoComponent = () => {
         ]
       });
 
-      megaResponse.on("success", (status: GelatoTaskStatus) => {
+      smartWalletResponse.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
       });
 
-      const megaTransactionHash = await megaResponse.wait();
+      const smartWalletTransactionHash = await smartWalletResponse.wait();
 
-      setTransactionHash(megaTransactionHash);
+      setTransactionHash(smartWalletTransactionHash);
     } catch (error) {
       console.error("Transaction failed:", error);
     } finally {
