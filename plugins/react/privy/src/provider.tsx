@@ -14,7 +14,6 @@ import {
   type Chain,
   type Hex,
   type Transport,
-  type WalletClient,
   createWalletClient,
   custom
 } from "viem";
