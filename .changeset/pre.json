@@ -12,5 +12,7 @@
     "@gelatodigital/smartwallet-react-types": "0.0.1",
     "@gelatodigital/smartwallet": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "silent-steaks-deny"
+  ]
 }
