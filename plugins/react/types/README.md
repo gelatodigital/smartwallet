@@ -1,3 +1,3 @@
-# Base common react types
+# @gelatonetwork/smartwallet-react-types
 
-A wrapper React component for Privy WaaS provider
+Common TypeScript types for Gelato Smart Wallet React packages.
