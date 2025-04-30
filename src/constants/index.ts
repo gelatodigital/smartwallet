@@ -1,8 +1,8 @@
 import type { Address, Chain, Hex } from "viem";
 import { baseSepolia, sepolia } from "viem/chains";
 
-const GELATO_API = "https://api.gelato.digital";
-const GELATO_API_WS = "wss://api.gelato.digital";
+const GELATO_API = "https://api.staging.gelato.digital";
+const GELATO_API_WS = "wss://api.staging.gelato.digital";
 
 const EXECUTION_MODE = {
   default: "0x0100000000000000000000000000000000000000000000000000000000000000",
