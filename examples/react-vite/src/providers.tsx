@@ -1,10 +1,4 @@
-import {
-  type GelatoTaskStatus,
-  createGelatoSmartWalletClient,
-  erc20,
-  native,
-  sponsored
-} from "@gelatonetwork/smartwallet";
+import { type GelatoTaskStatus, erc20, native, sponsored } from "@gelatonetwork/smartwallet";
 import {
   GelatoSmartWalletConnectButton,
   GelatoSmartWalletContextProvider,
@@ -12,18 +6,16 @@ import {
   useGelatoSmartWalletProviderContext,
   wagmi
 } from "@gelatonetwork/smartwallet-react-sdk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { http, useAccount } from "wagmi";
 
 import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
   const {
-    wagmi: { client: walletClient },
+    wagmi: { client: smartWalletClient },
     logout
   } = useGelatoSmartWalletProviderContext();
-  // biome-ignore lint/suspicious/noExplicitAny: wanted to prevent several type imports from Viem to just define SmartWalletClient type
-  const [gelatoSmartWallet, setGelatoSmartWallet] = useState<any | null>(null);
   const [paymentType, setPaymentType] = useState<string>("sponsored");
   // USDC on sepolia
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
@@ -35,7 +27,7 @@ const WalletInfoComponent = () => {
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
   const executeTransaction = async () => {
-    if (!gelatoSmartWallet) return;
+    if (!smartWalletClient) return;
 
     setIsLoading(true);
     try {
@@ -46,7 +38,7 @@ const WalletInfoComponent = () => {
             ? erc20(erc20TokenAddress)
             : native();
       // Example transaction - sending a simple call
-      const smartWalletResponse = await gelatoSmartWallet.execute({
+      const smartWalletResponse = await smartWalletClient.execute({
         payment,
         calls: [
           {
@@ -71,29 +63,10 @@ const WalletInfoComponent = () => {
     }
   };
 
-  useEffect(() => {
-    const initializeSmartWallet = async () => {
-      if (walletClient?.account && sponsorApiKey) {
-        console.log("Initializing SmartWallet", walletClient.account);
-
-        try {
-          const gelatoSmartWalletInstance = createGelatoSmartWalletClient(walletClient);
-          setGelatoSmartWallet(gelatoSmartWalletInstance);
-        } catch (error) {
-          console.error("Failed to initialize SmartWallet:", error);
-        }
-      } else {
-        console.log("No wallet client or sponsor API key");
-      }
-    };
-
-    initializeSmartWallet();
-  }, [walletClient]);
-
   return (
     <div>
       <h2>Gelato SmartWallet</h2>
-      {walletClient ? (
+      {smartWalletClient ? (
         <div>
           <p>Wallet connected!</p>
           <p>
@@ -108,59 +81,55 @@ const WalletInfoComponent = () => {
           </p>
           <div style={{ marginTop: "20px" }}>
             <h3>SmartWallet Transaction</h3>
-            {gelatoSmartWallet ? (
-              <div>
+            <div>
+              <div style={{ marginBottom: "15px" }}>
+                <label htmlFor="paymentType" style={{ marginRight: "10px" }}>
+                  Payment Type:
+                </label>
+                <select
+                  id="paymentType"
+                  onChange={(e) => {
+                    setPaymentType(e.target.value);
+                  }}
+                  style={{ padding: "5px", borderRadius: "4px" }}
+                >
+                  <option value="sponsored">Sponsored</option>
+                  <option value="erc20">ERC20</option>
+                  <option value="native">Native</option>
+                </select>
+              </div>
+              {paymentType === "erc20" && (
                 <div style={{ marginBottom: "15px" }}>
-                  <label htmlFor="paymentType" style={{ marginRight: "10px" }}>
-                    Payment Type:
+                  <label htmlFor="tokenSelect" style={{ marginRight: "10px" }}>
+                    Select Token:
                   </label>
                   <select
-                    id="paymentType"
+                    id="tokenSelect"
                     onChange={(e) => {
-                      setPaymentType(e.target.value);
+                      setErc20TokenAddress(e.target.value as `0x${string}`);
                     }}
                     style={{ padding: "5px", borderRadius: "4px" }}
                   >
-                    <option value="sponsored">Sponsored</option>
-                    <option value="erc20">ERC20</option>
-                    <option value="native">Native</option>
+                    <option value="0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9">WETH</option>
                   </select>
                 </div>
-                {paymentType === "erc20" && (
-                  <div style={{ marginBottom: "15px" }}>
-                    <label htmlFor="tokenSelect" style={{ marginRight: "10px" }}>
-                      Select Token:
-                    </label>
-                    <select
-                      id="tokenSelect"
-                      onChange={(e) => {
-                        setErc20TokenAddress(e.target.value as `0x${string}`);
-                      }}
-                      style={{ padding: "5px", borderRadius: "4px" }}
-                    >
-                      <option value="0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9">WETH</option>
-                    </select>
-                  </div>
-                )}
-                <button type="button" onClick={executeTransaction} disabled={isLoading}>
-                  {isLoading ? "Processing..." : "Execute Transaction"}
-                </button>
-                {transactionHash && (
-                  <p>
-                    Transaction Hash:{" "}
-                    <a
-                      href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {transactionHash}
-                    </a>
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p>SmartWallet not initialized</p>
-            )}
+              )}
+              <button type="button" onClick={executeTransaction} disabled={isLoading}>
+                {isLoading ? "Processing..." : "Execute Transaction"}
+              </button>
+              {transactionHash && (
+                <p>
+                  Transaction Hash:{" "}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {transactionHash}
+                  </a>
+                </p>
+              )}
+            </div>
           </div>
           <p />
           <button type="button" onClick={logout}>
