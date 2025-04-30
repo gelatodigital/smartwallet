@@ -10,7 +10,16 @@
     "@gelatonetwork/smartwallet-react-privy": "0.0.1",
     "@gelatonetwork/smartwallet-react-sdk": "0.0.1",
     "@gelatonetwork/smartwallet-react-types": "0.0.1",
-    "@gelatonetwork/smartwallet": "0.0.1"
+    "@gelatonetwork/smartwallet": "0.0.1",
+    "estimates": "0.0.1"
   },
-  "changesets": ["silent-steaks-deny", "stupid-spiders-do"]
+  "changesets": [
+    "brave-women-wish",
+    "common-bears-worry",
+    "fresh-pigs-smash",
+    "legal-ideas-judge",
+    "neat-swans-smoke",
+    "silent-steaks-deny",
+    "stupid-spiders-do"
+  ]
 }

@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.2
+
+### Patch Changes
+
+- 9d15eea: feat: allow passing gelato apiKey
+- 9d15eea: feat: estimate functions
+
 ## 0.0.2-alpha.1
 
 ### Patch Changes

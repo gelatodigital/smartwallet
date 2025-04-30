@@ -1,5 +1,20 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.2-alpha.2
+
+### Patch Changes
+
+- a4745d0: feat: provide gelato smart wallet client from react component
+- 9d15eea: feat: allow passing gelato apiKey
+- 5f11604: chore: add readmes
+- b495e5d: fix: missing default chain for dynamic
+- Updated dependencies [a4745d0]
+- Updated dependencies [9d15eea]
+- Updated dependencies [5f11604]
+- Updated dependencies [9d15eea]
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.2
+  - @gelatonetwork/smartwallet@0.0.2-alpha.2
+
 ## 0.0.2-alpha.1
 
 ### Patch Changes
