@@ -33,4 +33,6 @@ createGelatoSmartWalletClient(client)
 
     const txHash = await response.wait();
     console.log(`Transaction hash: ${txHash}`);
+
+    process.exit(0);
   });

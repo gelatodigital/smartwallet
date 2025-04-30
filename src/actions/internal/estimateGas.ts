@@ -4,6 +4,9 @@ import { encodeCalls } from "viem/experimental/erc7821";
 
 import { mode } from "../../constants/index.js";
 
+// Add buffer to account for signature verification
+const BUFFER_GAS = 15_000n;
+
 export async function estimateGas<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
@@ -12,7 +15,7 @@ export async function estimateGas<
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   calls: Call[]
 ) {
-  return await client.estimateContractGas({
+  const estimatedGas = await client.estimateContractGas({
     address: client.account.address,
     abi: parseAbi([
       "function execute(bytes32 mode, bytes calldata executionData) external payable"
@@ -20,4 +23,6 @@ export async function estimateGas<
     functionName: "execute",
     args: [mode("default"), encodeCalls(calls)]
   });
+
+  return estimatedGas + BUFFER_GAS;
 }
