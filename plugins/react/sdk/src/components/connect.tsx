@@ -3,6 +3,7 @@ import { GelatoSmartWalletPrivyConnectButton } from "@gelatodigital/smartwallet-
 import type { FC, ReactNode } from "react";
 
 import { useGelatoSmartWalletProviderContext } from "../provider.js";
+import { isDynamic } from "../utils/index.js";
 
 interface GelatoSmartWalletConnectButtonProps {
   children: ReactNode;
@@ -12,9 +13,10 @@ export const GelatoSmartWalletConnectButton: FC<GelatoSmartWalletConnectButtonPr
   children
 }) => {
   const { type } = useGelatoSmartWalletProviderContext();
+
   return (
     <>
-      {type === "dynamic" ? (
+      {isDynamic(type) ? (
         <GelatoSmartWalletDynamicConnectButton>{children}</GelatoSmartWalletDynamicConnectButton>
       ) : (
         <GelatoSmartWalletPrivyConnectButton>{children}</GelatoSmartWalletPrivyConnectButton>

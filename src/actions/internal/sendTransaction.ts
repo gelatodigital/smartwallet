@@ -12,7 +12,7 @@ import {
 import { encodeExecuteData } from "viem/experimental/erc7821";
 
 import type { Payment } from "../../payment/index.js";
-import { callGelatoAccount, sponsoredCall } from "../../relay/index.js";
+import { smartWalletCall, sponsoredCall } from "../../relay/index.js";
 
 export async function sendTransaction<
   transport extends Transport = Transport,
@@ -27,7 +27,7 @@ export async function sendTransaction<
 ) {
   switch (payment.type) {
     case "native": {
-      return await callGelatoAccount({
+      return await smartWalletCall({
         chainId: client.chain.id,
         target: client.account.address,
         data: encodeExecuteData({
@@ -51,7 +51,7 @@ export async function sendTransaction<
       });
     }
     case "erc20": {
-      return await callGelatoAccount({
+      return await smartWalletCall({
         chainId: client.chain.id,
         target: client.account.address,
         feeToken: payment.token,

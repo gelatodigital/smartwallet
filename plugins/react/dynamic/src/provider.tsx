@@ -2,10 +2,11 @@ import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethere
 import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
-import type { wallet } from "@gelatodigital/smartwallet-react-types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+
+import type { wallet } from "@gelatodigital/smartwallet-react-types";
+import type { FC, ReactNode } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
@@ -17,11 +18,13 @@ const GelatoSmartWalletDynamicProviderContext = createContext<
 
 export const useGelatoSmartWalletDynamicContext = () => {
   const context = useContext(GelatoSmartWalletDynamicProviderContext);
+
   if (!context) {
     throw new Error(
       "useGelatoSmartWalletDynamicProvider must be used within a GelatoSmartWalletDynamicProvider"
     );
   }
+
   return context;
 };
 
@@ -30,8 +33,8 @@ type GelatoSmartWalletDynamicContextProps = wallet.ProviderProps;
 const GelatoSmartWalletDynamicInternal: FC<{
   children: ReactNode;
   defaultChain: Chain | undefined;
-  wagmiConfig: WagmiConfig | undefined;
-}> = ({ children, defaultChain, wagmiConfig }) => {
+  wagmi: { config: WagmiConfig | undefined };
+}> = ({ children, defaultChain, wagmi }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
 
@@ -98,8 +101,10 @@ const GelatoSmartWalletDynamicInternal: FC<{
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
       value={{
-        walletClient: walletClient as WalletClient<Transport, Chain, Account>,
-        wagmiConfig,
+        wagmi: {
+          config: wagmi.config,
+          client: walletClient as WalletClient<Transport, Chain, Account>
+        },
         logout: logoutHandler,
         switchNetwork
       }}
@@ -114,19 +119,20 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
   settings
 }) => {
   const queryClient = new QueryClient();
-  const wagmiConfig = settings.wagmiConfigParameters
-    ? createConfig(settings.wagmiConfigParameters)
-    : undefined;
+  const wagmiConfig = settings.wagmi ? createConfig(settings.wagmi.config) : undefined;
+
   return (
     <DynamicContextProvider
       settings={{
-        environmentId: settings.appId,
+        environmentId: settings.waas.appId,
         walletConnectors: [EthereumWalletConnectors]
       }}
     >
       <GelatoSmartWalletDynamicInternal
         defaultChain={settings.defaultChain}
-        wagmiConfig={wagmiConfig}
+        wagmi={{
+          config: wagmiConfig
+        }}
       >
         {wagmiConfig ? (
           <WagmiProvider config={wagmiConfig}>
