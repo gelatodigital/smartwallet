@@ -28,6 +28,9 @@ createGelatoSmartWalletClient(client)
       }
     ]
   })
-  .then((id) => {
-    console.log(`Your Gelato sponsored id is: ${id}`);
+  .then(async (response) => {
+    console.log(`Your Gelato id is: ${response.id}`);
+
+    const txHash = await response.wait();
+    console.log(`Transaction hash: ${txHash}`);
   });
