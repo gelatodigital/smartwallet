@@ -96,7 +96,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
           };
         };
 
-        const smartWalletClient = createGelatoSmartWalletClient(client);
+        const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(client);
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
         console.error("Failed to get wallet client:", error);

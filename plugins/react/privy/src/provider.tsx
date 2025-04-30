@@ -121,7 +121,9 @@ const GelatoSmartWalletPrivyInternal: FC<{
           return signedAuthorization;
         };
 
-        const walletClientGelato = createGelatoSmartWalletClient(walletClient);
+        const walletClientGelato = createGelatoSmartWalletClient<Transport, Chain, Account>(
+          walletClient
+        );
         setSmartWalletClient(walletClientGelato);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
