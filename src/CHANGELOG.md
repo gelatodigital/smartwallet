@@ -1,4 +1,4 @@
-# @gelatodigital/smartwallet
+# @gelatonetwork/smartwallet
 
 ## 0.0.2-alpha.0
 

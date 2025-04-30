@@ -5,7 +5,7 @@ import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 
-import type { wallet } from "@gelatodigital/smartwallet-react-types";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type { FC, ReactNode } from "react";
 import type { Account, Chain, Transport, WalletClient } from "viem";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";

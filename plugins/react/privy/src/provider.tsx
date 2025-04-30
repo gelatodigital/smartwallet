@@ -15,7 +15,7 @@ import {
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 
-import type { wallet } from "@gelatodigital/smartwallet-react-types";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type { FC, ReactNode } from "react";
 import type { Config as WagmiConfig } from "wagmi";
 

@@ -3,7 +3,7 @@ import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
   erc20
-} from "@gelatodigital/smartwallet";
+} from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";

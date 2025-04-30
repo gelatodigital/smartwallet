@@ -1,5 +1,5 @@
 {
-  "name": "@gelatodigital/smartwallet-react-sdk",
+  "name": "@gelatonetwork/smartwallet-react-sdk",
   "version": "0.0.2-alpha.0",
   "author": "Gelato",
   "type": "module",
@@ -20,21 +20,15 @@
   "peerDependenciesMeta": {
     "typescript": {
       "optional": true
-    },
-    "@gelatodigital/smartwallet-react-dynamic": {
-      "optional": true
-    },
-    "@gelatodigital/smartwallet-react-privy": {
-      "optional": true
     }
   },
   "dependencies": {
     "react": "catalog:",
     "viem": "catalog:",
     "wagmi": "catalog:",
-    "@gelatodigital/smartwallet-react-types": "workspace:*",
-    "@gelatodigital/smartwallet-react-dynamic": "workspace:*",
-    "@gelatodigital/smartwallet-react-privy": "workspace:*"
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "@gelatonetwork/smartwallet-react-dynamic": "workspace:*",
+    "@gelatonetwork/smartwallet-react-privy": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "catalog:"

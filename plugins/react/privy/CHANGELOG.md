@@ -1,4 +1,4 @@
-# @gelatodigital/smartwallet-react-privy
+# @gelatonetwork/smartwallet-react-privy
 
 ## 0.0.2-alpha.0
 
@@ -6,4 +6,4 @@
 
 - 5474e52: chore: alpha release
 - Updated dependencies [5474e52]
-  - @gelatodigital/smartwallet-react-types@0.0.2-alpha.0
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.0

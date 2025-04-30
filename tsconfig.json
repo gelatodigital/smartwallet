@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "paths": {
-      "@gelatodigital/smartwallet": ["./src"]
+      "@gelatonetwork/smartwallet": ["./src"]
     }
   },
   "exclude": ["node_modules", "_dist"]
