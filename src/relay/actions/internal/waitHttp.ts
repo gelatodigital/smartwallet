@@ -1,0 +1,36 @@
+import type { Hash } from "viem";
+
+import { getTaskStatus } from "../../status/http.js";
+import {
+  ExecutionCancelledError,
+  ExecutionRevertedError,
+  InternalError,
+  TaskState
+} from "../../status/types.js";
+
+export const waitHttp = async (taskId: string): Promise<Hash | undefined> => {
+  const taskStatus = await getTaskStatus(taskId);
+
+  if (!taskStatus) {
+    throw new InternalError(taskId);
+  }
+
+  if (taskStatus.taskState === TaskState.ExecReverted) {
+    throw new ExecutionRevertedError(
+      taskId,
+      taskStatus.transactionHash ? (taskStatus.transactionHash as Hash) : undefined
+    );
+  }
+
+  if (taskStatus.taskState === TaskState.Cancelled) {
+    throw new ExecutionCancelledError(taskId);
+  }
+
+  if (taskStatus.taskState === TaskState.ExecSuccess) {
+    if (taskStatus.transactionHash) {
+      return taskStatus.transactionHash as Hash;
+    }
+
+    throw new InternalError(taskId);
+  }
+};

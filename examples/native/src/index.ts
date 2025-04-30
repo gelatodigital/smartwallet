@@ -1,5 +1,9 @@
 import "dotenv/config";
-import { createGelatoSmartWalletClient, native } from "@gelatodigital/smartwallet";
+import {
+  type GelatoTaskStatus,
+  createGelatoSmartWalletClient,
+  native
+} from "@gelatodigital/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
@@ -24,6 +28,14 @@ createGelatoSmartWalletClient(client)
       }
     ]
   })
-  .then((id) => {
-    console.log(`Your Gelato id is: ${id}`);
+  .then((response) => {
+    console.log(`Your Gelato id is: ${response.id}`);
+
+    // Listen for events
+    response.on("success", (status: GelatoTaskStatus) => {
+      console.log(`Transaction successful: ${status.transactionHash}`);
+    });
+    response.on("error", (error: Error) => {
+      console.error(`Transaction failed: ${error.message}`);
+    });
   });

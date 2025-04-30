@@ -1,6 +1,7 @@
 import type { Account, Call, Chain, Hash, PublicActions, Transport, WalletClient } from "viem";
 
 import { type Payment, isErc20, isNative } from "../payment/index.js";
+import type { GelatoResponse } from "../relay/index.js";
 import { getAuthorizationList } from "./internal/getAuthorizationList.js";
 import { getOpData } from "./internal/getOpData.js";
 import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
@@ -20,7 +21,7 @@ export async function execute<
 >(
   client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[] }
-): Promise<Hash> {
+): Promise<GelatoResponse> {
   const { payment, calls } = parameters;
 
   const authorizationList = await getAuthorizationList(client, payment);
