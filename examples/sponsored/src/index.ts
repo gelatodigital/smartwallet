@@ -4,7 +4,9 @@ import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
-if (!process.env.SPONSOR_API_KEY) {
+const sponsorApiKey = process.env.SPONSOR_API_KEY;
+
+if (!sponsorApiKey) {
   throw new Error("SPONSOR_API_KEY is not set");
 }
 
@@ -17,7 +19,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, process.env.SPONSOR_API_KEY)
+createGelatoSmartWalletClient(client, sponsorApiKey)
   .execute({
     payment: sponsored(),
     calls: [

@@ -10,6 +10,8 @@ import { sepolia } from "viem/chains";
 
 const token = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
+const apiKey = process.env.GELATO_API_KEY;
+
 const account = privateKeyToAccount(privateKey);
 
 const client = createWalletClient({
@@ -18,7 +20,9 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, process.env.GELATO_API_KEY)
+
+
+createGelatoSmartWalletClient(client, apiKey)
   .execute({
     payment: erc20(token),
     calls: [
