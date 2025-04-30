@@ -7,5 +7,5 @@
   "access": "restricted",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": ["erc20-payment", "native-payment", "smartwallet-react-vite", "sponsored-payment"]
 }
