@@ -12,19 +12,10 @@
   },
   "peerDependencies": {
     "typescript": "catalog:",
-    "viem": "catalog:",
-    "@gelatonetwork/smartwallet-react-types": "workspace:*",
-    "@gelatonetwork/smartwallet-react-dynamic": "workspace:*",
-    "@gelatonetwork/smartwallet-react-privy": "workspace:*"
+    "viem": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {
-      "optional": true
-    },
-    "@gelatonetwork/smartwallet-react-dynamic": {
-      "optional": true
-    },
-    "@gelatonetwork/smartwallet-react-privy": {
       "optional": true
     }
   },
