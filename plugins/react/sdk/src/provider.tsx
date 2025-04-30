@@ -1,12 +1,12 @@
 import {
   GelatoSmartWalletDynamicContextProvider,
   useGelatoSmartWalletDynamicContext
-} from "@gelatodigital/smartwallet-react-dynamic";
+} from "@gelatonetwork/smartwallet-react-dynamic";
 import {
   GelatoSmartWalletPrivyContextProvider,
   useGelatoSmartWalletPrivyContext
-} from "@gelatodigital/smartwallet-react-privy";
-import type { wallet } from "@gelatodigital/smartwallet-react-types";
+} from "@gelatonetwork/smartwallet-react-privy";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type React from "react";
 import { type ReactNode, createContext, useContext } from "react";
 

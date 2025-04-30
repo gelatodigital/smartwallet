@@ -4,14 +4,14 @@ import {
   erc20,
   native,
   sponsored
-} from "@gelatodigital/smartwallet";
+} from "@gelatonetwork/smartwallet";
 import {
   GelatoSmartWalletConnectButton,
   GelatoSmartWalletContextProvider,
   dynamic,
   useGelatoSmartWalletProviderContext,
   wagmi
-} from "@gelatodigital/smartwallet-react-sdk";
+} from "@gelatonetwork/smartwallet-react-sdk";
 import { useEffect, useState } from "react";
 import { http, useAccount } from "wagmi";
 

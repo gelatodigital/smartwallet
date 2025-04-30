@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createGelatoSmartWalletClient, sponsored } from "@gelatodigital/smartwallet";
+import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";

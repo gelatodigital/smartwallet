@@ -1,5 +1,5 @@
-import { GelatoSmartWalletDynamicConnectButton } from "@gelatodigital/smartwallet-react-dynamic";
-import { GelatoSmartWalletPrivyConnectButton } from "@gelatodigital/smartwallet-react-privy";
+import { GelatoSmartWalletDynamicConnectButton } from "@gelatonetwork/smartwallet-react-dynamic";
+import { GelatoSmartWalletPrivyConnectButton } from "@gelatonetwork/smartwallet-react-privy";
 import type { FC, ReactNode } from "react";
 
 import { useGelatoSmartWalletProviderContext } from "../provider.js";

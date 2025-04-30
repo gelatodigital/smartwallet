@@ -1,5 +1,5 @@
 {
-  "name": "@gelatodigital/smartwallet-react-dynamic",
+  "name": "@gelatonetwork/smartwallet-react-dynamic",
   "version": "0.0.2-alpha.0",
   "author": "Gelato",
   "type": "module",
@@ -28,7 +28,7 @@
     "@dynamic-labs/sdk-react-core": "^4.12.4",
     "@dynamic-labs/wagmi-connector": "^4.12.4",
     "@dynamic-labs/wallet-connector-core": "^4.12.4",
-    "@gelatodigital/smartwallet-react-types": "workspace:*",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
