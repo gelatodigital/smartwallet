@@ -1,5 +1,5 @@
 import { WebsocketHandler } from "./status/index.js";
 
-import { apiWs } from "../constants/index.js";
+import { api } from "../constants/index.js";
 
-export const statusApiWebSocket = new WebsocketHandler(apiWs());
+export const statusApiWebSocket = new WebsocketHandler(api("ws"));

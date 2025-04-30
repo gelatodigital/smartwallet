@@ -21,9 +21,7 @@ export const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
 
 export type Mode = keyof typeof EXECUTION_MODE;
 
-export const api = () => GELATO_API;
-
-export const apiWs = () => GELATO_API_WS;
+export const api = (t: "http" | "ws" = "http") => (t === "http" ? GELATO_API : GELATO_API_WS);
 
 export const mode = (mode: Mode) => EXECUTION_MODE[mode] as Hex;
 
