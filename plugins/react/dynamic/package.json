@@ -1,6 +1,6 @@
 {
   "name": "@gelatodigital/smartwallet-react-dynamic",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "author": "Gelato",
   "type": "module",
   "description": "Context provider supporting Dynamic WaaS",
