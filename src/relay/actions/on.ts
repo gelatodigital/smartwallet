@@ -2,47 +2,46 @@ import { Hash } from "viem";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
 import { statusApiWebSocket } from "../ws.js";
+import { onError } from "./internal/onError.js";
+
+type SuccessCallback = (data: TransactionStatusResponse) => void;
+type ErrorCallback = (error: Error) => void;
+type Callback = SuccessCallback | ErrorCallback;
 
 export const on = (
   taskId: string,
   parameters: {
-    update: GelatoTaskEvent;
-    callback: (data: TransactionStatusResponse | Error) => void;
+    update: GelatoTaskEvent | "error";
+    callback: Callback;
   }
 ) => {
   const { update, callback } = parameters;
+
+  if (update === "error") {
+    return onError(taskId, { update, callback: callback as ErrorCallback });
+  }
+
+  const successCallback = callback as SuccessCallback;
 
   const updateHandler = (taskStatus: TransactionStatusResponse) => {
     if (taskStatus.taskId !== taskId) return;
 
     if (update === "success" && taskStatus.taskState === TaskState.ExecSuccess) {
-      callback(taskStatus);
+      successCallback(taskStatus);
     } else if (update === "revert" && taskStatus.taskState === TaskState.ExecReverted) {
-      callback(taskStatus);
+      successCallback(taskStatus);
     } else if (update === "cancel" && taskStatus.taskState === TaskState.Cancelled) {
-      callback(taskStatus);
-    }
-  };
-
-  const errorHandler = (error: Error) => {
-    if (update === "error") {
-      callback(error);
+      successCallback(taskStatus);
     }
   };
 
   statusApiWebSocket.onUpdate(updateHandler);
-  statusApiWebSocket.onError(errorHandler);
 
-  statusApiWebSocket.subscribe(taskId).catch((error) => {
-    if (update === "error") {
-      callback(error);
-    }
-  });
+  statusApiWebSocket.subscribe(taskId);
 
   // Cleanup function
   return () => {
     statusApiWebSocket.unsubscribe(taskId);
     statusApiWebSocket.offUpdate(updateHandler);
-    statusApiWebSocket.offError(errorHandler);
   };
 };

@@ -24,10 +24,8 @@ export interface SmartWalletCallRequest extends BaseCallRequest {
 export interface GelatoResponse {
   id: string;
   wait: () => Promise<string>;
-  on: (
-    update: GelatoTaskEvent,
-    callback: (parameter: TransactionStatusResponse | Error) => void
-  ) => () => void;
+  on(update: GelatoTaskEvent, callback: (parameter: TransactionStatusResponse) => void): () => void;
+  on(update: "error", callback: (parameter: Error) => void): () => void;
 }
 
 const callGelatoApi = async <T extends object>(
@@ -56,7 +54,7 @@ const callGelatoApi = async <T extends object>(
   return {
     id: taskId,
     wait: () => wait(taskId),
-    on: (update, callback) => on(taskId, { update, callback })
+    on: (update: GelatoTaskEvent | "error", callback) => on(taskId, { update, callback })
   };
 };
 
