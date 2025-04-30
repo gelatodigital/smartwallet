@@ -12,8 +12,5 @@
     "@gelatonetwork/smartwallet-react-types": "0.0.1",
     "@gelatonetwork/smartwallet": "0.0.1"
   },
-  "changesets": [
-    "silent-steaks-deny",
-    "stupid-spiders-do"
-  ]
+  "changesets": ["silent-steaks-deny", "stupid-spiders-do"]
 }
