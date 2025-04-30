@@ -121,7 +121,8 @@ const GelatoSmartWalletPrivyInternal: FC<{
           return signedAuthorization;
         };
 
-        setSmartWalletClient(createGelatoSmartWalletClient(walletClient));
+        const walletClientGelato = createGelatoSmartWalletClient(walletClient);
+        setSmartWalletClient(walletClientGelato);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
       }
@@ -133,9 +134,11 @@ const GelatoSmartWalletPrivyInternal: FC<{
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider
       value={{
-        wagmi: {
-          config: wagmi.config,
+        gelato: {
           client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
+        },
+        wagmi: {
+          config: wagmi.config
         },
         logout: logoutWrapper,
         switchNetwork

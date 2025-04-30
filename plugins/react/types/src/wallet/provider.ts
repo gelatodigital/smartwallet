@@ -8,8 +8,10 @@ export type ProviderType = "dynamic" | "privy";
 export type WagmiCreateConfigParameters = CreateConfigParameters;
 
 export interface ProviderContext {
-  wagmi: {
+  gelato: {
     client?: GelatoSmartWalletClient<Transport, Chain, Account> | undefined;
+  };
+  wagmi: {
     config?: Config | undefined;
   };
   logout: () => void;

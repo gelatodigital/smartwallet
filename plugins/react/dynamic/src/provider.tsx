@@ -109,9 +109,11 @@ const GelatoSmartWalletDynamicInternal: FC<{
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
       value={{
-        wagmi: {
-          config: wagmi.config,
+        gelato: {
           client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
+        },
+        wagmi: {
+          config: wagmi.config
         },
         logout: logoutHandler,
         switchNetwork

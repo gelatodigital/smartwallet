@@ -13,7 +13,7 @@ import { sepolia } from "viem/chains";
 
 const WalletInfoComponent = () => {
   const {
-    wagmi: { client: smartWalletClient },
+    gelato: { client: smartWalletClient },
     logout
   } = useGelatoSmartWalletProviderContext();
   const [paymentType, setPaymentType] = useState<string>("sponsored");
