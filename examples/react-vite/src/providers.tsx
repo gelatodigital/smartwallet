@@ -16,6 +16,7 @@ const WalletInfoComponent = () => {
     gelato: { client },
     logout
   } = useGelatoSmartWalletProviderContext();
+
   const [paymentType, setPaymentType] = useState<string>("sponsored");
   // USDC on sepolia
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
@@ -38,7 +39,7 @@ const WalletInfoComponent = () => {
             ? erc20(erc20TokenAddress)
             : native();
       // Example transaction - sending a simple call
-      const smartWalletResponse = await client.execute({
+      const response = await client.execute({
         payment,
         calls: [
           {
@@ -49,13 +50,13 @@ const WalletInfoComponent = () => {
         ]
       });
 
-      smartWalletResponse.on("success", (status: GelatoTaskStatus) => {
+      response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
       });
 
-      const smartWalletTransactionHash = await smartWalletResponse.wait();
+      const transactionHash = await response.wait();
 
-      setTransactionHash(smartWalletTransactionHash);
+      setTransactionHash(transactionHash);
     } catch (error) {
       console.error("Transaction failed:", error);
     } finally {
