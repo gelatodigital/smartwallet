@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
 import type { Account, Chain, Transport } from "viem";
+import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
 type GelatoSmartWalletDynamicContextType = wallet.ProviderContext;
@@ -139,7 +140,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
       }}
     >
       <GelatoSmartWalletDynamicInternal
-        defaultChain={settings.defaultChain}
+        defaultChain={settings.defaultChain ?? sepolia}
         wagmi={{
           config: wagmiConfig
         }}
