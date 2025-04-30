@@ -3,23 +3,22 @@ import {
   type Call,
   type Chain,
   type Hex,
-  type PublicActions,
   type SignedAuthorizationList,
   type Transport,
-  type WalletClient,
   ethAddress
 } from "viem";
 import { encodeExecuteData } from "viem/experimental/erc7821";
 
 import type { Payment } from "../../payment/index.js";
 import { smartWalletCall, sponsoredCall } from "../../relay/index.js";
+import type { GelatoWalletClient } from "../index.js";
 
 export async function sendTransaction<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
 >(
-  client: WalletClient<transport, chain, account> & PublicActions<transport, chain, account>,
+  client: GelatoWalletClient<transport, chain, account>,
   calls: Call[],
   payment: Payment,
   authorizationList?: SignedAuthorizationList,
@@ -39,6 +38,12 @@ export async function sendTransaction<
       });
     }
     case "sponsored": {
+      const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
+
+      if (!sponsorApiKey) {
+        throw new Error("Sponsor API key is required");
+      }
+
       return await sponsoredCall({
         chainId: client.chain.id,
         target: client.account.address,
@@ -46,7 +51,7 @@ export async function sendTransaction<
           calls,
           opData
         }),
-        sponsorApiKey: payment.apiKey,
+        sponsorApiKey,
         authorizationList
       });
     }

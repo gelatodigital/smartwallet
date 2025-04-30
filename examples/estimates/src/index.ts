@@ -1,12 +1,10 @@
 import "dotenv/config";
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
-import { http, type Hex, createWalletClient } from "viem";
+import { http, type Hex, createWalletClient, formatEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
-
-if (!sponsorApiKey) {
+if (!process.env.SPONSOR_API_KEY) {
   throw new Error("SPONSOR_API_KEY is not set");
 }
 
@@ -19,9 +17,9 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, sponsorApiKey)
-  .execute({
-    payment: sponsored(),
+createGelatoSmartWalletClient(client, process.env.SPONSOR_API_KEY)
+  .estimate({
+    payment: sponsored(process.env.SPONSOR_API_KEY),
     calls: [
       {
         to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
@@ -30,11 +28,8 @@ createGelatoSmartWalletClient(client, sponsorApiKey)
       }
     ]
   })
-  .then(async (response) => {
-    console.log(`Your Gelato id is: ${response.id}`);
-
-    const txHash = await response.wait();
-    console.log(`Transaction hash: ${txHash}`);
-
+  .then(async ({ estimatedFee, estimatedGas }) => {
+    console.log(`Estimated fee: ${formatEther(estimatedFee)} ETH`);
+    console.log(`Estimated gas: ${estimatedGas} GAS`);
     process.exit(0);
   });

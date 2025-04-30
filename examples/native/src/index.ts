@@ -9,6 +9,8 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
+const apiKey = process.env.GELATO_API_KEY;
+
 const account = privateKeyToAccount(privateKey);
 
 const client = createWalletClient({
@@ -17,7 +19,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client)
+createGelatoSmartWalletClient(client, apiKey)
   .execute({
     payment: native(),
     calls: [

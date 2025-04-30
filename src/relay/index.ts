@@ -11,6 +11,7 @@ interface BaseCallRequest {
   gasLimit?: string;
   retries?: number;
   authorizationList?: SignedAuthorizationList;
+  sponsorApiKey?: string;
 }
 
 export interface SponsoredCallRequest extends BaseCallRequest {

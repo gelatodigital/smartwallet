@@ -55,8 +55,6 @@ pnpm dev
 - `src/` - Gelato SmartWallet SDK
 - `plugins/` - Plugins built on top of Gelato SmartWallet SDK
 - `examples/` - Example implementations
-  - `erc20/` - ERC20 token examples
-  - `sponsored/` - Sponsored transaction examples
 
 ## Development
 

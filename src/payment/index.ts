@@ -1,4 +1,4 @@
-import type { Address, Chain } from "viem";
+import type { Address } from "viem";
 
 export interface NativePayment {
   readonly type: "native";
@@ -11,7 +11,8 @@ export interface ERC20Payment {
 
 export interface SponsoredPayment {
   readonly type: "sponsored";
-  readonly apiKey: string;
+  // Optional, if not provided, the apiKey MUST be provided when instantiating the client
+  readonly sponsorApiKey?: string;
 }
 
 export type Payment = NativePayment | ERC20Payment | SponsoredPayment;
@@ -27,7 +28,7 @@ export const isErc20 = (payment: Payment): payment is ERC20Payment => payment.ty
 
 export const isNative = (payment: Payment): payment is NativePayment => payment.type === "native";
 
-export const sponsored = (apiKey: string): SponsoredPayment => ({
+export const sponsored = (sponsorApiKey?: string): SponsoredPayment => ({
   type: "sponsored",
-  apiKey
+  sponsorApiKey
 });
