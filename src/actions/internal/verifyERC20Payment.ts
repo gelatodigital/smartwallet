@@ -40,8 +40,6 @@ export async function verifyERC20Payment<
     })
   ]);
 
-  console.log("tokens", tokens);
-
   if (!tokens.some((token) => lowercase(token) === lowercase(payment.token))) {
     throw new Error(
       `Token ${symbol} (${payment.token}) is not allowed to be used as a payment token on ${
