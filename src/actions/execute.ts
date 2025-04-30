@@ -34,7 +34,6 @@ export async function execute<
 
   const opData = await getOpData(client, calls);
 
-  // TODO: add support for passkey signers
   const signed = await client.signTypedData({
     account: client.account,
     ...opData

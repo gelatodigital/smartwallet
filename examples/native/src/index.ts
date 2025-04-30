@@ -30,12 +30,15 @@ createGelatoSmartWalletClient(client)
   })
   .then((response) => {
     console.log(`Your Gelato id is: ${response.id}`);
+    console.log("Waiting for transaction to be confirmed...");
 
     // Listen for events
     response.on("success", (status: GelatoTaskStatus) => {
       console.log(`Transaction successful: ${status.transactionHash}`);
+      process.exit(0);
     });
     response.on("error", (error: Error) => {
       console.error(`Transaction failed: ${error.message}`);
+      process.exit(1);
     });
   });
