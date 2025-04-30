@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.3
+
+### Patch Changes
+
+- fix: versioning
+
 ## 0.0.2-alpha.2
 
 ### Patch Changes
