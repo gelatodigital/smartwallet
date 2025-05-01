@@ -23,8 +23,6 @@ export type GelatoSmartWalletActions = {
     estimatedFee: bigint;
     estimatedGas: bigint;
   }>;
-  estimateGas: (args: { payment: Payment; calls: Call[] }) => Promise<bigint>;
-  estimateFee: (args: { payment: Payment; calls: Call[] }) => Promise<bigint>;
 };
 
 export type GelatoSmartWalletInternals = {
@@ -57,11 +55,7 @@ export function actions<
 >(client: GelatoWalletClient<transport, chain, account>) {
   return {
     execute: (args: { payment: Payment; calls: Call[] }) => execute(client, args),
-    estimate: (args: { payment: Payment; calls: Call[] }) => estimate(client, args),
-    estimateGas: (args: { payment: Payment; calls: Call[] }) =>
-      estimate(client, args).then(({ estimatedGas }) => estimatedGas),
-    estimateFee: (args: { payment: Payment; calls: Call[] }) =>
-      estimate(client, args).then(({ estimatedFee }) => estimatedFee)
+    estimate: (args: { payment: Payment; calls: Call[] }) => estimate(client, args)
   };
 }
 
