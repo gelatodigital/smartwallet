@@ -13,6 +13,7 @@
   "peerDependencies": {
     "typescript": "catalog:",
     "viem": "catalog:",
+    "@gelatonetwork/smartwallet": "workspace:*",
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@gelatonetwork/smartwallet-react-dynamic": "workspace:*",
     "@gelatonetwork/smartwallet-react-privy": "workspace:*"
