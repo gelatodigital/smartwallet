@@ -15,7 +15,7 @@ import type { GelatoWalletClient } from "../index.js";
 import { getMockSignedOpData } from "./getMockSignedOpData.js";
 import { signAuthorizationList } from "./signAuthorizationList.js";
 
-const BASE_GAS = 21_000n;
+const BASE_GAS = 30_000n;
 
 export async function estimateGas<
   transport extends Transport = Transport,
@@ -42,7 +42,7 @@ export async function estimateGas<
         await client.simulateContract(request as SimulateContractParameters);
       } else {
         // TODO: fix, it's wrong and inaccurate
-        return client.estimateContractGas(request as EstimateContractGasParameters);
+        return await client.estimateContractGas(request as EstimateContractGasParameters);
       }
     } catch (err) {
       if (err instanceof BaseError) {
