@@ -10,8 +10,8 @@ const EXECUTION_MODE = {
 };
 
 const DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0x529C16817F74c5CcA41906Ab32F178e7da389b4b",
-  [baseSepolia.id]: "0xa191bcc6055B4d77d577b6A042b940737c8507B3"
+  [sepolia.id]: "0x074cEA0cBd04358fDef8cf8ccd6738ad38cfDae8",
+  [baseSepolia.id]: "0xC08a65356fDea7eF7c4b88C6D814EF8cA5E5b5a9"
 };
 
 const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {

@@ -34,14 +34,27 @@ export const getPaymentTokens = async (chainId: number): Promise<string[]> => {
 export const getEstimatedFee = async (
   chainId: number,
   paymentToken: string,
-  gasLimit: bigint,
-  gasLimitL1: bigint
+  estimatedExecutionGas: bigint,
+  estimatedL1Gas: bigint,
+  data?: string
+): Promise<bigint> => {
+  return data
+    ? _getEstimatedFeeOpStack(chainId, paymentToken, estimatedExecutionGas, estimatedL1Gas, data)
+    : _getEstimatedFee(chainId, paymentToken, estimatedExecutionGas, estimatedL1Gas);
+};
+
+const _getEstimatedFee = async (
+  chainId: number,
+  paymentToken: string,
+  estimatedExecutionGas: bigint,
+  estimatedL1Gas: bigint
 ): Promise<bigint> => {
   const queryParams = new URLSearchParams({
     paymentToken,
-    gasLimit: gasLimit.toString(),
-    gasLimitL1: gasLimitL1.toString()
+    gasLimit: estimatedExecutionGas.toString(),
+    gasLimitL1: estimatedL1Gas.toString()
   });
+
   const url = `${api()}/oracles/${chainId.toString()}/estimate?${queryParams.toString()}`;
 
   try {
@@ -53,5 +66,39 @@ export const getEstimatedFee = async (
     return BigInt(data.estimatedFee);
   } catch (error) {
     throw new Error(`GelatoRelaySDK/getEstimatedFee: Failed with error: ${error}`);
+  }
+};
+
+const _getEstimatedFeeOpStack = async (
+  chainId: number,
+  paymentToken: string,
+  estimatedExecutionGas: bigint,
+  estimatedL1Gas: bigint,
+  data: string
+): Promise<bigint> => {
+  const url = `${api()}/oracles/${chainId.toString()}/estimate/opStack`;
+
+  const body = JSON.stringify({
+    paymentToken,
+    gasLimit: estimatedExecutionGas.toString(),
+    gasLimitL1: estimatedL1Gas.toString(),
+    data
+  });
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return BigInt(data.estimatedFee);
+  } catch (error) {
+    throw new Error(`GelatoRelaySDK/getEstimatedFeePost: Failed with error: ${error}`);
   }
 };

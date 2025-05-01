@@ -3,11 +3,12 @@ import type { Account, Call, Chain, Transport } from "viem";
 import { type Payment, isErc20, isNative } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { getAuthorizationList } from "./internal/getAuthorizationList.js";
 import { getOpData } from "./internal/getOpData.js";
 import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
 import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
+import { signAuthorizationList } from "./internal/signAuthorizationList.js";
+import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
  *
@@ -25,7 +26,9 @@ export async function execute<
 ): Promise<GelatoResponse> {
   const { payment, calls } = parameters;
 
-  const authorizationList = await getAuthorizationList(client, payment);
+  const authorized = await verifyAuthorization(client);
+
+  const authorizationList = authorized ? [] : await signAuthorizationList(client);
 
   if (isErc20(payment)) {
     const { paymentCall } = await resolveERC20PaymentCall(client, payment, calls);
@@ -41,6 +44,8 @@ export async function execute<
     account: client.account,
     ...opData
   });
+
+  delete client._internal.inflight;
 
   return await sendTransaction(client, calls, payment, authorizationList, signed);
 }

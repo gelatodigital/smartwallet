@@ -1,6 +1,6 @@
 import type { Account, Chain, Transport } from "viem";
-import { parseAbi } from "viem";
 
+import { abi as erc20Abi } from "../../abis/erc20.js";
 import { getPaymentTokens } from "../../oracle/index.js";
 import type { ERC20Payment } from "../../payment/index.js";
 import { lowercase } from "../../utils/index.js";
@@ -17,19 +17,19 @@ export async function verifyERC20Payment<
       contracts: [
         {
           address: payment.token,
-          abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+          abi: erc20Abi,
           functionName: "balanceOf",
           args: [client.account.address]
         },
         {
           address: payment.token,
-          abi: parseAbi(["function decimals() view returns (uint8)"]),
+          abi: erc20Abi,
           functionName: "decimals",
           args: []
         },
         {
           address: payment.token,
-          abi: parseAbi(["function symbol() view returns (string)"]),
+          abi: erc20Abi,
           functionName: "symbol",
           args: []
         }
