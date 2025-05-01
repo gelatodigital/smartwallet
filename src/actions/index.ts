@@ -4,11 +4,13 @@ import type {
   Chain,
   Client,
   Hex,
+  PrivateKeyAccount,
   PublicActions,
   Transport,
   WalletClient
 } from "viem";
 
+import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
@@ -32,6 +34,9 @@ export type GelatoSmartWalletInternals = {
     isOpStack: () => boolean;
     inflight?: {
       mockOpData?: undefined | Hex;
+    };
+    mock: {
+      signer: PrivateKeyAccount;
     };
   };
 };
@@ -66,6 +71,11 @@ export function internal({
 }: { apiKey?: string; isOpStack: boolean }): GelatoSmartWalletInternals {
   return {
     _internal: {
+      mock: {
+        signer: privateKeyToAccount(
+          "0x1111111111111111111111111111111111111111111111111111111111111111"
+        )
+      },
       authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack

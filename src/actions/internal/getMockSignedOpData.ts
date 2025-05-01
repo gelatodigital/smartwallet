@@ -1,6 +1,5 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import type { GelatoWalletClient } from "../index.js";
 import { getOpData } from "./getOpData.js";
 
@@ -12,9 +11,8 @@ export async function getMockSignedOpData<
   if (client._internal.inflight?.mockOpData) {
     return client._internal.inflight.mockOpData;
   }
-
   // mock signature
-  const mockOpData = await privateKeyToAccount(generatePrivateKey()).signTypedData({
+  const mockOpData = await client._internal.mock.signer.signTypedData({
     ...(await getOpData(client, calls))
   });
 
