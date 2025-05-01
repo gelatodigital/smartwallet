@@ -15,6 +15,8 @@ import type { GelatoWalletClient } from "../index.js";
 import { getMockSignedOpData } from "./getMockSignedOpData.js";
 import { signAuthorizationList } from "./signAuthorizationList.js";
 
+const BASE_GAS = 21_000n;
+
 export async function estimateGas<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
@@ -56,20 +58,22 @@ export async function estimateGas<
 
   const estimatedGas = await estimate();
 
+  const estimatedGasWithBase = estimatedGas + BASE_GAS;
+
   if (client._internal.isOpStack()) {
     // biome-ignore lint/suspicious/noExplicitAny: temporary solution to bypass the type checking
     const estimatedL1Gas = await client.estimateContractL1Gas(request as any);
 
     return {
-      estimatedGas: estimatedGas + estimatedL1Gas,
+      estimatedGas: estimatedGasWithBase + estimatedL1Gas,
       estimatedL1Gas,
-      estimatedExecutionGas: estimatedGas
+      estimatedExecutionGas: estimatedGasWithBase
     };
   }
 
   return {
-    estimatedGas,
+    estimatedGas: estimatedGasWithBase,
     estimatedL1Gas: 0n,
-    estimatedExecutionGas: estimatedGas
+    estimatedExecutionGas: estimatedGasWithBase
   };
 }
