@@ -3,10 +3,12 @@ export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/stat
 
 import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
+import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
 import { delegation } from "./constants/index.js";
+import { isOpStack } from "./utils/opstack.js";
 
 export type GelatoSmartWalletClient<
   transport extends Transport,
@@ -14,6 +16,7 @@ export type GelatoSmartWalletClient<
   account extends Account
 > = WalletClient<transport, chain, account> &
   PublicActions<transport, chain, account> &
+  PublicActionsL2<chain, account> &
   GelatoSmartWalletActions;
 
 export const createGelatoSmartWalletClient = <
@@ -22,13 +25,13 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  sponsorApiKey?: string
+  apiKey?: string
 ) => {
   if (!delegation(client.chain.id)) throw new Error(`Chain not supported: ${client.chain.id}`);
 
   const baseClient = Object.assign(
-    client.extend(publicActions),
-    internal(sponsorApiKey)
+    client.extend(publicActions).extend(publicActionsL2()),
+    internal({ apiKey, isOpStack: isOpStack(client.chain) })
   ) as GelatoWalletClient<transport, chain, account>;
 
   return merge(baseClient, actions(baseClient)) as GelatoSmartWalletClient<

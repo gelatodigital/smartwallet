@@ -1,12 +1,13 @@
 import type { Account, Call, Chain, Transport } from "viem";
 import { ethAddress, formatEther, formatUnits } from "viem";
-
-import { isErc20, isNative } from "../../payment/index.js";
+import { encodeExecuteData } from "viem/experimental/erc7821";
 
 import { getEstimatedFee } from "../../oracle/index.js";
+import { isErc20, isNative } from "../../payment/index.js";
 import type { Payment } from "../../payment/index.js";
 import type { GelatoWalletClient } from "../index.js";
 import { estimateGas } from "./estimateGas.js";
+import { getMockSignedOpData } from "./getMockSignedOpData.js";
 import { verifyERC20Payment } from "./verifyERC20Payment.js";
 
 export async function getEstimates<
@@ -15,12 +16,18 @@ export async function getEstimates<
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, payment: Payment, calls: Call[]) {
   if (isErc20(payment)) {
-    const [{ balance, decimals, symbol }, estimatedGas] = await Promise.all([
-      verifyERC20Payment(client, payment),
-      estimateGas(client, calls)
-    ]);
+    const [{ balance, decimals, symbol }, { estimatedExecutionGas, estimatedL1Gas, estimatedGas }] =
+      await Promise.all([verifyERC20Payment(client, payment), estimateGas(client, calls)]);
 
-    const estimatedFee = await getEstimatedFee(client.chain.id, payment.token, estimatedGas, 0n);
+    const estimatedFee = await getEstimatedFee(
+      client.chain.id,
+      payment.token,
+      estimatedExecutionGas,
+      estimatedL1Gas,
+      client._internal.isOpStack()
+        ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
+        : undefined
+    );
 
     if (balance < estimatedFee) {
       throw new Error(
@@ -31,14 +38,30 @@ export async function getEstimates<
       );
     }
 
-    return { estimatedFee, estimatedGas };
+    return {
+      estimatedFee,
+      estimatedGas,
+      estimatedExecutionGas,
+      estimatedL1Gas
+    };
   }
 
   if (isNative(payment)) {
-    const estimatedGas = await estimateGas(client, calls);
+    const { estimatedExecutionGas, estimatedL1Gas, estimatedGas } = await estimateGas(
+      client,
+      calls
+    );
 
     const [estimatedFee, balance] = await Promise.all([
-      getEstimatedFee(client.chain.id, ethAddress, estimatedGas, 0n),
+      getEstimatedFee(
+        client.chain.id,
+        ethAddress,
+        estimatedExecutionGas,
+        estimatedL1Gas,
+        client._internal.isOpStack()
+          ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
+          : undefined
+      ),
       client.getBalance({
         address: client.account.address
       })
@@ -50,11 +73,20 @@ export async function getEstimates<
       );
     }
 
-    return { estimatedFee, estimatedGas };
+    return { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas };
   }
 
-  const estimatedGas = await estimateGas(client, calls);
-  const estimatedFee = await getEstimatedFee(client.chain.id, ethAddress, estimatedGas, 0n);
+  const { estimatedExecutionGas, estimatedL1Gas, estimatedGas } = await estimateGas(client, calls);
 
-  return { estimatedFee, estimatedGas };
+  const estimatedFee = await getEstimatedFee(
+    client.chain.id,
+    ethAddress,
+    estimatedExecutionGas,
+    estimatedL1Gas,
+    client._internal.isOpStack()
+      ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
+      : undefined
+  );
+
+  return { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas };
 }

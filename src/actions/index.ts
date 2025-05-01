@@ -1,5 +1,15 @@
-import type { Account, Call, Chain, Client, PublicActions, Transport, WalletClient } from "viem";
+import type {
+  Account,
+  Call,
+  Chain,
+  Client,
+  Hex,
+  PublicActions,
+  Transport,
+  WalletClient
+} from "viem";
 
+import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { estimate } from "./estimate.js";
@@ -17,7 +27,12 @@ export type GelatoSmartWalletActions = {
 
 export type GelatoSmartWalletInternals = {
   _internal: {
+    authorized: boolean | undefined;
     apiKey: () => string | undefined;
+    isOpStack: () => boolean;
+    inflight?: {
+      mockOpData?: undefined | Hex;
+    };
   };
 };
 
@@ -27,6 +42,7 @@ export type GelatoWalletClient<
   account extends Account = Account
 > = WalletClient<transport, chain, account> &
   PublicActions<transport, chain, account> &
+  PublicActionsL2<chain, account> &
   GelatoSmartWalletInternals;
 
 export function actions<
@@ -44,10 +60,15 @@ export function actions<
   };
 }
 
-export function internal(apiKey?: string): GelatoSmartWalletInternals {
+export function internal({
+  apiKey,
+  isOpStack
+}: { apiKey?: string; isOpStack: boolean }): GelatoSmartWalletInternals {
   return {
     _internal: {
-      apiKey: () => apiKey
+      authorized: undefined,
+      apiKey: () => apiKey,
+      isOpStack: () => isOpStack
     }
   };
 }

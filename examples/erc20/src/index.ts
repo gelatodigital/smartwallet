@@ -6,9 +6,10 @@ import {
 } from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
-const token = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
+// USDC on Base Sepolia
+const token = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
 const apiKey = process.env.GELATO_API_KEY;
 
@@ -16,7 +17,7 @@ const account = privateKeyToAccount(privateKey);
 
 const client = createWalletClient({
   account,
-  chain: sepolia,
+  chain: baseSepolia,
   transport: http()
 });
 
