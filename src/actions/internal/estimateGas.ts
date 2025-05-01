@@ -15,7 +15,7 @@ import type { GelatoWalletClient } from "../index.js";
 import { getMockSignedOpData } from "./getMockSignedOpData.js";
 import { signAuthorizationList } from "./signAuthorizationList.js";
 
-const BASE_GAS = 30_000n;
+const BASE_GAS = 27_000n;
 
 export async function estimateGas<
   transport extends Transport = Transport,
