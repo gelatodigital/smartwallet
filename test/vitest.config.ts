@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
         provider: "v8",
         reporter: process.env.CI ? ["lcov"] : ["text", "json", "html"]
       },
-      include: ["src/**/*.test.ts"],
+      include: ["test/**/*.test.ts"],
       passWithNoTests: true,
       resolveSnapshotPath: (path, ext) =>
         join(join(dirname(path), "_snapshots"), `${basename(path)}${ext}`),
