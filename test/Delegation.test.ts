@@ -43,12 +43,12 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    const erc20BalanceInitial = await gelatoClient.readContract({
+    const erc20BalanceInitial = (await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: SimpleERC20.abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
-    });
+    })) as bigint;
 
     await gelatoClient.execute({
       payment: erc20(constants.erc20Address()),
@@ -65,12 +65,12 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    const erc20BalanceFinal = await gelatoClient.readContract({
+    const erc20BalanceFinal = (await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: SimpleERC20.abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
-    });
+    })) as bigint;
 
     expect(code).toBe(constants.delegationCode(gelatoClient.chain.id).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);
