@@ -6,6 +6,7 @@ import { rpcUrl } from "./anvil";
 import { erc20Address } from "./constants.js";
 
 import SimpleERC20 from "../contract/SimpleERC20.json";
+import { waitBlockTime } from "./utils.js";
 
 const accounts = [
   {
@@ -48,6 +49,8 @@ export async function getAccount(balance: bigint | undefined = parseEther("10000
       chain: null,
       functionName: "mint"
     });
+
+    await waitBlockTime();
   }
 
   return {
