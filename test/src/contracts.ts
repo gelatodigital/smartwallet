@@ -1,10 +1,9 @@
 import type { Address, Hex } from "viem";
 import { deployContract, getCode, getTransactionReceipt, setCode } from "viem/actions";
 
-import { deployerAccount, testClient } from "./account.js";
+import { testClient } from "./account.js";
 import { waitBlockTime } from "./utils.js";
 
-// TODO: handle git submodules sync and forge build before testing!
 import Delegation from "../../contracts/out/Delegation.sol/Delegation.json";
 import SimpleERC20 from "../contract/SimpleERC20.json";
 import { multicall3Address, multicall3Bytecode } from "./constants.js";
