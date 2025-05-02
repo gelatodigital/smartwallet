@@ -144,7 +144,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
       }}
     >
       <GelatoSmartWalletDynamicInternal
-        defaultChain={settings.defaultChain ?? sepolia}
+        defaultChain={settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? sepolia}
         wagmi={{
           config: wagmiConfig
         }}
