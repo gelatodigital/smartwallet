@@ -3,8 +3,9 @@ import { sepolia } from "viem/chains";
 
 import { delegation } from "../../src/constants/index.js";
 
-// TODO use env for this
-export const blockTime = 0.1;
+export const blockTime = process.env.VITE_TEST_BLOCK_TIME
+  ? Number(process.env.VITE_TEST_BLOCK_TIME)
+  : 0.1;
 
 export const testChainId = sepolia.id;
 export const hardfork = "Prague";

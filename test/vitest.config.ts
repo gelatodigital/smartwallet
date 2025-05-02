@@ -1,7 +1,8 @@
 import { basename, dirname, join } from "node:path";
+import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     test: {
       alias: {
@@ -18,7 +19,8 @@ export default defineConfig(() => {
       resolveSnapshotPath: (path, ext) =>
         join(join(dirname(path), "_snapshots"), `${basename(path)}${ext}`),
       setupFiles: [join(__dirname, "./setup.ts")],
-      testTimeout: 30_000
+      testTimeout: 30_000,
+      env: loadEnv(mode, process.cwd(), "")
     }
   };
 });
