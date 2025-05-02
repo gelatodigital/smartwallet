@@ -46,9 +46,11 @@ export async function estimateGas<
       }
     } catch (err) {
       if (err instanceof BaseError) {
-        const lowLevelError = err.walk();
         // biome-ignore lint/suspicious/noExplicitAny: parse value returned on revert
-        return BigInt((lowLevelError as any).data.args[0]);
+        const lowLevelError = err.walk() as any;
+        if (lowLevelError.data.errorName === "SimulationResult") {
+          return BigInt(lowLevelError.data.args[0]);
+        }
       }
       throw err;
     }
