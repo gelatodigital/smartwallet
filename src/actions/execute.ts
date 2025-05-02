@@ -24,7 +24,9 @@ export async function execute<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[] }
 ): Promise<GelatoResponse> {
-  const { payment, calls } = parameters;
+  const { payment, calls: _calls } = parameters;
+
+  const calls = [..._calls];
 
   const authorized = await verifyAuthorization(client);
 
