@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vitest";
+import { abi as erc20Abi } from "../src/abis/erc20.js";
 
 import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
-import { constants, SimpleERC20, account, utils, wallet } from "./src/index.js";
+import { constants, account, utils, wallet } from "./src/index.js";
 
 describe("Initial Delegation Test", () => {
   test("Delegate with native payment", async () => {
@@ -43,12 +44,12 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    const erc20BalanceInitial = (await gelatoClient.readContract({
+    const erc20BalanceInitial = await gelatoClient.readContract({
       address: constants.erc20Address(),
-      abi: SimpleERC20.abi,
+      abi: erc20Abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
-    })) as bigint;
+    });
 
     await gelatoClient.execute({
       payment: erc20(constants.erc20Address()),
@@ -65,12 +66,12 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    const erc20BalanceFinal = (await gelatoClient.readContract({
+    const erc20BalanceFinal = await gelatoClient.readContract({
       address: constants.erc20Address(),
-      abi: SimpleERC20.abi,
+      abi: erc20Abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
-    })) as bigint;
+    });
 
     expect(code).toBe(constants.delegationCode(gelatoClient.chain.id).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);
@@ -87,7 +88,7 @@ describe("Initial Delegation Test", () => {
     });
     const erc20BalanceInitial = await gelatoClient.readContract({
       address: constants.erc20Address(),
-      abi: SimpleERC20.abi,
+      abi: erc20Abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
     });
@@ -114,7 +115,7 @@ describe("Initial Delegation Test", () => {
     });
     const erc20BalanceFinal = await gelatoClient.readContract({
       address: constants.erc20Address(),
-      abi: SimpleERC20.abi,
+      abi: erc20Abi,
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
     });
