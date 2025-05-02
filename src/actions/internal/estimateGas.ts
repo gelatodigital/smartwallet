@@ -46,8 +46,13 @@ export async function estimateGas<
       }
     } catch (err) {
       if (err instanceof BaseError) {
-        // biome-ignore lint/suspicious/noExplicitAny: parse value returned on revert
-        const lowLevelError = err.walk() as any;
+        const lowLevelError = err.walk() as unknown as {
+          data: {
+            abiItem: { name: string; type: "error"; inputs: [] };
+            args: [bigint];
+            errorName: string;
+          };
+        };
         if (lowLevelError.data.errorName === "SimulationResult") {
           return BigInt(lowLevelError.data.args[0]);
         }
