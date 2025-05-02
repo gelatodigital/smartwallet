@@ -22,7 +22,17 @@ export async function resolveERC20PaymentCall<
     value: 0n
   });
 
-  const { estimatedFee, estimatedGas } = await getEstimates(client, payment, calls);
+  const { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas } = await getEstimates(
+    client,
+    payment,
+    [...calls, paymentCall(1n)]
+  );
 
-  return { paymentCall: paymentCall(estimatedFee), estimatedFee, estimatedGas };
+  return {
+    paymentCall: paymentCall(estimatedFee),
+    estimatedFee,
+    estimatedGas,
+    estimatedExecutionGas,
+    estimatedL1Gas
+  };
 }

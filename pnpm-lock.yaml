@@ -134,9 +134,6 @@ importers:
 
   examples/react-vite:
     dependencies:
-      '@gelatonetwork/smartwallet':
-        specifier: workspace:*
-        version: link:../../src
       '@gelatonetwork/smartwallet-react-sdk':
         specifier: workspace:*
         version: link:../../plugins/react/sdk
@@ -288,6 +285,9 @@ importers:
 
   plugins/react/sdk:
     dependencies:
+      '@gelatonetwork/smartwallet':
+        specifier: workspace:*
+        version: link:../../../src
       '@gelatonetwork/smartwallet-react-dynamic':
         specifier: workspace:*
         version: link:../dynamic

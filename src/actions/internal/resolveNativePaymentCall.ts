@@ -15,10 +15,17 @@ export async function resolveNativePaymentCall<
     value: estimatedFee
   });
 
-  const { estimatedFee, estimatedGas } = await getEstimates(client, native(), [
-    ...calls,
-    paymentCall(1n)
-  ]);
+  const { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas } = await getEstimates(
+    client,
+    native(),
+    [...calls, paymentCall(1n)]
+  );
 
-  return { paymentCall: paymentCall(estimatedFee), estimatedFee, estimatedGas };
+  return {
+    paymentCall: paymentCall(estimatedFee),
+    estimatedFee,
+    estimatedGas,
+    estimatedExecutionGas,
+    estimatedL1Gas
+  };
 }

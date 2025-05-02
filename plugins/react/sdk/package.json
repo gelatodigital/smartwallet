@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-sdk",
-  "version": "0.0.2-alpha.3",
+  "version": "0.0.2-alpha.4",
   "author": "Gelato",
   "type": "module",
   "description": "Gelato SmartWallet React SDK",
@@ -13,6 +13,7 @@
   "peerDependencies": {
     "typescript": "catalog:",
     "viem": "catalog:",
+    "@gelatonetwork/smartwallet": "workspace:*",
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@gelatonetwork/smartwallet-react-dynamic": "workspace:*",
     "@gelatonetwork/smartwallet-react-privy": "workspace:*"
