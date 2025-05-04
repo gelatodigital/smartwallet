@@ -7,7 +7,7 @@ import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
-import { delegation } from "./constants/index.js";
+import { type Wallet, delegation } from "./constants/index.js";
 import { isOpStack } from "./utils/opstack.js";
 
 export type GelatoSmartWalletClient<
@@ -25,13 +25,17 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  apiKey?: string
+  apiKey?: string,
+  wallet: Wallet = "gelato"
 ) => {
-  if (!delegation(client.chain.id)) throw new Error(`Chain not supported: ${client.chain.id}`);
-
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),
-    internal({ apiKey, isOpStack: isOpStack(client.chain) })
+    internal({
+      erc4337: wallet === "zerodev",
+      delegation: delegation(wallet, client.chain.id),
+      apiKey,
+      isOpStack: isOpStack(client.chain)
+    })
   ) as GelatoWalletClient<transport, chain, account>;
 
   return merge(baseClient, actions(baseClient)) as GelatoSmartWalletClient<

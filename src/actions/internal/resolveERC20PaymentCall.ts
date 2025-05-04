@@ -1,7 +1,6 @@
 import type { Account, Call, Chain, Transport } from "viem";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, erc20Abi } from "viem";
 
-import { abi as erc20Abi } from "../../abis/erc20.js";
 import { feeCollector } from "../../constants/index.js";
 import type { ERC20Payment } from "../../payment/index.js";
 import type { GelatoWalletClient } from "../index.js";
@@ -17,7 +16,7 @@ export async function resolveERC20PaymentCall<
     data: encodeFunctionData({
       abi: erc20Abi,
       functionName: "transfer",
-      args: [feeCollector(client.chain), estimatedFee]
+      args: [feeCollector(client.chain.id), estimatedFee]
     }),
     value: 0n
   });

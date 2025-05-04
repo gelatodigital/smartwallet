@@ -1,9 +1,25 @@
-import type { Account, Call, Chain, Transport } from "viem";
+import {
+  type Account,
+  type Call,
+  type Chain,
+  type Transport,
+  encodeFunctionData,
+  zeroAddress
+} from "viem";
 
+import {
+  entryPoint07Abi,
+  entryPoint07Address,
+  getUserOperationHash,
+  toPackedUserOperation
+} from "viem/account-abstraction";
+import { encodeExecuteData } from "viem/experimental/erc7821";
+import { feeCollector } from "../constants/index.js";
 import { type Payment, isErc20, isNative } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { getOpData } from "./internal/getOpData.js";
+import { getUserOp } from "./internal/getUserOp.js";
 import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
 import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
@@ -38,14 +54,45 @@ export async function execute<
     calls.push(paymentCall);
   }
 
-  const opData = await getOpData(client, calls);
+  if (client._internal.erc4337) {
+    const userOperation = await getUserOp(client, calls);
 
-  const signed = await client.signTypedData({
+    const hash = getUserOperationHash({
+      chainId: client.chain.id,
+      entryPointAddress: entryPoint07Address,
+      entryPointVersion: "0.7",
+      userOperation
+    });
+
+    const signature = await client.signMessage({
+      account: client.account,
+      message: { raw: hash }
+    });
+
+    userOperation.signature = signature;
+
+    const packedUserOperation = toPackedUserOperation(userOperation);
+
+    const data = encodeFunctionData({
+      abi: entryPoint07Abi,
+      functionName: "handleOps",
+      args: [[packedUserOperation], feeCollector(client.chain.id)]
+    });
+
+    return sendTransaction(client, entryPoint07Address, data, payment, authorizationList);
+  }
+
+  const opData = await client.signTypedData({
     account: client.account,
-    ...opData
+    ...(await getOpData(client, calls))
+  });
+
+  const data = encodeExecuteData({
+    calls,
+    opData
   });
 
   delete client._internal.inflight;
 
-  return await sendTransaction(client, calls, payment, authorizationList, signed);
+  return sendTransaction(client, client.account.address, data, payment, authorizationList);
 }

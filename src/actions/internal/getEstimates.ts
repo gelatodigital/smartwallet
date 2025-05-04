@@ -24,6 +24,8 @@ export async function getEstimates<
       payment.token,
       estimatedExecutionGas,
       estimatedL1Gas,
+      // TODO: why is this required when we've already estimated L1 gas?
+      // TODO: update to work for UserOps
       client._internal.isOpStack()
         ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
         : undefined
@@ -58,6 +60,8 @@ export async function getEstimates<
         ethAddress,
         estimatedExecutionGas,
         estimatedL1Gas,
+        // TODO: why is this required when we've already estimated L1 gas?
+        // TODO: update to work for UserOps
         client._internal.isOpStack()
           ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
           : undefined
@@ -83,6 +87,8 @@ export async function getEstimates<
     ethAddress,
     estimatedExecutionGas,
     estimatedL1Gas,
+    // TODO: why is this required when we've already estimated L1 gas?
+    // TODO: update to work for UserOps
     client._internal.isOpStack()
       ? encodeExecuteData({ calls, opData: await getMockSignedOpData(client, calls) })
       : undefined

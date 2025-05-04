@@ -11,7 +11,7 @@ export async function resolveNativePaymentCall<
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]) {
   const paymentCall = (estimatedFee: bigint) => ({
-    to: feeCollector(client.chain),
+    to: feeCollector(client.chain.id),
     value: estimatedFee
   });
 

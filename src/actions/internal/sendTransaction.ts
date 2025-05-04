@@ -1,5 +1,6 @@
 import {
   type Account,
+  type Address,
   type Call,
   type Chain,
   type Hex,
@@ -19,20 +20,17 @@ export async function sendTransaction<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  calls: Call[],
+  target: Address,
+  data: Hex,
   payment: Payment,
-  authorizationList?: SignedAuthorizationList,
-  opData?: Hex | undefined
+  authorizationList?: SignedAuthorizationList
 ) {
   switch (payment.type) {
     case "native": {
       return await smartWalletCall({
         chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        target,
+        data,
         feeToken: ethAddress,
         authorizationList
       });
@@ -46,11 +44,8 @@ export async function sendTransaction<
 
       return await sponsoredCall({
         chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        target,
+        data,
         sponsorApiKey,
         authorizationList
       });
@@ -58,12 +53,9 @@ export async function sendTransaction<
     case "erc20": {
       return await smartWalletCall({
         chainId: client.chain.id,
-        target: client.account.address,
+        target,
         feeToken: payment.token,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        data,
         authorizationList
       });
     }

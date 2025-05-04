@@ -1,5 +1,6 @@
 import type {
   Account,
+  Address,
   Call,
   Chain,
   Client,
@@ -12,6 +13,7 @@ import type {
 
 import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
+import { Wallet } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { estimate } from "./estimate.js";
@@ -27,6 +29,8 @@ export type GelatoSmartWalletActions = {
 
 export type GelatoSmartWalletInternals = {
   _internal: {
+    erc4337: boolean;
+    delegation: Address;
     authorized: boolean | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
@@ -60,9 +64,16 @@ export function actions<
 }
 
 export function internal({
+  erc4337,
+  delegation,
   apiKey,
   isOpStack
-}: { apiKey?: string; isOpStack: boolean }): GelatoSmartWalletInternals {
+}: {
+  erc4337: boolean;
+  delegation: Address;
+  apiKey?: string;
+  isOpStack: boolean;
+}): GelatoSmartWalletInternals {
   return {
     _internal: {
       mock: {
@@ -70,6 +81,8 @@ export function internal({
           "0x1111111111111111111111111111111111111111111111111111111111111111"
         )
       },
+      erc4337,
+      delegation,
       authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack
