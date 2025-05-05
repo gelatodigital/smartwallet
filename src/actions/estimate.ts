@@ -27,7 +27,7 @@ export async function estimate<
   estimatedExecutionGas: bigint;
   estimatedL1Gas: bigint;
 }> {
-  const { payment, calls } = parameters;
+  const { payment, calls } = structuredClone(parameters);
 
   await verifyAuthorization(client);
 
