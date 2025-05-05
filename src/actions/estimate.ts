@@ -1,10 +1,10 @@
-import type { Account, Call, Chain, Transport } from "viem";
+import { type Account, type Call, type Chain, type Transport, ethAddress } from "viem";
 
-import { type Payment, isErc20, isNative, sponsored } from "../payment/index.js";
+import { getEstimatedFee } from "../oracle/index.js";
+import type { Payment } from "../payment/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { getEstimates } from "./internal/getEstimates.js";
-import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
-import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
+import { estimateGas } from "./internal/estimateGas.js";
+import { resolveMockPaymentCall } from "./internal/resolvePaymentCall.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
@@ -24,32 +24,34 @@ export async function estimate<
 ): Promise<{
   estimatedFee: bigint;
   estimatedGas: bigint;
-  estimatedExecutionGas: bigint;
   estimatedL1Gas: bigint;
 }> {
   const { payment, calls } = parameters;
 
   await verifyAuthorization(client);
 
-  if (isErc20(payment)) {
-    const { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas } =
-      await resolveERC20PaymentCall(client, payment, calls);
-    return { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas };
+  if (payment.type === "erc20") {
+    calls.push(resolveMockPaymentCall(client, payment));
   }
 
-  if (isNative(payment)) {
-    const { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas } =
-      await resolveNativePaymentCall(client, calls);
-    return { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas };
+  if (client._internal.erc4337) {
+    throw new Error("ERC4337 estimation not yet supported");
   }
 
-  const { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas } = await getEstimates(
-    client,
-    sponsored(),
-    calls
+  const { estimatedGas, estimatedL1Gas } = await estimateGas(client, calls);
+
+  const estimatedFee = await getEstimatedFee(
+    client.chain.id,
+    payment.type === "erc20" ? payment.token : ethAddress,
+    estimatedGas,
+    estimatedL1Gas
   );
 
   delete client._internal.inflight;
 
-  return { estimatedFee, estimatedGas, estimatedExecutionGas, estimatedL1Gas };
+  return {
+    estimatedFee,
+    estimatedGas,
+    estimatedL1Gas
+  };
 }

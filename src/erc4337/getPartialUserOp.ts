@@ -2,9 +2,9 @@ import type { Account, Call, Chain, Transport } from "viem";
 
 import { type UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { encodeExecuteData } from "viem/experimental/erc7821";
-import type { GelatoWalletClient } from "../index.js";
+import type { GelatoWalletClient } from "../actions/index.js";
 
-export async function getUserOp<
+export async function getPartialUserOp<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account

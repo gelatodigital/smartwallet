@@ -13,15 +13,13 @@ if (!sponsorApiKey) {
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
 const account = privateKeyToAccount(privateKey);
 
-console.log(privateKey);
-
 const client = createWalletClient({
   account,
   chain: sepolia,
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, sponsorApiKey, "zerodev")
+createGelatoSmartWalletClient(client, "zerodev")
   .execute({
     payment: sponsored(),
     calls: [

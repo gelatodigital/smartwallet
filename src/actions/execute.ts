@@ -1,27 +1,15 @@
-import {
-  type Account,
-  type Call,
-  type Chain,
-  type Transport,
-  encodeFunctionData,
-  zeroAddress
-} from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
-import {
-  entryPoint07Abi,
-  entryPoint07Address,
-  getUserOperationHash,
-  toPackedUserOperation
-} from "viem/account-abstraction";
 import { encodeExecuteData } from "viem/experimental/erc7821";
-import { feeCollector } from "../constants/index.js";
-import { type Payment, isErc20, isNative } from "../payment/index.js";
+import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
+import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
+import { signUserOp } from "../erc4337/signUserOp.js";
+import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
+import { estimateGas } from "./internal/estimateGas.js";
 import { getOpData } from "./internal/getOpData.js";
-import { getUserOp } from "./internal/getUserOp.js";
-import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
-import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
+import { resolveMockPaymentCall, resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
@@ -43,43 +31,36 @@ export async function execute<
   const { payment, calls } = parameters;
 
   const authorized = await verifyAuthorization(client);
+  const authorizationList = authorized
+    ? undefined
+    : await signAuthorizationList(client, payment.type === "native");
 
-  const authorizationList = authorized ? [] : await signAuthorizationList(client);
-
-  if (isErc20(payment)) {
-    const { paymentCall } = await resolveERC20PaymentCall(client, payment, calls);
-    calls.push(paymentCall);
-  } else if (isNative(payment)) {
-    const { paymentCall } = await resolveNativePaymentCall(client, calls);
-    calls.push(paymentCall);
+  const callsWithMockPayment = calls;
+  if (payment.type === "erc20") {
+    callsWithMockPayment.push(resolveMockPaymentCall(client, payment));
   }
 
   if (client._internal.erc4337) {
-    const userOperation = await getUserOp(client, calls);
+    const userOp = await getPartialUserOp(client, callsWithMockPayment);
 
-    const hash = getUserOperationHash({
-      chainId: client.chain.id,
-      entryPointAddress: entryPoint07Address,
-      entryPointVersion: "0.7",
-      userOperation
-    });
+    // TODO: estimate userOp gas limits here
 
-    const signature = await client.signMessage({
-      account: client.account,
-      message: { raw: hash }
-    });
+    if (payment.type === "erc20") {
+      const transfer = await resolvePaymentCall(client, payment, 100_000n, 0n); // TODO: actual gas
+      userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
+    }
 
-    userOperation.signature = signature;
+    userOp.signature = await signUserOp(client, userOp);
 
-    const packedUserOperation = toPackedUserOperation(userOperation);
+    const handleOps = encodeHandleOpsCall(client, userOp);
 
-    const data = encodeFunctionData({
-      abi: entryPoint07Abi,
-      functionName: "handleOps",
-      args: [[packedUserOperation], feeCollector(client.chain.id)]
-    });
+    return sendTransaction(client, handleOps.to, handleOps.data, payment, authorizationList);
+  }
 
-    return sendTransaction(client, entryPoint07Address, data, payment, authorizationList);
+  if (payment.type === "erc20") {
+    const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
+    const transfer = await resolvePaymentCall(client, payment, estimatedGas, estimatedL1Gas);
+    calls.push(transfer);
   }
 
   const opData = await client.signTypedData({

@@ -13,7 +13,6 @@ import type {
 
 import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
-import { Wallet } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { estimate } from "./estimate.js";
@@ -24,6 +23,7 @@ export type GelatoSmartWalletActions = {
   estimate: (args: { payment: Payment; calls: Call[] }) => Promise<{
     estimatedFee: bigint;
     estimatedGas: bigint;
+    estimatedL1Gas: bigint;
   }>;
 };
 

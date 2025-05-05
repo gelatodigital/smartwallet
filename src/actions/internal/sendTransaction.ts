@@ -1,17 +1,8 @@
-import {
-  type Account,
-  type Address,
-  type Call,
-  type Chain,
-  type Hex,
-  type SignedAuthorizationList,
-  type Transport,
-  ethAddress
-} from "viem";
-import { encodeExecuteData } from "viem/experimental/erc7821";
+import type { Account, Address, Chain, Hex, SignedAuthorizationList, Transport } from "viem";
 
+import type { SendTransactionParameters } from "viem/zksync";
 import type { Payment } from "../../payment/index.js";
-import { smartWalletCall, sponsoredCall } from "../../relay/index.js";
+import { type GelatoResponse, smartWalletCall, sponsoredCall } from "../../relay/index.js";
 import type { GelatoWalletClient } from "../index.js";
 
 export async function sendTransaction<
@@ -24,16 +15,21 @@ export async function sendTransaction<
   data: Hex,
   payment: Payment,
   authorizationList?: SignedAuthorizationList
-) {
+): Promise<GelatoResponse> {
   switch (payment.type) {
     case "native": {
-      return await smartWalletCall({
-        chainId: client.chain.id,
-        target,
+      const hash = await client.sendTransaction({
+        to: target,
         data,
-        feeToken: ethAddress,
         authorizationList
-      });
+      } as SendTransactionParameters);
+
+      return {
+        id: hash,
+        wait: async () => hash,
+        // TODO: call callback to immediately resolve
+        on: () => () => {}
+      };
     }
     case "sponsored": {
       const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
@@ -42,7 +38,7 @@ export async function sendTransaction<
         throw new Error("Sponsor API key is required");
       }
 
-      return await sponsoredCall({
+      return sponsoredCall({
         chainId: client.chain.id,
         target,
         data,
@@ -51,7 +47,7 @@ export async function sendTransaction<
       });
     }
     case "erc20": {
-      return await smartWalletCall({
+      return smartWalletCall({
         chainId: client.chain.id,
         target,
         feeToken: payment.token,

@@ -25,8 +25,8 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  apiKey?: string,
-  wallet: Wallet = "gelato"
+  wallet: Wallet = "gelato",
+  apiKey?: string
 ) => {
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),
