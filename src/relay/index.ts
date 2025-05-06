@@ -23,10 +23,15 @@ export interface SmartWalletCallRequest extends BaseCallRequest {
 }
 
 export interface GelatoResponse {
+  /// Task ID
   id: string;
+  /// Wait for the task to be executed on chain
   wait: () => Promise<string>;
+  /// Wait for the task to be submitted to chain
   waitSubmission: () => Promise<string>;
+  /// Subscribe for task updates
   on(update: GelatoTaskEvent, callback: (parameter: TransactionStatusResponse) => void): () => void;
+  /// Subscribe for task errors
   on(update: "error", callback: (parameter: Error) => void): () => void;
 }
 

@@ -13,6 +13,13 @@ import {
 } from "../status/types.js";
 import { statusApiWebSocket } from "../ws.js";
 
+/**
+ * Wait for a task to be executed on or submitted to chain
+ * @param taskId - The ID of the task to wait for
+ * @param submission - Whether to wait for submission to chain, when false execution will be waited
+ * @param parameters - Optional parameters to configure polling and fallback retries
+ * @returns The transaction hash of the task when task is executed on chain
+ */
 export const wait = async (
   taskId: string,
   submission = false,
@@ -89,7 +96,12 @@ export const wait = async (
 
     // Websocket error happened fallback to HTTP polling
     console.warn("WebSocket connection failed, falling back to HTTP polling");
-    return await waitPolling(taskId, submission, parameters?.pollingInterval, parameters?.maxRetries);
+    return await waitPolling(
+      taskId,
+      submission,
+      parameters?.pollingInterval,
+      parameters?.maxRetries
+    );
   } finally {
     statusApiWebSocket.unsubscribe(taskId);
     statusApiWebSocket.offUpdate(updateHandler);
