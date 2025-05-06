@@ -1,11 +1,11 @@
 import {
-  ethAddress,
   type Account,
   type Address,
   type Chain,
   type Hex,
   type SignedAuthorizationList,
-  type Transport
+  type Transport,
+  ethAddress
 } from "viem";
 
 import type { SendTransactionParameters } from "viem/zksync";

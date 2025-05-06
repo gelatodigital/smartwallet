@@ -19,7 +19,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, "zerodev")
+createGelatoSmartWalletClient(client, "zerodev", sponsorApiKey)
   .execute({
     payment: sponsored(),
     calls: [

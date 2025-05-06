@@ -40,7 +40,7 @@ export async function execute<
 
     // TODO: estimate userOp gas limits here
     if (payment.type === "erc20" || payment.type === "native") {
-      const transfer = await resolvePaymentCall(client, payment, 100_000n, 0n);
+      const transfer = await resolvePaymentCall(client, payment, 500_000n, 0n);
       userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
     }
 
