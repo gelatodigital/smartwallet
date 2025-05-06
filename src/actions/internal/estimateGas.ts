@@ -6,12 +6,12 @@ import type {
   SimulateContractParameters,
   Transport
 } from "viem";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, multicall3Abi } from "viem";
 import { encodeCalls } from "viem/experimental/erc7821";
 
 import type { EstimateL1GasParameters } from "viem/op-stack";
 import { abi as accountAbi } from "../../abis/account.js";
-import { mode } from "../../constants/index.js";
+import { delegationCode, mode } from "../../constants/index.js";
 import type { GelatoWalletClient } from "../index.js";
 import { getMockSignedOpData } from "./getMockSignedOpData.js";
 
@@ -36,7 +36,7 @@ export async function estimateGas<
       stateOverride: [
         {
           address: client.account.address,
-          code: `0xef0100${client._internal.delegation.substring(2)}`
+          code: delegationCode(client._internal.delegation)
         }
       ]
     } as SimulateContractParameters);

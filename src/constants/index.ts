@@ -56,6 +56,8 @@ export const delegation = (wallet: Wallet, chainId: number) => {
   return address;
 };
 
+export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}`;
+
 export const nonceStorageSlot = () => NONCE_STORAGE_SLOT as Hex;
 
 export const statusApiPollingInterval = () => GELATO_STATUS_API_POLLING_INTERVAL;

@@ -3,6 +3,7 @@ import { getCode } from "viem/actions";
 
 import { lowercase } from "../../utils/index.js";
 import type { GelatoWalletClient } from "../index.js";
+import { delegationCode } from "../../constants/index.js";
 
 export async function verifyAuthorization<
   transport extends Transport = Transport,
@@ -19,7 +20,7 @@ export async function verifyAuthorization<
   const isEip7702Authorized = Boolean(
     bytecode?.length &&
       bytecode.length > 0 &&
-      lowercase(bytecode) === lowercase(`0xef0100${client._internal.delegation.slice(2)}`)
+      lowercase(bytecode) === lowercase(delegationCode(client._internal.delegation))
   );
 
   client._internal.authorized = isEip7702Authorized;
