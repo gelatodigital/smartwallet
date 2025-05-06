@@ -4,7 +4,7 @@ import { getEstimatedFee } from "../oracle/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { estimateGas } from "./internal/estimateGas.js";
-import { resolveMockPaymentCall } from "./internal/resolvePaymentCall.js";
+import { resolveMockPaymentCalls } from "./internal/resolvePaymentCall.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
@@ -30,15 +30,13 @@ export async function estimate<
 
   await verifyAuthorization(client);
 
-  if (payment.type === "erc20") {
-    calls.push(resolveMockPaymentCall(client, payment));
-  }
+  const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
 
   if (client._internal.erc4337) {
     throw new Error("ERC4337 estimation not yet supported");
   }
 
-  const { estimatedGas, estimatedL1Gas } = await estimateGas(client, calls);
+  const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
 
   const estimatedFee = await getEstimatedFee(
     client.chain.id,

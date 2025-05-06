@@ -31,9 +31,7 @@ export async function execute<
   const { payment, calls } = parameters;
 
   const authorized = await verifyAuthorization(client);
-  const authorizationList = authorized
-    ? undefined
-    : await signAuthorizationList(client, payment.type === "native");
+  const authorizationList = authorized ? undefined : await signAuthorizationList(client);
 
   const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
 
