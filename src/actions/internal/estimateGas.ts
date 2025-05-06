@@ -1,4 +1,11 @@
-import type { Account, Call, CallParameters, Chain, Transport } from "viem";
+import type {
+  Account,
+  Call,
+  Chain,
+  EncodeFunctionDataParameters,
+  SimulateContractParameters,
+  Transport
+} from "viem";
 import { encodeFunctionData } from "viem";
 import { encodeCalls } from "viem/experimental/erc7821";
 
@@ -16,23 +23,23 @@ export async function estimateGas<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]) {
-  const simulateExecute = encodeFunctionData({
+  const args: EncodeFunctionDataParameters = {
     abi: accountAbi,
     functionName: "simulateExecute",
     args: [mode("opData"), encodeCalls(calls, await getMockSignedOpData(client, calls))]
-  });
+  };
 
   try {
-    await client.call({
-      to: client.account.address,
-      data: simulateExecute,
+    await client.simulateContract({
+      ...args,
+      address: client.account.address,
       stateOverride: [
         {
           address: client.account.address,
           code: `0xef0100${client._internal.delegation.substring(2)}`
         }
       ]
-    } as CallParameters);
+    } as SimulateContractParameters);
   } catch (err) {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const data = (err as any).cause?.data;
@@ -40,15 +47,15 @@ export async function estimateGas<
       throw err;
     }
 
-    const gasConsumed = data.args[0];
+    const gasConsumed = data.args[0] as bigint;
     const estimatedGas =
-      gasConsumed + BASE_GAS + client._internal.authorized ? 0n : AUTHORIZATION_GAS;
+      gasConsumed + BASE_GAS + (client._internal.authorized ? 0n : AUTHORIZATION_GAS);
 
     if (client._internal.isOpStack()) {
       // TODO: currently only supports EIP-1559 transactions so we cannot specify authorizationList
       const estimatedL1Gas = await client.estimateL1Gas({
         to: client.account.address,
-        data: simulateExecute
+        data: encodeFunctionData(args)
       } as EstimateL1GasParameters);
 
       return {

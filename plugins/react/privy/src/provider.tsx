@@ -123,6 +123,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
 
         const walletClientGelato = createGelatoSmartWalletClient<Transport, Chain, Account>(
           client,
+          "gelato",
           apiKey
         );
         setSmartWalletClient(walletClientGelato);
