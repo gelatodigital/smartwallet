@@ -24,7 +24,7 @@ export async function execute<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[] }
 ): Promise<GelatoResponse> {
-  const { payment, calls } = parameters;
+  const { payment, calls } = structuredClone(parameters);
 
   const authorized = await verifyAuthorization(client);
 

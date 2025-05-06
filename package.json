@@ -10,18 +10,24 @@
     "dev": "pnpm -r dev",
     "lint": "biome check --write .",
     "format": "biome format --write .",
-    "test": "pnpm -r test",
     "clean": "pnpm -r clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && pnpm version-packages && changeset publish",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "simple-git-hooks",
+    "pretest": "git submodule update --init --recursive && cd contracts && forge build",
+    "test": "vitest -c ./test/vitest.config.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
     "@changesets/cli": "^2.29.2",
+    "@vitest/coverage-v8": "^3.1.2",
+    "prool": "^0.0.24",
     "simple-git-hooks": "^2.12.1",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "viem": "catalog:",
+    "vite": "^6.3.2",
+    "vitest": "^3.1.2"
   },
   "engines": {
     "node": ">=23"
