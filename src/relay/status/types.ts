@@ -43,7 +43,7 @@ export interface ErrorWebsocketMessage {
   payload: Error;
 }
 
-export type GelatoTaskEvent = "success" | "cancel" | "revert";
+export type GelatoTaskEvent = "success" | "submitted" | "cancel" | "revert";
 
 export class GelatoTaskError extends Error {
   readonly taskId: string;

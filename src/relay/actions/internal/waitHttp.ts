@@ -8,7 +8,7 @@ import {
   TaskState
 } from "../../status/types.js";
 
-export const waitHttp = async (taskId: string): Promise<Hash | undefined> => {
+export const waitHttp = async (taskId: string, submission = false): Promise<Hash | undefined> => {
   const taskStatus = await getTaskStatus(taskId);
 
   if (!taskStatus) {
@@ -32,5 +32,13 @@ export const waitHttp = async (taskId: string): Promise<Hash | undefined> => {
     }
 
     throw new InternalError(taskId);
+  }
+
+  if (
+    submission &&
+    (taskStatus.taskState === TaskState.ExecPending ||
+      taskStatus.taskState === TaskState.WaitingForConfirmation)
+  ) {
+    return taskStatus.transactionHash as Hash;
   }
 };

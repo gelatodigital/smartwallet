@@ -15,13 +15,14 @@ import { statusApiWebSocket } from "../ws.js";
 
 export const wait = async (
   taskId: string,
+  submission = false,
   parameters?: {
     pollingInterval?: number;
     maxRetries?: number;
   }
 ): Promise<Hash> => {
   // Check with HTTP first
-  const transactionHash = await waitHttp(taskId);
+  const transactionHash = await waitHttp(taskId, submission);
 
   if (transactionHash) {
     return transactionHash;
@@ -44,6 +45,15 @@ export const wait = async (
 
     if (taskStatus.taskState === TaskState.Cancelled) {
       rejectPromise(new ExecutionCancelledError(taskId));
+    }
+
+    if (
+      submission &&
+      (taskStatus.taskState === TaskState.ExecPending ||
+        taskStatus.taskState === TaskState.WaitingForConfirmation) &&
+      taskStatus.transactionHash
+    ) {
+      resolvePromise(taskStatus.transactionHash as Hash);
     }
 
     if (taskStatus.taskState === TaskState.ExecSuccess) {
@@ -79,7 +89,7 @@ export const wait = async (
 
     // Websocket error happened fallback to HTTP polling
     console.warn("WebSocket connection failed, falling back to HTTP polling");
-    return await waitPolling(taskId, parameters?.pollingInterval, parameters?.maxRetries);
+    return await waitPolling(taskId, submission, parameters?.pollingInterval, parameters?.maxRetries);
   } finally {
     statusApiWebSocket.unsubscribe(taskId);
     statusApiWebSocket.offUpdate(updateHandler);

@@ -30,6 +30,13 @@ export const on = (
       successCallback(taskStatus);
     } else if (update === "cancel" && taskStatus.taskState === TaskState.Cancelled) {
       successCallback(taskStatus);
+    } else if (
+      update === "submitted" &&
+      (taskStatus.taskState === TaskState.ExecPending ||
+        taskStatus.taskState === TaskState.WaitingForConfirmation) &&
+      taskStatus.transactionHash
+    ) {
+      successCallback(taskStatus);
     }
   };
 

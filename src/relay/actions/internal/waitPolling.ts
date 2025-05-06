@@ -7,6 +7,7 @@ import { ExecutionTimeoutError } from "../../status/types.js";
 
 export const waitPolling = async (
   taskId: string,
+  submission: boolean,
   pollInterval?: number,
   maxRetries?: number
 ): Promise<Hash> => {
@@ -14,7 +15,7 @@ export const waitPolling = async (
   const _maxRetries = maxRetries ?? statusApiPollingMaxRetries();
 
   for (let attempt = 0; attempt < _maxRetries; attempt++) {
-    const transactionHash = await waitHttp(taskId);
+    const transactionHash = await waitHttp(taskId, submission);
 
     if (transactionHash) {
       return transactionHash;
