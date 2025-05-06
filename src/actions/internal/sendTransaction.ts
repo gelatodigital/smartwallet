@@ -1,4 +1,12 @@
-import type { Account, Address, Chain, Hex, SignedAuthorizationList, Transport } from "viem";
+import {
+  ethAddress,
+  type Account,
+  type Address,
+  type Chain,
+  type Hex,
+  type SignedAuthorizationList,
+  type Transport
+} from "viem";
 
 import type { SendTransactionParameters } from "viem/zksync";
 import type { Payment } from "../../payment/index.js";
@@ -18,18 +26,14 @@ export async function sendTransaction<
 ): Promise<GelatoResponse> {
   switch (payment.type) {
     case "native": {
-      const hash = await client.sendTransaction({
-        to: target,
+      return smartWalletCall({
+        chainId: client.chain.id,
+        target,
+        feeToken: ethAddress,
         data,
+        sponsorApiKey: client._internal.apiKey(),
         authorizationList
-      } as SendTransactionParameters);
-
-      return {
-        id: hash,
-        wait: async () => hash,
-        // TODO: call callback to immediately resolve
-        on: () => () => {}
-      };
+      });
     }
     case "sponsored": {
       const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
@@ -52,6 +56,7 @@ export async function sendTransaction<
         target,
         feeToken: payment.token,
         data,
+        sponsorApiKey: client._internal.apiKey(),
         authorizationList
       });
     }

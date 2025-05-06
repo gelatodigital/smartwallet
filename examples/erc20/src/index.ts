@@ -9,6 +9,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
+const apiKey = process.env.GELATO_API_KEY;
 
 if (!privateKey) {
   throw new Error("PRIVATE_KEY is not set");
@@ -16,7 +17,6 @@ if (!privateKey) {
 
 // USDC on Base Sepolia
 const token = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
-const apiKey = process.env.GELATO_API_KEY;
 
 const account = privateKeyToAccount(privateKey);
 

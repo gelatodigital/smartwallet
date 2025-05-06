@@ -1,4 +1,4 @@
-import { type Account, type Call, type Chain, type Transport } from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
 import { abi as accountAbi } from "../../abis/account.js";
 import { serializeTypedData } from "../../utils/eip712.js";

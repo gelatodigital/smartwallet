@@ -9,6 +9,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
+const apiKey = process.env.GELATO_API_KEY;
 
 if (!privateKey) {
   throw new Error("PRIVATE_KEY is not set");
@@ -22,7 +23,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client)
+createGelatoSmartWalletClient(client, "gelato", apiKey)
   .execute({
     payment: native(),
     calls: [

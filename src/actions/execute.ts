@@ -9,7 +9,7 @@ import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { estimateGas } from "./internal/estimateGas.js";
 import { getOpData } from "./internal/getOpData.js";
-import { resolveMockPaymentCall, resolvePaymentCall } from "./internal/resolvePaymentCall.js";
+import { resolveMockPaymentCalls, resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
@@ -35,18 +35,14 @@ export async function execute<
     ? undefined
     : await signAuthorizationList(client, payment.type === "native");
 
-  const callsWithMockPayment = calls;
-  if (payment.type === "erc20") {
-    callsWithMockPayment.push(resolveMockPaymentCall(client, payment));
-  }
+  const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
 
   if (client._internal.erc4337) {
     const userOp = await getPartialUserOp(client, callsWithMockPayment);
 
     // TODO: estimate userOp gas limits here
-
-    if (payment.type === "erc20") {
-      const transfer = await resolvePaymentCall(client, payment, 100_000n, 0n); // TODO: actual gas
+    if (payment.type === "erc20" || payment.type === "native") {
+      const transfer = await resolvePaymentCall(client, payment, 100_000n, 0n);
       userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
     }
 
@@ -57,7 +53,7 @@ export async function execute<
     return sendTransaction(client, handleOps.to, handleOps.data, payment, authorizationList);
   }
 
-  if (payment.type === "erc20") {
+  if (payment.type === "erc20" || payment.type === "native") {
     const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
     const transfer = await resolvePaymentCall(client, payment, estimatedGas, estimatedL1Gas);
     calls.push(transfer);
