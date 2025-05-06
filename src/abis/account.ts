@@ -1,8 +1,0 @@
-import { parseAbi } from "viem";
-
-export const abi = parseAbi([
-  "function simulateExecute(bytes32 mode, bytes executionData) payable",
-  "function execute(bytes32 mode, bytes executionData) payable",
-  "function getNonce() returns (uint256)",
-  "error SimulationResult(uint256)"
-]);

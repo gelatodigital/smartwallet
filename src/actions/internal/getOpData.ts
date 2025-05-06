@@ -1,6 +1,6 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
-import { abi as accountAbi } from "../../abis/account.js";
+import { delegationAbi } from "../../abis/delegation.js";
 import { serializeTypedData } from "../../utils/eip712.js";
 import type { GelatoWalletClient } from "../index.js";
 
@@ -11,7 +11,7 @@ export async function getOpData<
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]) {
   const nonce = await client.readContract({
     address: client.account.address,
-    abi: accountAbi,
+    abi: delegationAbi,
     functionName: "getNonce"
   });
 
