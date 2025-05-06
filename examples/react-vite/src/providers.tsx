@@ -11,6 +11,11 @@ import { http, useAccount } from "wagmi";
 
 import { sepolia } from "viem/chains";
 
+enum TransactionStatus {
+  SUBMITTED = "submitted",
+  EXECUTED = "executed"
+}
+
 const WalletInfoComponent = () => {
   const {
     gelato: { client },
@@ -22,7 +27,9 @@ const WalletInfoComponent = () => {
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
     "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
   );
+
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
@@ -50,13 +57,18 @@ const WalletInfoComponent = () => {
         ]
       });
 
+      response.on("submitted", (status: GelatoTaskStatus) => {
+        console.log("Transaction submitted:", status.transactionHash);
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        setTransactionHash(status.transactionHash!);
+        setTransactionStatus(TransactionStatus.SUBMITTED);
+      });
       response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        setTransactionHash(status.transactionHash!);
+        setTransactionStatus(TransactionStatus.EXECUTED);
       });
-
-      const transactionHash = await response.wait();
-
-      setTransactionHash(transactionHash);
     } catch (error) {
       console.error("Transaction failed:", error);
     } finally {
@@ -119,16 +131,19 @@ const WalletInfoComponent = () => {
                 {isLoading ? "Processing..." : "Execute Transaction"}
               </button>
               {transactionHash && (
-                <p>
-                  Transaction Hash:{" "}
-                  <a
-                    href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {transactionHash}
-                  </a>
-                </p>
+                <div>
+                  <p>Transaction Status: {transactionStatus}</p>
+                  <p>
+                    Transaction Hash:{" "}
+                    <a
+                      href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {transactionHash}
+                    </a>
+                  </p>
+                </div>
               )}
             </div>
           </div>
