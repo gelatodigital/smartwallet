@@ -2,7 +2,11 @@ import type { SignedAuthorizationList } from "viem";
 
 import { api } from "../constants/index.js";
 import { on, wait } from "./actions/index.js";
-import type { GelatoTaskEvent, TransactionStatusResponse } from "./status/index.js";
+import type {
+  GelatoTaskEvent,
+  GelatoTaskWaitEvent,
+  TransactionStatusResponse
+} from "./status/index.js";
 
 interface BaseCallRequest {
   chainId: number;
@@ -25,10 +29,8 @@ export interface SmartWalletCallRequest extends BaseCallRequest {
 export interface GelatoResponse {
   /// Task ID
   id: string;
-  /// Wait for the task to be executed on chain
-  wait: () => Promise<string>;
-  /// Wait for the task to be submitted to chain
-  waitSubmission: () => Promise<string>;
+  /// Wait for the task to be executed or submitted on chain
+  wait: (e: GelatoTaskWaitEvent) => Promise<string>;
   /// Subscribe for task updates
   on(update: GelatoTaskEvent, callback: (parameter: TransactionStatusResponse) => void): () => void;
   /// Subscribe for task errors
@@ -60,8 +62,7 @@ const callGelatoApi = async <T extends object>(
 
   return {
     id: taskId,
-    wait: () => wait(taskId),
-    waitSubmission: () => wait(taskId, true),
+    wait: (e: GelatoTaskWaitEvent = "execution") => wait(taskId, e === "submission"),
     on: (update: GelatoTaskEvent | "error", callback) => on(taskId, { update, callback })
   };
 };
