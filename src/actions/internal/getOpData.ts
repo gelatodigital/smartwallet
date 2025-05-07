@@ -1,9 +1,9 @@
 import { type Account, type Call, type Chain, type Transport, encodePacked } from "viem";
 
 import { delegationAbi } from "../../abis/delegation.js";
+import { delegationCode } from "../../constants/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
 import type { GelatoWalletClient } from "../index.js";
-import { delegationCode } from "../../constants/index.js";
 
 export async function getOpData<
   transport extends Transport = Transport,
@@ -13,7 +13,7 @@ export async function getOpData<
   client: GelatoWalletClient<transport, chain, account>,
   calls: Call[],
   nonceKey: bigint,
-  mock: boolean = false
+  mock = false
 ) {
   const nonce = await client.readContract({
     address: client.account.address,
