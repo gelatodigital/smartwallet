@@ -45,8 +45,6 @@ export async function estimate<
     estimatedL1Gas
   );
 
-  delete client._internal.inflight;
-
   return {
     estimatedFee,
     estimatedGas,

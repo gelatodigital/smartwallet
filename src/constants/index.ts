@@ -59,7 +59,7 @@ export const delegation = (wallet: Wallet, chainId: number) => {
   return address;
 };
 
-export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}`;
+export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}` as Hex;
 
 export const gelatoDomainNameAndVersion = () => GELATO_DOMAIN_NAME_AND_VERSION;
 

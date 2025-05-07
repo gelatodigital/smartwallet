@@ -6,7 +6,7 @@ import type { EstimateL1GasParameters } from "viem/op-stack";
 import { simulationAbi, simulationBytecode } from "../../abis/simulation.js";
 import { mode } from "../../constants/index.js";
 import type { GelatoWalletClient } from "../index.js";
-import { getMockSignedOpData } from "./getMockSignedOpData.js";
+import { getOpData } from "./getOpData.js";
 
 const AUTHORIZATION_GAS = 12_500n;
 const BASE_GAS = 21_000n + 1000n;
@@ -24,7 +24,7 @@ export async function estimateGas<
     data: encodeFunctionData({
       abi: simulationAbi,
       functionName: "simulateExecute",
-      args: [mode("opData"), encodeCalls(calls, await getMockSignedOpData(client, calls))]
+      args: [mode("opData"), encodeCalls(calls, await getOpData(client, calls, 0n, true))]
     })
   };
 

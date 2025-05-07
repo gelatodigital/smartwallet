@@ -64,7 +64,5 @@ export async function execute<
     opData
   });
 
-  delete client._internal.inflight;
-
   return sendTransaction(client, client.account.address, data, payment, authorizationList);
 }
