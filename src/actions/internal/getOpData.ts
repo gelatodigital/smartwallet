@@ -1,4 +1,4 @@
-import type { Account, Call, Chain, Transport } from "viem";
+import { type Account, type Call, type Chain, type Transport, encodePacked } from "viem";
 
 import { delegationAbi } from "../../abis/delegation.js";
 import { serializeTypedData } from "../../utils/eip712.js";
@@ -8,12 +8,26 @@ export async function getOpData<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
->(client: GelatoWalletClient<transport, chain, account>, calls: Call[]) {
+>(client: GelatoWalletClient<transport, chain, account>, calls: Call[], nonceKey: bigint) {
   const nonce = await client.readContract({
     address: client.account.address,
     abi: delegationAbi,
-    functionName: "getNonce"
+    functionName: "getNonce",
+    args: [nonceKey]
   });
 
-  return serializeTypedData(client.chain.id, client.account.address, "opData", calls, nonce);
+  const typedData = serializeTypedData(
+    client.chain.id,
+    client.account.address,
+    "opData",
+    calls,
+    nonce
+  );
+
+  const signature = await client.signTypedData({
+    account: client.account,
+    ...typedData
+  });
+
+  return encodePacked(["uint256", "bytes"], [nonce, signature]);
 }
