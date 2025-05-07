@@ -40,5 +40,5 @@ export async function getOpData<
     ? await client._internal.mock.signer.signTypedData({ ...typedData })
     : await client.signTypedData({ account: client.account, ...typedData });
 
-  return encodePacked(["uint256", "bytes"], [nonce, signature]);
+  return encodePacked(["uint192", "bytes"], [nonceKey, signature]);
 }
