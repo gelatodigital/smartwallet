@@ -1,4 +1,4 @@
-import { erc20Abi, type Address, type Hex } from "viem";
+import { type Address, type Hex, erc20Abi } from "viem";
 import { deployContract, getCode, getTransactionReceipt, setCode } from "viem/actions";
 
 import { testClient } from "./account.js";

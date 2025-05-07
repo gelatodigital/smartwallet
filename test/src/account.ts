@@ -1,10 +1,10 @@
-import { http, createTestClient, parseEther, erc20Abi, erc20Abi_bytes32 } from "viem";
+import { http, createTestClient, erc20Abi, erc20Abi_bytes32, parseEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { setBalance, writeContract } from "viem/actions";
+import { erc20MintableAbi } from "../abi/erc20";
 import { rpcUrl } from "./anvil";
 import { erc20Address } from "./constants.js";
 import { waitBlockTime } from "./utils.js";
-import { erc20MintableAbi } from "../abi/erc20";
 
 const accounts = [
   {

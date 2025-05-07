@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vitest";
 
-import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
-import { constants, account, utils, wallet } from "./src/index.js";
 import { erc20Abi } from "viem";
 import { delegation, delegationCode } from "../src/constants/index.js";
+import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
+import { constants, account, utils, wallet } from "./src/index.js";
 
 describe("Initial Delegation Test", () => {
   test("Delegate with native payment", async () => {
