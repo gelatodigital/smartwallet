@@ -25,14 +25,17 @@ export async function sendTransaction<
 ): Promise<GelatoResponse> {
   switch (payment.type) {
     case "native": {
-      return smartWalletCall({
-        chainId: client.chain.id,
-        target,
-        feeToken: ethAddress,
-        data,
-        sponsorApiKey: client._internal.apiKey(),
-        authorizationList
-      });
+      return smartWalletCall(
+        {
+          chainId: client.chain.id,
+          target,
+          feeToken: ethAddress,
+          data,
+          sponsorApiKey: client._internal.apiKey(),
+          authorizationList
+        },
+        client
+      );
     }
     case "sponsored": {
       const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
@@ -41,23 +44,29 @@ export async function sendTransaction<
         throw new Error("Sponsor API key is required");
       }
 
-      return sponsoredCall({
-        chainId: client.chain.id,
-        target,
-        data,
-        sponsorApiKey,
-        authorizationList
-      });
+      return sponsoredCall(
+        {
+          chainId: client.chain.id,
+          target,
+          data,
+          sponsorApiKey,
+          authorizationList
+        },
+        client
+      );
     }
     case "erc20": {
-      return smartWalletCall({
-        chainId: client.chain.id,
-        target,
-        feeToken: payment.token,
-        data,
-        sponsorApiKey: client._internal.apiKey(),
-        authorizationList
-      });
+      return smartWalletCall(
+        {
+          chainId: client.chain.id,
+          target,
+          feeToken: payment.token,
+          data,
+          sponsorApiKey: client._internal.apiKey(),
+          authorizationList
+        },
+        client
+      );
     }
     default: {
       throw new Error("Unsupported payment type");

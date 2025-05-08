@@ -1,8 +1,10 @@
-import type { Hash } from "viem";
+import type { Account, Chain, Hash, Transport } from "viem";
 
 import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
 
+import type { GelatoWalletClient } from "../../actions/index.js";
+import { statusApiPollingInterval } from "../../constants/index.js";
 import {
   ExecutionCancelledError,
   ExecutionRevertedError,
@@ -11,23 +13,39 @@ import {
   TaskState,
   type TransactionStatusResponse
 } from "../status/types.js";
+import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../ws.js";
 
-export const wait = async (
+type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
+
+/**
+ * Wait for a task to be executed on or submitted to chain
+ * @param taskId - The ID of the task to wait for
+ * @param submission - Whether to wait for submission to chain, when false execution will be waited
+ * @param parameters - Optional parameters to configure polling and fallback retries
+ * @returns The transaction hash of the task when task is executed on chain
+ */
+export const wait = async <
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
   taskId: string,
+  client: GelatoWalletClient<transport, chain, account>,
+  submission = false,
   parameters?: {
     pollingInterval?: number;
     maxRetries?: number;
   }
 ): Promise<Hash> => {
   // Check with HTTP first
-  const transactionHash = await waitHttp(taskId);
+  const transactionHash = await waitHttp(taskId, submission);
 
   if (transactionHash) {
     return transactionHash;
   }
 
-  let resolvePromise: (value: Hash) => void;
+  let resolvePromise: (value: TaskStatusReturn) => void;
   let rejectPromise: (reason: Error) => void;
 
   const updateHandler = (taskStatus: TransactionStatusResponse) => {
@@ -46,9 +64,13 @@ export const wait = async (
       rejectPromise(new ExecutionCancelledError(taskId));
     }
 
+    if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
+      resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission });
+    }
+
     if (taskStatus.taskState === TaskState.ExecSuccess) {
       taskStatus.transactionHash
-        ? resolvePromise(taskStatus.transactionHash as Hash)
+        ? resolvePromise({ hash: taskStatus.transactionHash as Hash })
         : rejectPromise(new InternalError(taskId));
     }
   };
@@ -57,8 +79,11 @@ export const wait = async (
     rejectPromise(error);
   };
 
+  // Temporary TX hash in-case falling back to HTTP from WS
+  let fallbackHash: Hash | undefined;
+
   try {
-    const promise = new Promise<Hash>((resolve, reject) => {
+    const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
       resolvePromise = resolve;
       rejectPromise = reject;
     });
@@ -67,7 +92,37 @@ export const wait = async (
     statusApiWebSocket.onError(errorHandler);
 
     await statusApiWebSocket.subscribe(taskId);
-    return await promise;
+
+    // Listen for task status, when submission event is received but we're waiting for the executionn
+    // `promise` will resolve with `waitForReceipt` set to true and Provider's TX receipt will race with
+    // status API to fetch inclusion as quickly as possible
+    const result = await promise;
+    while (result.waitForReceipt && !submission) {
+      fallbackHash = result.hash;
+      const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
+        resolvePromise = resolve;
+        rejectPromise = reject;
+      });
+
+      const _result = await Promise.race([
+        promise,
+        client.waitForTransactionReceipt({
+          hash: result.hash,
+          pollingInterval: statusApiPollingInterval()
+        })
+      ]);
+
+      if ("waitForReceipt" in _result && _result.waitForReceipt) {
+        // Resubmission occurred, race for new hash again
+        result.hash = _result.hash;
+        result.waitForReceipt = _result.waitForReceipt;
+      } else {
+        // Either transaction receipt succeeded or we got ExecSuccess event
+        break;
+      }
+    }
+
+    return result.hash;
   } catch (error) {
     if (error instanceof GelatoTaskError) {
       throw error;
@@ -79,7 +134,14 @@ export const wait = async (
 
     // Websocket error happened fallback to HTTP polling
     console.warn("WebSocket connection failed, falling back to HTTP polling");
-    return await waitPolling(taskId, parameters?.pollingInterval, parameters?.maxRetries);
+    return await waitPolling(
+      taskId,
+      submission,
+      client,
+      fallbackHash,
+      parameters?.pollingInterval,
+      parameters?.maxRetries
+    );
   } finally {
     statusApiWebSocket.unsubscribe(taskId);
     statusApiWebSocket.offUpdate(updateHandler);

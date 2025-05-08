@@ -7,5 +7,6 @@ export {
   ExecutionCancelledError,
   ExecutionRevertedError,
   InternalError,
-  GelatoTaskEvent
+  GelatoTaskEvent,
+  GelatoTaskWaitEvent
 } from "./types.js";
