@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { abi as erc20Abi } from "../src/abis/erc20.js";
 
+import { erc20Abi } from "viem";
+import { delegationAddress, delegationCode } from "../src/constants/index.js";
 import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
 import { constants, account, utils, wallet } from "./src/index.js";
 
@@ -30,7 +31,9 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    expect(code).toBe(constants.delegationCode(gelatoClient.chain.id).toLowerCase());
+    expect(code).toBe(
+      delegationCode(delegationAddress(gelatoClient.chain.id, "gelato")).toLowerCase()
+    );
     expect(balanceFinal).toBeLessThan(balanceInitial);
   });
 
@@ -73,7 +76,9 @@ describe("Initial Delegation Test", () => {
       args: [gelatoClient.account.address]
     });
 
-    expect(code).toBe(constants.delegationCode(gelatoClient.chain.id).toLowerCase());
+    expect(code).toBe(
+      delegationCode(delegationAddress(gelatoClient.chain.id, "gelato")).toLowerCase()
+    );
     expect(balanceFinal).toBe(balanceInitial);
     expect(erc20BalanceFinal).toBeLessThan(erc20BalanceInitial);
   });
@@ -120,7 +125,9 @@ describe("Initial Delegation Test", () => {
       args: [gelatoClient.account.address]
     });
 
-    expect(code).toBe(constants.delegationCode(gelatoClient.chain.id).toLowerCase());
+    expect(code).toBe(
+      delegationCode(delegationAddress(gelatoClient.chain.id, "gelato")).toLowerCase()
+    );
     expect(balanceFinal).toBe(balanceInitial);
     expect(erc20BalanceFinal).toBe(erc20BalanceInitial);
     expect(sponsorBalanceFinal).toBeLessThan(sponsorBalanceInitial);

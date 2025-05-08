@@ -1,6 +1,4 @@
 import type { Account, Chain, Transport } from "viem";
-
-import { delegation } from "../../constants/index.js";
 import type { GelatoWalletClient } from "../index.js";
 
 export async function signAuthorizationList<
@@ -11,7 +9,7 @@ export async function signAuthorizationList<
   if (mock) {
     return [
       await client._internal.mock.signer.signAuthorization({
-        contractAddress: delegation(client.chain.id),
+        contractAddress: client._internal.delegation,
         chainId: client.chain.id,
         nonce: 0
       })
@@ -21,7 +19,7 @@ export async function signAuthorizationList<
   return [
     await client.signAuthorization({
       account: client.account,
-      contractAddress: delegation(client.chain.id)
+      contractAddress: client._internal.delegation
     })
   ];
 }

@@ -1,16 +1,15 @@
 import {
   type Account,
-  type Call,
+  type Address,
   type Chain,
   type Hex,
   type SignedAuthorizationList,
   type Transport,
   ethAddress
 } from "viem";
-import { encodeExecuteData } from "viem/experimental/erc7821";
 
 import type { Payment } from "../../payment/index.js";
-import { smartWalletCall, sponsoredCall } from "../../relay/index.js";
+import { type GelatoResponse, smartWalletCall, sponsoredCall } from "../../relay/index.js";
 import type { GelatoWalletClient } from "../index.js";
 
 export async function sendTransaction<
@@ -19,21 +18,19 @@ export async function sendTransaction<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  calls: Call[],
+  target: Address,
+  data: Hex,
   payment: Payment,
-  authorizationList?: SignedAuthorizationList,
-  opData?: Hex | undefined
-) {
+  authorizationList?: SignedAuthorizationList
+): Promise<GelatoResponse> {
   switch (payment.type) {
     case "native": {
-      return await smartWalletCall({
+      return smartWalletCall({
         chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        target,
         feeToken: ethAddress,
+        data,
+        sponsorApiKey: client._internal.apiKey(),
         authorizationList
       });
     }
@@ -44,26 +41,21 @@ export async function sendTransaction<
         throw new Error("Sponsor API key is required");
       }
 
-      return await sponsoredCall({
+      return sponsoredCall({
         chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        target,
+        data,
         sponsorApiKey,
         authorizationList
       });
     }
     case "erc20": {
-      return await smartWalletCall({
+      return smartWalletCall({
         chainId: client.chain.id,
-        target: client.account.address,
+        target,
         feeToken: payment.token,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
+        data,
+        sponsorApiKey: client._internal.apiKey(),
         authorizationList
       });
     }

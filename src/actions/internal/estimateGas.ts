@@ -1,86 +1,62 @@
-import type {
-  Account,
-  Call,
-  Chain,
-  EstimateContractGasParameters,
-  SimulateContractParameters,
-  Transport
-} from "viem";
-import { BaseError } from "viem";
+import type { Account, Call, CallParameters, Chain, Hex, Transport } from "viem";
+import { encodeFunctionData, hexToBytes } from "viem";
 import { encodeCalls } from "viem/experimental/erc7821";
 
-import { abi as accountAbi } from "../../abis/account.js";
+import type { EstimateL1GasParameters } from "viem/op-stack";
+import { simulationAbi, simulationBytecode } from "../../abis/simulation.js";
 import { mode } from "../../constants/index.js";
 import type { GelatoWalletClient } from "../index.js";
-import { getMockSignedOpData } from "./getMockSignedOpData.js";
-import { signAuthorizationList } from "./signAuthorizationList.js";
+import { getOpData } from "./getOpData.js";
 
-const BASE_GAS = 27_000n;
+const AUTHORIZATION_GAS = 12_500n;
+const BASE_GAS = 21_000n + 1000n;
+
+const calculateCalldataGas = (data: Hex): bigint =>
+  hexToBytes(data).reduce((gas, byte) => gas + (byte === 0 ? 4n : 16n), 0n);
 
 export async function estimateGas<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]) {
-  const request = {
-    address: client.account.address,
-    abi: accountAbi,
-    // If delegating, call "execute" to not revert using eth_estimateGas
-    functionName: "simulateExecute",
-    args: [mode("opData"), encodeCalls(calls, await getMockSignedOpData(client, calls))],
-    // Set to zero to avoid gas estimation issues related with funds
-    maxFeePerGas: 0n,
-    maxPriorityFeePerGas: 0n,
-    // Use mock authorization list to estimate gas
-    authorizationList:
-      client._internal.authorized === false ? await signAuthorizationList(client, true) : undefined
+  const args = {
+    to: client.account.address,
+    data: encodeFunctionData({
+      abi: simulationAbi,
+      functionName: "simulateExecute",
+      args: [mode("opData"), encodeCalls(calls, await getOpData(client, calls, 0n, true))]
+    })
   };
 
-  const estimate = async () => {
-    try {
-      if (client._internal.authorized) {
-        await client.simulateContract(request as SimulateContractParameters);
-      } else {
-        // TODO: fix, it's wrong and inaccurate
-        return await client.estimateContractGas(request as EstimateContractGasParameters);
+  const result = await client.call({
+    ...args,
+    stateOverride: [
+      {
+        address: client.account.address,
+        code: simulationBytecode
       }
-    } catch (err) {
-      if (err instanceof BaseError) {
-        const lowLevelError = err.walk() as unknown as {
-          data: {
-            abiItem: { name: string; type: "error"; inputs: [] };
-            args: [bigint];
-            errorName: string;
-          };
-        };
-        if (lowLevelError.data.errorName === "SimulationResult") {
-          return BigInt(lowLevelError.data.args[0]);
-        }
-      }
-      throw err;
-    }
+    ]
+  } as CallParameters);
 
-    throw new Error("Unexpected simulation result");
-  };
-
-  const estimatedGas = await estimate();
-
-  const estimatedGasWithBase = estimatedGas + BASE_GAS;
+  const executionGas = BigInt(result.data as Hex);
+  const estimatedGas =
+    executionGas +
+    BASE_GAS +
+    calculateCalldataGas(args.data) +
+    (client._internal.authorized ? 0n : AUTHORIZATION_GAS);
 
   if (client._internal.isOpStack()) {
-    // biome-ignore lint/suspicious/noExplicitAny: temporary solution to bypass the type checking
-    const estimatedL1Gas = await client.estimateContractL1Gas(request as any);
+    // TODO: currently only supports EIP-1559 transactions so we cannot specify authorizationList
+    const estimatedL1Gas = await client.estimateL1Gas(args as EstimateL1GasParameters);
 
     return {
-      estimatedGas: estimatedGasWithBase + estimatedL1Gas,
-      estimatedL1Gas,
-      estimatedExecutionGas: estimatedGasWithBase
+      estimatedGas,
+      estimatedL1Gas
     };
   }
 
   return {
-    estimatedGas: estimatedGasWithBase,
-    estimatedL1Gas: 0n,
-    estimatedExecutionGas: estimatedGasWithBase
+    estimatedGas,
+    estimatedL1Gas: 0n
   };
 }

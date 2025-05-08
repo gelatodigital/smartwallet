@@ -33,12 +33,12 @@ const callGelatoApi = async <T extends object>(
   endpoint: string,
   request: T
 ): Promise<GelatoResponse> => {
-  if ("authorizationList" in request && Array.isArray(request.authorizationList)) {
-    if (request.authorizationList.length > 0) {
-      delete request.authorizationList[0].v;
-    } else {
-      delete request.authorizationList;
-    }
+  if (
+    "authorizationList" in request &&
+    Array.isArray(request.authorizationList) &&
+    request.authorizationList.length > 0
+  ) {
+    delete request.authorizationList[0].v;
   }
 
   const { taskId, message } = await fetch(`${api()}${endpoint}`, {
