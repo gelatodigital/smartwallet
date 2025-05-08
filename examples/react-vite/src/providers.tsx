@@ -27,7 +27,7 @@ const CHAIN_CONFIGS: Record<number, ChainConfig> = {
   [sepolia.id]: {
     id: sepolia.id,
     name: "Sepolia",
-    explorer: "etherscan.io",
+    explorer: "https://sepolia.etherscan.io",
     tokens: {
       WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
       USDC: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
@@ -36,7 +36,7 @@ const CHAIN_CONFIGS: Record<number, ChainConfig> = {
   [baseSepolia.id]: {
     id: baseSepolia.id,
     name: "Base Sepolia",
-    explorer: "basescan.org",
+    explorer: "https://sepolia.basescan.org",
     tokens: {
       WETH: "0x4200000000000000000000000000000000000006",
       USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
@@ -135,7 +135,7 @@ const WalletInfoComponent = () => {
           <p>
             Wallet Address:{" "}
             <a
-              href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/address/${walletAddress}`}
+              href={`${CHAIN_CONFIGS[chainId].explorer}/address/${walletAddress}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -205,7 +205,7 @@ const WalletInfoComponent = () => {
                   <p>
                     Transaction Hash:{" "}
                     <a
-                      href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
+                      href={`${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
