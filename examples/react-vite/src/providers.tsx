@@ -12,8 +12,8 @@ import { http, useAccount } from "wagmi";
 import { sepolia } from "viem/chains";
 
 enum TransactionStatus {
-  SUBMITTED = "submitted",
-  EXECUTED = "executed"
+  Submitted = "submitted",
+  Executed = "executed"
 }
 
 const WalletInfoComponent = () => {
@@ -61,13 +61,13 @@ const WalletInfoComponent = () => {
         console.log("Transaction submitted:", status.transactionHash);
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
         setTransactionHash(status.transactionHash!);
-        setTransactionStatus(TransactionStatus.SUBMITTED);
+        setTransactionStatus(TransactionStatus.Submitted);
       });
       response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
         setTransactionHash(status.transactionHash!);
-        setTransactionStatus(TransactionStatus.EXECUTED);
+        setTransactionStatus(TransactionStatus.Executed);
       });
     } catch (error) {
       console.error("Transaction failed:", error);
