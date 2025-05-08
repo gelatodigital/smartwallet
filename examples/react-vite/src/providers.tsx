@@ -44,6 +44,11 @@ const CHAIN_CONFIGS: Record<number, ChainConfig> = {
   }
 };
 
+enum TransactionStatus {
+  Submitted = "submitted",
+  Executed = "executed"
+}
+
 const WalletInfoComponent = () => {
   const {
     gelato: { client },
@@ -56,7 +61,9 @@ const WalletInfoComponent = () => {
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
     CHAIN_CONFIGS[sepolia.id].tokens.WETH
   );
+
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
   const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
@@ -84,13 +91,18 @@ const WalletInfoComponent = () => {
         ]
       });
 
+      response.on("submitted", (status: GelatoTaskStatus) => {
+        console.log("Transaction submitted:", status.transactionHash);
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        setTransactionHash(status.transactionHash!);
+        setTransactionStatus(TransactionStatus.Submitted);
+      });
       response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        setTransactionHash(status.transactionHash!);
+        setTransactionStatus(TransactionStatus.Executed);
       });
-
-      const transactionHash = await response.wait();
-
-      setTransactionHash(transactionHash);
     } catch (error) {
       console.error("Transaction failed:", error);
     } finally {
@@ -188,16 +200,19 @@ const WalletInfoComponent = () => {
                 {isLoading ? "Processing..." : "Execute Transaction"}
               </button>
               {transactionHash && (
-                <p>
-                  Transaction Hash:{" "}
-                  <a
-                    href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {transactionHash}
-                  </a>
-                </p>
+                <div>
+                  <p>Transaction Status: {transactionStatus}</p>
+                  <p>
+                    Transaction Hash:{" "}
+                    <a
+                      href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {transactionHash}
+                    </a>
+                  </p>
+                </div>
               )}
             </div>
           </div>

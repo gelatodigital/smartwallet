@@ -1,5 +1,29 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 1.0.0-alpha.6
+
+### Patch Changes
+
+- Updated dependencies [2bdff53]
+  - @gelatonetwork/smartwallet@0.1.0-alpha.6
+  - @gelatonetwork/smartwallet-react-types@1.0.0-alpha.6
+
+## 1.0.0-alpha.5
+
+### Minor Changes
+
+- e0b9f69: feat: support kernel wallet (7702)
+
+### Patch Changes
+
+- 03ad775: chore: improve DX for defaultChain
+- Updated dependencies [e0b9f69]
+- Updated dependencies [49a40ae]
+- Updated dependencies [b928e65]
+- Updated dependencies [ffa3302]
+  - @gelatonetwork/smartwallet-react-types@1.0.0-alpha.5
+  - @gelatonetwork/smartwallet@0.1.0-alpha.5
+
 ## 0.0.2-alpha.4
 
 ### Patch Changes

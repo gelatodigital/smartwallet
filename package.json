@@ -11,9 +11,8 @@
     "lint": "biome check --write .",
     "format": "biome format --write .",
     "clean": "pnpm -r clean",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "pnpm build && pnpm version-packages && changeset publish",
+    "changeset:publish": "pnpm build && changeset publish",
+    "changeset:version": "changeset version && pnpm format",
     "postinstall": "simple-git-hooks",
     "pretest": "git submodule update --init --recursive && cd contracts && forge build",
     "test": "vitest -c ./test/vitest.config.ts"

@@ -1,5 +1,6 @@
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
+import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../ws.js";
 import { type ErrorCallback, onError } from "./internal/onError.js";
 
@@ -29,6 +30,12 @@ export const on = (
     } else if (update === "revert" && taskStatus.taskState === TaskState.ExecReverted) {
       successCallback(taskStatus);
     } else if (update === "cancel" && taskStatus.taskState === TaskState.Cancelled) {
+      successCallback(taskStatus);
+    } else if (
+      update === "submitted" &&
+      isSubmitted(taskStatus.taskState) &&
+      taskStatus.transactionHash
+    ) {
       successCallback(taskStatus);
     }
   };
