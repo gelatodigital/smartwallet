@@ -1,5 +1,6 @@
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
+import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../ws.js";
 import { type ErrorCallback, onError } from "./internal/onError.js";
 
@@ -32,8 +33,7 @@ export const on = (
       successCallback(taskStatus);
     } else if (
       update === "submitted" &&
-      (taskStatus.taskState === TaskState.ExecPending ||
-        taskStatus.taskState === TaskState.WaitingForConfirmation) &&
+      isSubmitted(taskStatus.taskState) &&
       taskStatus.transactionHash
     ) {
       successCallback(taskStatus);

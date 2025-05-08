@@ -7,6 +7,7 @@ import {
   InternalError,
   TaskState
 } from "../../status/types.js";
+import { isSubmitted } from "../../status/utils.js";
 
 export const waitHttp = async (taskId: string, submission = false): Promise<Hash | undefined> => {
   const taskStatus = await getTaskStatus(taskId);
@@ -34,11 +35,7 @@ export const waitHttp = async (taskId: string, submission = false): Promise<Hash
     throw new InternalError(taskId);
   }
 
-  if (
-    submission &&
-    (taskStatus.taskState === TaskState.ExecPending ||
-      taskStatus.taskState === TaskState.WaitingForConfirmation)
-  ) {
+  if (submission && isSubmitted(taskStatus.taskState)) {
     return taskStatus.transactionHash as Hash;
   }
 };

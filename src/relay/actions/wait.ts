@@ -11,6 +11,7 @@ import {
   TaskState,
   type TransactionStatusResponse
 } from "../status/types.js";
+import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../ws.js";
 
 /**
@@ -54,12 +55,7 @@ export const wait = async (
       rejectPromise(new ExecutionCancelledError(taskId));
     }
 
-    if (
-      submission &&
-      (taskStatus.taskState === TaskState.ExecPending ||
-        taskStatus.taskState === TaskState.WaitingForConfirmation) &&
-      taskStatus.transactionHash
-    ) {
+    if (submission && isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
       resolvePromise(taskStatus.transactionHash as Hash);
     }
 

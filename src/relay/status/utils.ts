@@ -10,3 +10,7 @@ export const isFinalTaskState = (taskState: TaskState): boolean => {
       return false;
   }
 };
+
+export const isSubmitted = (taskState: TaskState): boolean => {
+  return taskState === TaskState.ExecPending || taskState === TaskState.WaitingForConfirmation;
+};
