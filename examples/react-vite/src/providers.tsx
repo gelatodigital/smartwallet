@@ -6,21 +6,55 @@ import {
   useGelatoSmartWalletProviderContext,
   wagmi
 } from "@gelatonetwork/smartwallet-react-sdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { http, useAccount } from "wagmi";
 
-import { sepolia } from "viem/chains";
+import { baseSepolia, sepolia } from "viem/chains";
+
+// Chain configuration interface
+interface ChainConfig {
+  id: number;
+  name: string;
+  explorer: string;
+  tokens: {
+    WETH: `0x${string}`;
+    USDC: `0x${string}`;
+  };
+}
+
+// Chain configurations
+const CHAIN_CONFIGS: Record<number, ChainConfig> = {
+  [sepolia.id]: {
+    id: sepolia.id,
+    name: "Sepolia",
+    explorer: "etherscan.io",
+    tokens: {
+      WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+      USDC: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+    }
+  },
+  [baseSepolia.id]: {
+    id: baseSepolia.id,
+    name: "Base Sepolia",
+    explorer: "basescan.org",
+    tokens: {
+      WETH: "0x4200000000000000000000000000000000000006",
+      USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+    }
+  }
+};
 
 const WalletInfoComponent = () => {
   const {
     gelato: { client },
+    switchNetwork,
     logout
   } = useGelatoSmartWalletProviderContext();
 
+  const [chainId, setChainId] = useState<number>(sepolia.id);
   const [paymentType, setPaymentType] = useState<string>("sponsored");
-  // USDC on sepolia
   const [erc20TokenAddress, setErc20TokenAddress] = useState<`0x${string}`>(
-    "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    CHAIN_CONFIGS[sepolia.id].tokens.WETH
   );
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,6 +98,22 @@ const WalletInfoComponent = () => {
     }
   };
 
+  // Handle chainId change and switchNetwork
+  useEffect(() => {
+    const handleChainChange = async () => {
+      try {
+        await switchNetwork(chainId);
+        setPaymentType("sponsored");
+        setTransactionHash(null);
+        setErc20TokenAddress(CHAIN_CONFIGS[chainId].tokens.WETH);
+      } catch (error) {
+        console.error("Failed to switch network:", error);
+      }
+    };
+
+    handleChainChange();
+  }, [chainId, switchNetwork]);
+
   return (
     <div>
       <h2>Gelato SmartWallet</h2>
@@ -73,7 +123,7 @@ const WalletInfoComponent = () => {
           <p>
             Wallet Address:{" "}
             <a
-              href={`https://sepolia.etherscan.io/address/${walletAddress}`}
+              href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/address/${walletAddress}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -83,6 +133,24 @@ const WalletInfoComponent = () => {
           <div style={{ marginTop: "20px" }}>
             <h3>SmartWallet Transaction</h3>
             <div>
+              <div style={{ marginBottom: "15px" }}>
+                <label htmlFor="paymentType" style={{ marginRight: "10px" }}>
+                  Network:
+                </label>
+                <select
+                  id="network"
+                  onChange={(e) => {
+                    setChainId(Number.parseInt(e.target.value));
+                  }}
+                  style={{ padding: "5px", borderRadius: "4px" }}
+                >
+                  {Object.values(CHAIN_CONFIGS).map((chain) => (
+                    <option key={chain.id} value={chain.id}>
+                      {chain.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div style={{ marginBottom: "15px" }}>
                 <label htmlFor="paymentType" style={{ marginRight: "10px" }}>
                   Payment Type:
@@ -111,7 +179,8 @@ const WalletInfoComponent = () => {
                     }}
                     style={{ padding: "5px", borderRadius: "4px" }}
                   >
-                    <option value="0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9">WETH</option>
+                    <option value={CHAIN_CONFIGS[chainId].tokens.WETH}>WETH</option>
+                    <option value={CHAIN_CONFIGS[chainId].tokens.USDC}>USDC</option>
                   </select>
                 </div>
               )}
@@ -122,7 +191,7 @@ const WalletInfoComponent = () => {
                 <p>
                   Transaction Hash:{" "}
                   <a
-                    href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                    href={`https://sepolia.${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
