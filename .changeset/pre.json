@@ -11,16 +11,22 @@
     "@gelatonetwork/smartwallet-react-sdk": "0.0.1",
     "@gelatonetwork/smartwallet-react-types": "0.0.1",
     "@gelatonetwork/smartwallet": "0.0.1",
-    "estimates": "0.0.1"
+    "estimates": "0.0.1",
+    "kernel-sponsored-payment": "0.0.1"
   },
   "changesets": [
     "brave-women-wish",
+    "cold-clubs-stick",
     "common-bears-worry",
+    "dark-weeks-kick",
+    "fluffy-ghosts-occur",
     "fresh-lizards-search",
     "fresh-pigs-smash",
     "grumpy-heads-peel",
     "legal-ideas-judge",
     "neat-swans-smoke",
+    "real-onions-stay",
+    "shaggy-parks-start",
     "silent-steaks-deny",
     "stupid-spiders-do",
     "wicked-wings-divide"
