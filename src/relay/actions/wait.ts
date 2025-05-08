@@ -79,6 +79,9 @@ export const wait = async <
     rejectPromise(error);
   };
 
+  // Temporary TX hash in-case falling back to HTTP from WS
+  let fallbackHash: Hash | undefined;
+
   try {
     const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
       resolvePromise = resolve;
@@ -95,6 +98,7 @@ export const wait = async <
     // status API to fetch inclusion as quickly as possible
     const result = await promise;
     while (result.waitForReceipt && !submission) {
+      fallbackHash = result.hash;
       const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
         resolvePromise = resolve;
         rejectPromise = reject;
@@ -133,6 +137,8 @@ export const wait = async <
     return await waitPolling(
       taskId,
       submission,
+      client,
+      fallbackHash,
       parameters?.pollingInterval,
       parameters?.maxRetries
     );
