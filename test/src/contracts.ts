@@ -1,12 +1,11 @@
-import type { Address, Hex } from "viem";
+import { type Address, type Hex, erc20Abi } from "viem";
 import { deployContract, getCode, getTransactionReceipt, setCode } from "viem/actions";
 
 import { testClient } from "./account.js";
 import { waitBlockTime } from "./utils.js";
 
 import Delegation from "../../contracts/out/Delegation.sol/Delegation.json";
-import SimpleERC20 from "../contract/SimpleERC20.json";
-import { multicall3Address, multicall3Bytecode } from "./constants.js";
+import { erc20Bytecode, multicall3Address, multicall3Bytecode } from "./constants.js";
 
 export async function deployContracts(parameters: {
   delegation: Address;
@@ -50,11 +49,11 @@ export async function deployContracts(parameters: {
     await waitBlockTime();
   }
 
-  // Deploy SimpleERC20 token with unlimited minting
+  // Deploy ERC20 token with unlimited minting
   {
     const hash = await deployContract(client, {
-      abi: SimpleERC20.abi,
-      bytecode: SimpleERC20.bytecode.object as Hex,
+      abi: erc20Abi,
+      bytecode: erc20Bytecode(),
       chain: null
     });
 
@@ -65,7 +64,7 @@ export async function deployContracts(parameters: {
     });
 
     if (!contractAddress) {
-      throw new Error("SimpleERC20 contract deployment failed");
+      throw new Error("ERC20 contract deployment failed");
     }
 
     const code = await getCode(client, {
@@ -73,7 +72,7 @@ export async function deployContracts(parameters: {
     });
 
     if (!code) {
-      throw new Error("SimpleERC20 contract code not found");
+      throw new Error("ERC20 contract code not found");
     }
 
     await setCode(client, {

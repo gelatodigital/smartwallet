@@ -1,11 +1,9 @@
-import { http, type Client, createTestClient, parseEther } from "viem";
+import { http, createTestClient, erc20Abi, erc20Abi_bytes32, parseEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { setBalance, writeContract } from "viem/actions";
+import { erc20MintableAbi } from "../abi/erc20";
 import { rpcUrl } from "./anvil";
-
 import { erc20Address } from "./constants.js";
-
-import SimpleERC20 from "../contract/SimpleERC20.json";
 import { waitBlockTime } from "./utils.js";
 
 const accounts = [
@@ -44,7 +42,7 @@ export async function getAccount(balance: bigint | undefined = parseEther("10000
     // Mint ERC20 token
     await writeContract(testClient, {
       address: erc20Address(),
-      abi: SimpleERC20.abi,
+      abi: erc20MintableAbi,
       args: [account.address, balance],
       chain: null,
       functionName: "mint"

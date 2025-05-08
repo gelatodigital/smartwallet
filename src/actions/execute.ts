@@ -26,9 +26,9 @@ export async function execute<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[] }
+  parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
 ): Promise<GelatoResponse> {
-  const { payment, calls } = structuredClone(parameters);
+  const { payment, calls, nonceKey } = structuredClone(parameters);
 
   const authorized = await verifyAuthorization(client);
   const authorizationList = authorized ? undefined : await signAuthorizationList(client);
@@ -57,17 +57,12 @@ export async function execute<
     calls.push(transfer);
   }
 
-  const opData = await client.signTypedData({
-    account: client.account,
-    ...(await getOpData(client, calls))
-  });
+  const opData = await getOpData(client, calls, nonceKey || 0n);
 
   const data = encodeExecuteData({
     calls,
     opData
   });
-
-  delete client._internal.inflight;
 
   return sendTransaction(client, client.account.address, data, payment, authorizationList);
 }

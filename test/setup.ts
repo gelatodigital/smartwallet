@@ -17,7 +17,7 @@ beforeAll(async () => {
 
   // Deploy Delegation & related contracts for testing
   await deployContracts({
-    delegation: delegation(sepolia.id),
+    delegation: delegation("gelato", sepolia.id),
     erc20: erc20Address()
   });
 

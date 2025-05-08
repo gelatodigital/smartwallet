@@ -13,9 +13,14 @@ const EXECUTION_MODE: { [mode in Mode]: Address } = {
   opData: "0x0100000000007821000100000000000000000000000000000000000000000000"
 };
 
+const GELATO_DOMAIN_NAME_AND_VERSION = {
+  name: "GelatoDelegation",
+  version: "0.0.1"
+};
+
 const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0x074cEA0cBd04358fDef8cf8ccd6738ad38cfDae8",
-  [baseSepolia.id]: "0xC08a65356fDea7eF7c4b88C6D814EF8cA5E5b5a9"
+  [sepolia.id]: "0xe8d378f26A857D8d32bB9E8Ba6C2Dc5e554d95Bb",
+  [baseSepolia.id]: "0xD77B41b99B22f0f674744B53f85F4BB363F7f7CD"
 };
 
 const ZERODEV_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
@@ -27,8 +32,6 @@ const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
   [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf"
 };
-
-const NONCE_STORAGE_SLOT = "0xf2a7602a6b0fea467fdf81ac322504e60523f80eb506a1ca5e0f3e0d2ac70500";
 
 const GELATO_STATUS_API_POLLING_INTERVAL = 1000;
 const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
@@ -56,9 +59,9 @@ export const delegation = (wallet: Wallet, chainId: number) => {
   return address;
 };
 
-export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}`;
+export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}` as Hex;
 
-export const nonceStorageSlot = () => NONCE_STORAGE_SLOT as Hex;
+export const gelatoDomainNameAndVersion = () => GELATO_DOMAIN_NAME_AND_VERSION;
 
 export const statusApiPollingInterval = () => GELATO_STATUS_API_POLLING_INTERVAL;
 
