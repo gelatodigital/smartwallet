@@ -1,5 +1,6 @@
 import type {
   Account,
+  Address,
   Call,
   Chain,
   Client,
@@ -22,17 +23,17 @@ export type GelatoSmartWalletActions = {
   estimate: (args: { payment: Payment; calls: Call[] }) => Promise<{
     estimatedFee: bigint;
     estimatedGas: bigint;
+    estimatedL1Gas: bigint;
   }>;
 };
 
 export type GelatoSmartWalletInternals = {
   _internal: {
+    erc4337: boolean;
+    delegation: Address;
     authorized: boolean | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
-    inflight?: {
-      mockOpData?: undefined | Hex;
-    };
     mock: {
       signer: PrivateKeyAccount;
     };
@@ -60,9 +61,16 @@ export function actions<
 }
 
 export function internal({
+  erc4337,
+  delegation,
   apiKey,
   isOpStack
-}: { apiKey?: string; isOpStack: boolean }): GelatoSmartWalletInternals {
+}: {
+  erc4337: boolean;
+  delegation: Address;
+  apiKey?: string;
+  isOpStack: boolean;
+}): GelatoSmartWalletInternals {
   return {
     _internal: {
       mock: {
@@ -70,6 +78,8 @@ export function internal({
           "0x1111111111111111111111111111111111111111111111111111111111111111"
         )
       },
+      erc4337,
+      delegation,
       authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack

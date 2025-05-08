@@ -34,24 +34,24 @@ export const getPaymentTokens = async (chainId: number): Promise<string[]> => {
 export const getEstimatedFee = async (
   chainId: number,
   paymentToken: string,
-  estimatedExecutionGas: bigint,
+  estimatedGas: bigint,
   estimatedL1Gas: bigint,
   data?: string
 ): Promise<bigint> => {
   return data
-    ? _getEstimatedFeeOpStack(chainId, paymentToken, estimatedExecutionGas, estimatedL1Gas, data)
-    : _getEstimatedFee(chainId, paymentToken, estimatedExecutionGas, estimatedL1Gas);
+    ? _getEstimatedFeeOpStack(chainId, paymentToken, estimatedGas, estimatedL1Gas, data)
+    : _getEstimatedFee(chainId, paymentToken, estimatedGas, estimatedL1Gas);
 };
 
 const _getEstimatedFee = async (
   chainId: number,
   paymentToken: string,
-  estimatedExecutionGas: bigint,
+  estimatedGas: bigint,
   estimatedL1Gas: bigint
 ): Promise<bigint> => {
   const queryParams = new URLSearchParams({
     paymentToken,
-    gasLimit: estimatedExecutionGas.toString(),
+    gasLimit: estimatedGas.toString(),
     gasLimitL1: estimatedL1Gas.toString()
   });
 
@@ -72,7 +72,7 @@ const _getEstimatedFee = async (
 const _getEstimatedFeeOpStack = async (
   chainId: number,
   paymentToken: string,
-  estimatedExecutionGas: bigint,
+  estimatedGas: bigint,
   estimatedL1Gas: bigint,
   data: string
 ): Promise<bigint> => {
@@ -80,7 +80,7 @@ const _getEstimatedFeeOpStack = async (
 
   const body = JSON.stringify({
     paymentToken,
-    gasLimit: estimatedExecutionGas.toString(),
+    gasLimit: estimatedGas.toString(),
     gasLimitL1: estimatedL1Gas.toString(),
     data
   });

@@ -5,13 +5,18 @@ import {
   erc20
 } from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
+
+const privateKey = process.env.PRIVATE_KEY as Hex;
+const apiKey = process.env.GELATO_API_KEY;
+
+if (!privateKey) {
+  throw new Error("PRIVATE_KEY is not set");
+}
 
 // USDC on Base Sepolia
 const token = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
-const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
-const apiKey = process.env.GELATO_API_KEY;
 
 const account = privateKeyToAccount(privateKey);
 
@@ -21,7 +26,7 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, apiKey)
+createGelatoSmartWalletClient(client, { apiKey })
   .execute({
     payment: erc20(token),
     calls: [
