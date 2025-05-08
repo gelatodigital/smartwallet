@@ -1,7 +1,7 @@
 import { sepolia } from "viem/chains";
 import { afterAll, beforeAll, vi } from "vitest";
 
-import { delegation } from "../src/constants/index.js";
+import { delegationAddress } from "../src/constants/index.js";
 
 import { startAnvil, stopAnvil } from "./src/anvil.js";
 import { erc20Address } from "./src/constants.js";
@@ -17,7 +17,7 @@ beforeAll(async () => {
 
   // Deploy Delegation & related contracts for testing
   await deployContracts({
-    delegation: delegation("gelato", sepolia.id),
+    delegation: delegationAddress(sepolia.id, "gelato"),
     erc20: erc20Address()
   });
 

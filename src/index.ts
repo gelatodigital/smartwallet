@@ -25,14 +25,14 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  params: { apiKey?: string; wallet?: Wallet }
+  params?: { apiKey?: string; wallet?: Wallet }
 ) => {
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),
     internal({
-      erc4337: params.wallet === "kernel",
-      delegation: delegationAddress(client.chain.id, params.wallet || "gelato"),
-      apiKey: params.apiKey,
+      erc4337: params?.wallet === "kernel",
+      delegation: delegationAddress(client.chain.id, params?.wallet || "gelato"),
+      apiKey: params?.apiKey,
       isOpStack: isOpStack(client.chain)
     })
   ) as GelatoWalletClient<transport, chain, account>;
