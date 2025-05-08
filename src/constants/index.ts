@@ -1,4 +1,4 @@
-import type { Address, Chain, Hex } from "viem";
+import type { Address, Hex } from "viem";
 import { baseSepolia, sepolia } from "viem/chains";
 
 const GELATO_API = "https://api.staging.gelato.digital";
@@ -6,7 +6,7 @@ const GELATO_API_WS = "wss://api.staging.gelato.digital";
 
 export type Mode = "default" | "opData";
 
-export type Wallet = "gelato" | "zerodev";
+export type Wallet = "gelato" | "kernel";
 
 const EXECUTION_MODE: { [mode in Mode]: Address } = {
   default: "0x0100000000000000000000000000000000000000000000000000000000000000",
@@ -23,7 +23,7 @@ const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [baseSepolia.id]: "0xD77B41b99B22f0f674744B53f85F4BB363F7f7CD"
 };
 
-const ZERODEV_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
+const KERNEL_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
   [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
 };
@@ -32,6 +32,9 @@ const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
   [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf"
 };
+
+// for kernel version >=0.3.1
+const KERNEL_ECDSA_VALIDATOR_KEY = BigInt("0x0000845ADb2C711129d4f3966735eD98a9F09fC4cE570000");
 
 const GELATO_STATUS_API_POLLING_INTERVAL = 1000;
 const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
@@ -48,11 +51,11 @@ export const api = (t: "http" | "ws" = "http") => (t === "http" ? GELATO_API : G
 
 export const mode = (mode: Mode) => EXECUTION_MODE[mode] as Hex;
 
-export const delegation = (wallet: Wallet, chainId: number) => {
+export const delegationAddress = (chainId: number, wallet: Wallet) => {
   const address =
     wallet === "gelato"
       ? GELATO_V0_0_DELEGATION_ADDRESSES[chainId]
-      : ZERODEV_V3_3_DELEGATION_ADDRESSES[chainId];
+      : KERNEL_V3_3_DELEGATION_ADDRESSES[chainId];
   if (!address) {
     throw new Error(`Unsupported chain: ${chainId}`);
   }
@@ -62,6 +65,8 @@ export const delegation = (wallet: Wallet, chainId: number) => {
 export const delegationCode = (delegation: Address) => `0xef0100${delegation.slice(2)}` as Hex;
 
 export const gelatoDomainNameAndVersion = () => GELATO_DOMAIN_NAME_AND_VERSION;
+
+export const kernelECDSAValidatorKey = () => KERNEL_ECDSA_VALIDATOR_KEY;
 
 export const statusApiPollingInterval = () => GELATO_STATUS_API_POLLING_INTERVAL;
 

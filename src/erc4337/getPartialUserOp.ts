@@ -3,20 +3,18 @@ import type { Account, Call, Chain, Transport } from "viem";
 import { type UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { encodeExecuteData } from "viem/experimental/erc7821";
 import type { GelatoWalletClient } from "../actions/index.js";
+import { kernelECDSAValidatorKey } from "../constants/index.js";
 
 export async function getPartialUserOp<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]): Promise<UserOperation> {
-  // for kernel version >=0.3.1
-  const ECDSAValidatorKey = BigInt("0x0000845ADb2C711129d4f3966735eD98a9F09fC4cE570000");
-
   const nonce = await client.readContract({
     address: entryPoint07Address,
     abi: entryPoint07Abi,
     functionName: "getNonce",
-    args: [client.account.address, ECDSAValidatorKey]
+    args: [client.account.address, kernelECDSAValidatorKey()]
   });
 
   return {
