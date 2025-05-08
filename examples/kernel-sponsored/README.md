@@ -1,4 +1,4 @@
-# ZeroDev Sponsored Payment Example
+# Kernel Sponsored Payment Example
 
 ## Prerequisites
 

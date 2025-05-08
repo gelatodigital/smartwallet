@@ -8,7 +8,6 @@ import {
   ethAddress
 } from "viem";
 
-import type { SendTransactionParameters } from "viem/zksync";
 import type { Payment } from "../../payment/index.js";
 import { type GelatoResponse, smartWalletCall, sponsoredCall } from "../../relay/index.js";
 import type { GelatoWalletClient } from "../index.js";

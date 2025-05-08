@@ -3,6 +3,7 @@ import {
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
+import { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -41,9 +42,10 @@ type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
-  wagmi: { config: WagmiConfig | undefined };
-  apiKey?: string | undefined;
-}> = ({ children, wagmi, apiKey }) => {
+  wagmi: { config?: WagmiConfig };
+  apiKey?: string;
+  wallet?: Wallet;
+}> = ({ children, wagmi, apiKey, wallet }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
@@ -123,8 +125,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
 
         const walletClientGelato = createGelatoSmartWalletClient<Transport, Chain, Account>(
           client,
-          "gelato",
-          apiKey
+          { apiKey, wallet }
         );
         setSmartWalletClient(walletClientGelato);
       } catch (error) {
@@ -133,7 +134,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [ready, wallets, walletsReady, authenticated, signAuthorization, apiKey]);
+  }, [ready, wallets, walletsReady, authenticated, signAuthorization, apiKey, wallet]);
 
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider
@@ -167,7 +168,11 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
         defaultChain: settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? chains.sepolia
       }}
     >
-      <GelatoSmartWalletPrivyInternal wagmi={{ config: wagmiConfig }}>
+      <GelatoSmartWalletPrivyInternal
+        wagmi={{ config: wagmiConfig }}
+        apiKey={settings.apiKey}
+        wallet={settings.wallet}
+      >
         {wagmiConfig ? (
           <QueryClientProvider client={queryClient}>
             <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>

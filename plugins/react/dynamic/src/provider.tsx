@@ -7,6 +7,7 @@ import {
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
+import { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
@@ -36,10 +37,11 @@ type GelatoSmartWalletDynamicContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletDynamicInternal: FC<{
   children: ReactNode;
-  defaultChain: Chain | undefined;
-  apiKey?: string | undefined;
-  wagmi: { config: WagmiConfig | undefined };
-}> = ({ children, defaultChain, apiKey, wagmi }) => {
+  defaultChain?: Chain;
+  wagmi: { config?: WagmiConfig };
+  apiKey?: string;
+  wallet?: Wallet;
+}> = ({ children, defaultChain, wagmi, apiKey, wallet }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
     Transport,
@@ -98,10 +100,10 @@ const GelatoSmartWalletDynamicInternal: FC<{
           };
         };
 
-        const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(
-          client,
-          apiKey
-        );
+        const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(client, {
+          apiKey,
+          wallet
+        });
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
@@ -109,7 +111,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [primaryWallet, defaultChain, apiKey]);
+  }, [primaryWallet, defaultChain, apiKey, wallet]);
 
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
@@ -148,6 +150,8 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
         wagmi={{
           config: wagmiConfig
         }}
+        apiKey={settings.apiKey}
+        wallet={settings.wallet}
       >
         {wagmiConfig ? (
           <WagmiProvider config={wagmiConfig}>
