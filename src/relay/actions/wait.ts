@@ -4,6 +4,7 @@ import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
+import { statusApiPollingInterval } from "../../constants/index.js";
 import {
   ExecutionCancelledError,
   ExecutionRevertedError,
@@ -101,7 +102,10 @@ export const wait = async <
 
       const _result = await Promise.race([
         promise,
-        client.waitForTransactionReceipt({ hash: result.hash })
+        client.waitForTransactionReceipt({
+          hash: result.hash,
+          pollingInterval: statusApiPollingInterval()
+        })
       ]);
 
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
