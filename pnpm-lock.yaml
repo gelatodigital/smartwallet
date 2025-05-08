@@ -341,9 +341,6 @@ importers:
 
   src:
     dependencies:
-      '@gelatonetwork/smartwallet-react-sdk':
-        specifier: workspace:*
-        version: link:../plugins/react/sdk
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))

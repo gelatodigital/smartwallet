@@ -19,7 +19,6 @@
     }
   },
   "dependencies": {
-    "@gelatonetwork/smartwallet-react-sdk": "workspace:*",
     "isomorphic-ws": "^5.0.0",
     "viem": "catalog:",
     "ws": "^8.18.1"
