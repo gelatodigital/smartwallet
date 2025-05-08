@@ -34,9 +34,6 @@ export type GelatoSmartWalletInternals = {
     authorized: boolean | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
-    inflight?: {
-      mockOpData?: undefined | Hex;
-    };
     mock: {
       signer: PrivateKeyAccount;
     };
