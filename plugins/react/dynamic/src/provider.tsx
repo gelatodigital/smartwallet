@@ -52,12 +52,12 @@ const GelatoSmartWalletDynamicInternal: FC<{
     await handleLogOut();
   };
 
-  const switchNetwork = async (chain: Chain) => {
+  const switchNetwork = async (chainId: number) => {
     if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
       return;
     }
 
-    await primaryWallet.switchNetwork(chain.id);
+    await primaryWallet.switchNetwork(chainId);
   };
 
   useEffect(() => {

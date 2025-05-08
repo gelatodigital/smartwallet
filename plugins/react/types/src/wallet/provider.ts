@@ -15,7 +15,7 @@ export interface ProviderContext {
     config?: Config | undefined;
   };
   logout: () => void;
-  switchNetwork: (chain: Chain) => Promise<void>;
+  switchNetwork: (chainId: number) => Promise<void>;
 }
 
 export interface ProviderProps {
