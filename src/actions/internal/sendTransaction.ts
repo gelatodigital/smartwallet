@@ -26,16 +26,19 @@ export async function sendTransaction<
 ) {
   switch (payment.type) {
     case "native": {
-      return await smartWalletCall({
-        chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
-        feeToken: ethAddress,
-        authorizationList
-      });
+      return await smartWalletCall(
+        {
+          chainId: client.chain.id,
+          target: client.account.address,
+          data: encodeExecuteData({
+            calls,
+            opData
+          }),
+          feeToken: ethAddress,
+          authorizationList
+        },
+        client
+      );
     }
     case "sponsored": {
       const sponsorApiKey = payment.sponsorApiKey ?? client._internal.apiKey();
@@ -44,28 +47,34 @@ export async function sendTransaction<
         throw new Error("Sponsor API key is required");
       }
 
-      return await sponsoredCall({
-        chainId: client.chain.id,
-        target: client.account.address,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
-        sponsorApiKey,
-        authorizationList
-      });
+      return await sponsoredCall(
+        {
+          chainId: client.chain.id,
+          target: client.account.address,
+          data: encodeExecuteData({
+            calls,
+            opData
+          }),
+          sponsorApiKey,
+          authorizationList
+        },
+        client
+      );
     }
     case "erc20": {
-      return await smartWalletCall({
-        chainId: client.chain.id,
-        target: client.account.address,
-        feeToken: payment.token,
-        data: encodeExecuteData({
-          calls,
-          opData
-        }),
-        authorizationList
-      });
+      return await smartWalletCall(
+        {
+          chainId: client.chain.id,
+          target: client.account.address,
+          feeToken: payment.token,
+          data: encodeExecuteData({
+            calls,
+            opData
+          }),
+          authorizationList
+        },
+        client
+      );
     }
     default: {
       throw new Error("Unsupported payment type");

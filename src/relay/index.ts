@@ -1,5 +1,6 @@
-import type { SignedAuthorizationList } from "viem";
+import type { Account, Chain, SignedAuthorizationList, Transport } from "viem";
 
+import type { GelatoWalletClient } from "../actions/index.js";
 import { api } from "../constants/index.js";
 import { on, wait } from "./actions/index.js";
 import type {
@@ -30,16 +31,22 @@ export interface GelatoResponse {
   /// Task ID
   id: string;
   /// Wait for the task to be executed or submitted on chain
-  wait: (e: GelatoTaskWaitEvent) => Promise<string>;
+  wait: (e?: GelatoTaskWaitEvent) => Promise<string>;
   /// Subscribe for task updates
   on(update: GelatoTaskEvent, callback: (parameter: TransactionStatusResponse) => void): () => void;
   /// Subscribe for task errors
   on(update: "error", callback: (parameter: Error) => void): () => void;
 }
 
-const callGelatoApi = async <T extends object>(
+const callGelatoApi = async <
+  T extends object,
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
   endpoint: string,
-  request: T
+  request: T,
+  client: GelatoWalletClient<transport, chain, account>
 ): Promise<GelatoResponse> => {
   if ("authorizationList" in request && Array.isArray(request.authorizationList)) {
     if (request.authorizationList.length > 0) {
@@ -62,13 +69,25 @@ const callGelatoApi = async <T extends object>(
 
   return {
     id: taskId,
-    wait: (e: GelatoTaskWaitEvent = "execution") => wait(taskId, e === "submission"),
+    wait: (e: GelatoTaskWaitEvent = "execution") => wait(taskId, client, e === "submission"),
     on: (update: GelatoTaskEvent | "error", callback) => on(taskId, { update, callback })
   };
 };
 
-export const sponsoredCall = (request: SponsoredCallRequest): Promise<GelatoResponse> =>
-  callGelatoApi("/relays/v2/sponsored-call-eip7702", request);
+export const sponsoredCall = <
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
+  request: SponsoredCallRequest,
+  client: GelatoWalletClient<transport, chain, account>
+): Promise<GelatoResponse> => callGelatoApi("/relays/v2/sponsored-call-eip7702", request, client);
 
-export const smartWalletCall = (request: SmartWalletCallRequest): Promise<GelatoResponse> =>
-  callGelatoApi("/relays/v2/smart-wallet-call", request);
+export const smartWalletCall = <
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
+  request: SmartWalletCallRequest,
+  client: GelatoWalletClient<transport, chain, account>
+): Promise<GelatoResponse> => callGelatoApi("/relays/v2/smart-wallet-call", request, client);
