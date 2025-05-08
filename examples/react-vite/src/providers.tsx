@@ -239,6 +239,7 @@ export default function Providers() {
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
         apiKey: sponsorApiKey,
+        // wallet: "kernel"
         waas: dynamic(waasAppId),
         wagmi: wagmi({
           chains: [sepolia],

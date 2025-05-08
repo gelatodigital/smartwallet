@@ -1,11 +1,15 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
-import { type Payment, isErc20, isNative } from "../payment/index.js";
+import { encodeExecuteData } from "viem/experimental/erc7821";
+import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
+import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
+import { signUserOp } from "../erc4337/signUserOp.js";
+import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
+import { estimateGas } from "./internal/estimateGas.js";
 import { getOpData } from "./internal/getOpData.js";
-import { resolveERC20PaymentCall } from "./internal/resolveERC20PaymentCall.js";
-import { resolveNativePaymentCall } from "./internal/resolveNativePaymentCall.js";
+import { resolveMockPaymentCalls, resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
@@ -22,30 +26,43 @@ export async function execute<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[] }
+  parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
 ): Promise<GelatoResponse> {
-  const { payment, calls } = structuredClone(parameters);
+  const { payment, calls, nonceKey } = structuredClone(parameters);
 
   const authorized = await verifyAuthorization(client);
+  const authorizationList = authorized ? undefined : await signAuthorizationList(client);
 
-  const authorizationList = authorized ? [] : await signAuthorizationList(client);
+  const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
 
-  if (isErc20(payment)) {
-    const { paymentCall } = await resolveERC20PaymentCall(client, payment, calls);
-    calls.push(paymentCall);
-  } else if (isNative(payment)) {
-    const { paymentCall } = await resolveNativePaymentCall(client, calls);
-    calls.push(paymentCall);
+  if (client._internal.erc4337) {
+    const userOp = await getPartialUserOp(client, callsWithMockPayment);
+
+    // TODO: estimate userOp gas limits here
+    if (payment.type === "erc20" || payment.type === "native") {
+      const transfer = await resolvePaymentCall(client, payment, 500_000n, 0n);
+      userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
+    }
+
+    userOp.signature = await signUserOp(client, userOp);
+
+    const handleOps = encodeHandleOpsCall(client, userOp);
+
+    return sendTransaction(client, handleOps.to, handleOps.data, payment, authorizationList);
   }
 
-  const opData = await getOpData(client, calls);
+  if (payment.type === "erc20" || payment.type === "native") {
+    const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
+    const transfer = await resolvePaymentCall(client, payment, estimatedGas, estimatedL1Gas);
+    calls.push(transfer);
+  }
 
-  const signed = await client.signTypedData({
-    account: client.account,
-    ...opData
+  const opData = await getOpData(client, calls, nonceKey || 0n);
+
+  const data = encodeExecuteData({
+    calls,
+    opData
   });
 
-  delete client._internal.inflight;
-
-  return await sendTransaction(client, calls, payment, authorizationList, signed);
+  return sendTransaction(client, client.account.address, data, payment, authorizationList);
 }

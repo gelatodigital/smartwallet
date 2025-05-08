@@ -1,6 +1,5 @@
-import type { Account, Chain, Transport } from "viem";
+import { type Account, type Chain, type Transport, erc20Abi } from "viem";
 
-import { abi as erc20Abi } from "../../abis/erc20.js";
 import { getPaymentTokens } from "../../oracle/index.js";
 import type { ERC20Payment } from "../../payment/index.js";
 import { lowercase } from "../../utils/index.js";

@@ -1,6 +1,6 @@
 import type { Address, Call, TypedDataDefinition } from "viem";
 
-import { type Mode, mode } from "../constants/index.js";
+import { type Mode, gelatoDomainNameAndVersion, mode } from "../constants/index.js";
 
 export const serializeTypedData = (
   chainId: number,
@@ -10,8 +10,7 @@ export const serializeTypedData = (
   nonce: bigint
 ): TypedDataDefinition => ({
   domain: {
-    name: "Delegation",
-    version: "0.0.1",
+    ...gelatoDomainNameAndVersion(),
     chainId,
     verifyingContract: account
   },
