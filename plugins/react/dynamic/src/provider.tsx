@@ -36,10 +36,11 @@ type GelatoSmartWalletDynamicContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletDynamicInternal: FC<{
   children: ReactNode;
-  defaultChain: Chain | undefined;
+  defaultChain: Chain;
   apiKey?: string | undefined;
   wagmi: { config: WagmiConfig | undefined };
 }> = ({ children, defaultChain, apiKey, wagmi }) => {
+  const [chainId, setChainId] = useState<number>(defaultChain.id);
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
     Transport,
@@ -58,6 +59,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
     }
 
     await primaryWallet.switchNetwork(chainId);
+    setChainId(chainId);
   };
 
   useEffect(() => {
@@ -73,8 +75,8 @@ const GelatoSmartWalletDynamicInternal: FC<{
       }
 
       try {
-        if (defaultChain) {
-          await primaryWallet.switchNetwork(defaultChain.id);
+        if (chainId) {
+          await primaryWallet.switchNetwork(chainId);
         }
 
         const client = await primaryWallet.getWalletClient();
@@ -109,7 +111,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [primaryWallet, defaultChain, apiKey]);
+  }, [primaryWallet, chainId, apiKey]);
 
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
