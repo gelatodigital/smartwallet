@@ -3,7 +3,7 @@ import {
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import { Wallet } from "@gelatonetwork/smartwallet/constants";
+import type { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

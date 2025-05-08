@@ -1,5 +1,5 @@
 import type { GelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
-import { Wallet } from "@gelatonetwork/smartwallet/constants";
+import type { Wallet } from "@gelatonetwork/smartwallet/constants";
 import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
 import type { Account, Chain, Transport } from "viem";

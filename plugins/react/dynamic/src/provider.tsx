@@ -7,7 +7,7 @@ import {
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import { Wallet } from "@gelatonetwork/smartwallet/constants";
+import type { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
