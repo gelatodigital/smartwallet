@@ -11,11 +11,11 @@
     "build": "tsc --project ./tsconfig.build.json"
   },
   "peerDependencies": {
+    "@gelatonetwork/smartwallet": "workspace:*",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "typescript": "catalog:",
     "viem": "catalog:",
-    "wagmi": "catalog:",
-    "@gelatonetwork/smartwallet-react-types": "workspace:*",
-    "@gelatonetwork/smartwallet": "workspace:*"
+    "wagmi": "catalog:"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -26,17 +26,17 @@
     }
   },
   "dependencies": {
-    "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@gelatonetwork/smartwallet": "workspace:*",
-    "@privy-io/react-auth": "^2.10.0",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "@privy-io/react-auth": "^2.13.0",
     "@privy-io/wagmi": "^1.0.3",
     "@tanstack/react-query": "catalog:",
-    "caip": "^1",
+    "caip": "^1.1.1",
     "react": "catalog:",
     "react-dom": "catalog:",
     "viem": "catalog:",
     "wagmi": "catalog:",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@types/react": "catalog:",
