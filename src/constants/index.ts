@@ -1,5 +1,5 @@
 import type { Address, Hex } from "viem";
-import { baseSepolia, sepolia } from "viem/chains";
+import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 
 const GELATO_API = "https://api.staging.gelato.digital";
 const GELATO_API_WS = "wss://api.staging.gelato.digital";
@@ -19,18 +19,21 @@ const GELATO_DOMAIN_NAME_AND_VERSION = {
 };
 
 const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0xe8d378f26A857D8d32bB9E8Ba6C2Dc5e554d95Bb",
-  [baseSepolia.id]: "0xD77B41b99B22f0f674744B53f85F4BB363F7f7CD"
+  [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
 };
 
 const KERNEL_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
   [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
+  // not deployed on ink sepolia
 };
 
 const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
-  [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf"
+  [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
+  [inkSepolia.id]: "0x92478C7eCCb3c7a3932263712C1555DbaEa7D56C"
 };
 
 // for kernel version >=0.3.1
