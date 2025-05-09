@@ -65,15 +65,15 @@ const GelatoSmartWalletPrivyInternal: FC<{
     await logout();
   };
 
-  const switchNetwork = async (chain: Chain) => {
+  const switchNetwork = async (chainId: number) => {
     if (!smartWalletClient) {
       return;
     }
 
     const primaryWallet = wallets[0];
 
-    await primaryWallet.switchChain(chain.id);
-    smartWalletClient.switchChain({ id: chain.id });
+    await primaryWallet.switchChain(chainId);
+    smartWalletClient.switchChain({ id: chainId });
   };
 
   useEffect(() => {
