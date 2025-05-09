@@ -1,5 +1,14 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.2-alpha.6
+
+### Patch Changes
+
+- 6055f9b: chore: bump packages
+- Updated dependencies [6055f9b]
+  - @gelatonetwork/smartwallet@0.0.2-alpha.6
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.6
+
 ## 0.0.2-alpha.5
 
 ### Patch Changes
