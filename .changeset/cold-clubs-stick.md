@@ -1,9 +1,9 @@
 ---
-"@gelatonetwork/smartwallet-react-dynamic": minor
-"@gelatonetwork/smartwallet-react-privy": minor
-"@gelatonetwork/smartwallet-react-sdk": minor
-"@gelatonetwork/smartwallet-react-types": minor
-"@gelatonetwork/smartwallet": minor
+"@gelatonetwork/smartwallet-react-dynamic": patch
+"@gelatonetwork/smartwallet-react-privy": patch
+"@gelatonetwork/smartwallet-react-sdk": patch
+"@gelatonetwork/smartwallet-react-types": patch
+"@gelatonetwork/smartwallet": patch
 ---
 
 feat: support kernel wallet (7702)
