@@ -1,11 +1,5 @@
 # @gelatonetwork/smartwallet
 
-## 0.1.0-alpha.6
-
-### Patch Changes
-
-- 2bdff53: chore: update changeset action
-
 ## 0.1.0-alpha.5
 
 ### Minor Changes
