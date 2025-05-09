@@ -1,5 +1,17 @@
 # @gelatonetwork/smartwallet-react-types
 
+## 0.0.2-alpha.5
+
+### Patch Changes
+
+- e0b9f69: feat: support kernel wallet (7702)
+- Updated dependencies [e0b9f69]
+- Updated dependencies [49a40ae]
+- Updated dependencies [2bdff53]
+- Updated dependencies [b928e65]
+- Updated dependencies [ffa3302]
+  - @gelatonetwork/smartwallet@0.0.2-alpha.5
+
 ## 0.0.2-alpha.4
 
 ### Patch Changes

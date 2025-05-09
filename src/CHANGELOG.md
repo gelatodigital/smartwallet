@@ -1,5 +1,15 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.5
+
+### Patch Changes
+
+- e0b9f69: feat: support kernel wallet (7702)
+- 49a40ae: fix: verify simulation error
+- 2bdff53: chore: update changeset action
+- b928e65: feat: handler for tx hash on task submission
+- ffa3302: fix: sdk updating outer calls array
+
 ## 0.0.2-alpha.4
 
 ### Patch Changes
