@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.6
+
+### Patch Changes
+
+- 6055f9b: chore: bump packages
+
 ## 0.0.2-alpha.5
 
 ### Patch Changes
