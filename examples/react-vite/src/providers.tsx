@@ -96,17 +96,17 @@ const WalletInfoComponent = () => {
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
         setTransactionHash(status.transactionHash!);
         setTransactionStatus(TransactionStatus.Submitted);
+        setIsLoading(false);
       });
       response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
         // biome-ignore lint/style/noNonNullAssertion: <explanation>
         setTransactionHash(status.transactionHash!);
         setTransactionStatus(TransactionStatus.Executed);
+        setIsLoading(false);
       });
     } catch (error) {
       console.error("Transaction failed:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -151,6 +151,7 @@ const WalletInfoComponent = () => {
                 </label>
                 <select
                   id="network"
+                  value={chainId}
                   onChange={(e) => {
                     setChainId(Number.parseInt(e.target.value));
                   }}
@@ -196,7 +197,15 @@ const WalletInfoComponent = () => {
                   </select>
                 </div>
               )}
-              <button type="button" onClick={executeTransaction} disabled={isLoading}>
+              <button
+                type="button"
+                onClick={executeTransaction}
+                disabled={isLoading}
+                style={{
+                  opacity: isLoading ? 0.7 : 1,
+                  cursor: isLoading ? "not-allowed" : "pointer"
+                }}
+              >
                 {isLoading ? "Processing..." : "Execute Transaction"}
               </button>
               {transactionHash && (
@@ -257,9 +266,10 @@ export default function Providers() {
         // wallet: "kernel"
         waas: dynamic(waasAppId),
         wagmi: wagmi({
-          chains: [sepolia],
+          chains: [sepolia, baseSepolia],
           transports: {
-            [sepolia.id]: http()
+            [sepolia.id]: http(),
+            [baseSepolia.id]: http()
           }
         })
       }}
