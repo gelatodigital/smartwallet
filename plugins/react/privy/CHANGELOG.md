@@ -1,5 +1,14 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.2-alpha.7
+
+### Patch Changes
+
+- 2ef980a: chore: make every dependency static versioned
+- Updated dependencies [2ef980a]
+  - @gelatonetwork/smartwallet@0.0.2-alpha.7
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.7
+
 ## 0.0.2-alpha.6
 
 ### Patch Changes
