@@ -87,8 +87,10 @@ const GelatoSmartWalletDynamicInternal: FC<{
           const { chainId, nonce } = parameters;
           const contractAddress = parameters.contractAddress ?? parameters.address;
 
-          const signedAuthorization = await connector.experimental_signAuthorization({
-            contractAddress
+          const signedAuthorization = await connector.signAuthorization({
+            address: contractAddress,
+            chainId,
+            nonce
           });
 
           return {
