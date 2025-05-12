@@ -28,15 +28,15 @@
   "dependencies": {
     "@gelatonetwork/smartwallet": "workspace:*",
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
-    "@privy-io/react-auth": "^2.13.0",
-    "@privy-io/wagmi": "^1.0.3",
+    "@privy-io/react-auth": "2.13.0",
+    "@privy-io/wagmi": "1.0.3",
     "@tanstack/react-query": "catalog:",
-    "caip": "^1.1.1",
+    "caip": "1.1.1",
     "react": "catalog:",
     "react-dom": "catalog:",
     "viem": "catalog:",
     "wagmi": "catalog:",
-    "zod": "^3.24.4"
+    "zod": "3.24.4"
   },
   "devDependencies": {
     "@types/react": "catalog:",

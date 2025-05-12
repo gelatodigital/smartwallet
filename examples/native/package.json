@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "dotenv": "^16.5.0",
-    "tsx": "^4.19.4",
+    "dotenv": "16.5.0",
+    "tsx": "4.19.4",
     "typescript": "catalog:"
   }
 }
