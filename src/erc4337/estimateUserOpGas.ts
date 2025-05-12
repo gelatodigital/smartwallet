@@ -1,4 +1,4 @@
-import { type Account, type Chain, type Transport } from "viem";
+import type { Account, Chain, Transport } from "viem";
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../actions/index.js";

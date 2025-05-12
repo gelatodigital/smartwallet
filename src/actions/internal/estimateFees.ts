@@ -5,10 +5,10 @@ import { encodeCalls } from "viem/experimental/erc7821";
 import type { EstimateL1GasParameters } from "viem/op-stack";
 import { simulationAbi, simulationBytecode } from "../../abis/simulation.js";
 import { mode } from "../../constants/index.js";
+import { getEstimatedFee, getEstimatedFeeOpStack } from "../../oracle/index.js";
+import type { Payment } from "../../payment/index.js";
 import type { GelatoWalletClient } from "../index.js";
 import { getOpData } from "./getOpData.js";
-import { getEstimatedFee, getEstimatedFeeOpStack } from "../../oracle/index.js";
-import { Payment } from "../../payment/index.js";
 
 const AUTHORIZATION_GAS = 25_000n;
 

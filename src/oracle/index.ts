@@ -1,4 +1,4 @@
-import { Hex } from "viem";
+import type { Hex } from "viem";
 import { api } from "../constants/index.js";
 
 export const isOracleActive = async (chainId: number): Promise<boolean> => {

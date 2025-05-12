@@ -1,13 +1,13 @@
-import { type Account, type Call, type Chain, type Transport } from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
+import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
+import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
+import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoWalletClient } from "./index.js";
+import { estimateFees } from "./internal/estimateFees.js";
 import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
-import { estimateFees } from "./internal/estimateFees.js";
-import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
-import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
-import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
 
 /**
  *

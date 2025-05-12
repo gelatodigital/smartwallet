@@ -1,7 +1,7 @@
 import "dotenv/config";
 import {
+  type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  GelatoTaskStatus,
   sponsored
 } from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";

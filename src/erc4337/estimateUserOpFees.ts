@@ -1,9 +1,9 @@
-import { ethAddress, type Account, type Chain, type Transport } from "viem";
+import { type Account, type Chain, type Transport, ethAddress } from "viem";
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { Payment } from "../payment/index.js";
 import { getEstimatedFee } from "../oracle/index.js";
+import type { Payment } from "../payment/index.js";
 
 export async function estimateUserOpFees<
   transport extends Transport = Transport,
