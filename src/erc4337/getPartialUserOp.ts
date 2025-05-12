@@ -23,10 +23,9 @@ export async function getPartialUserOp<
     sender: client.account.address,
     maxFeePerGas: 0n,
     maxPriorityFeePerGas: 0n,
-    // TODO: binary search instead of hardcoding gas limits
-    preVerificationGas: 100_000n,
-    verificationGasLimit: 300_000n,
-    callGasLimit: 100_000n,
+    preVerificationGas: 0n,
+    verificationGasLimit: 0n,
+    callGasLimit: 0n,
     signature: "0x"
   };
 }

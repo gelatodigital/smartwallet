@@ -1,3 +1,4 @@
+import { Hex } from "viem";
 import { api } from "../constants/index.js";
 
 export const isOracleActive = async (chainId: number): Promise<boolean> => {
@@ -33,26 +34,12 @@ export const getPaymentTokens = async (chainId: number): Promise<string[]> => {
 
 export const getEstimatedFee = async (
   chainId: number,
-  paymentToken: string,
-  estimatedGas: bigint,
-  estimatedL1Gas: bigint,
-  data?: string
-): Promise<bigint> => {
-  return data
-    ? _getEstimatedFeeOpStack(chainId, paymentToken, estimatedGas, estimatedL1Gas, data)
-    : _getEstimatedFee(chainId, paymentToken, estimatedGas, estimatedL1Gas);
-};
-
-const _getEstimatedFee = async (
-  chainId: number,
-  paymentToken: string,
-  estimatedGas: bigint,
-  estimatedL1Gas: bigint
+  paymentToken: Hex,
+  estimatedGas: bigint
 ): Promise<bigint> => {
   const queryParams = new URLSearchParams({
     paymentToken,
-    gasLimit: estimatedGas.toString(),
-    gasLimitL1: estimatedL1Gas.toString()
+    gasLimit: estimatedGas.toString()
   });
 
   const url = `${api()}/oracles/${chainId.toString()}/estimate?${queryParams.toString()}`;
@@ -69,11 +56,10 @@ const _getEstimatedFee = async (
   }
 };
 
-const _getEstimatedFeeOpStack = async (
+export const getEstimatedFeeOpStack = async (
   chainId: number,
-  paymentToken: string,
+  paymentToken: Hex,
   estimatedGas: bigint,
-  estimatedL1Gas: bigint,
   data: string
 ): Promise<bigint> => {
   const url = `${api()}/oracles/${chainId.toString()}/estimate/opStack`;
@@ -81,7 +67,6 @@ const _getEstimatedFeeOpStack = async (
   const body = JSON.stringify({
     paymentToken,
     gasLimit: estimatedGas.toString(),
-    gasLimitL1: estimatedL1Gas.toString(),
     data
   });
 
@@ -99,6 +84,6 @@ const _getEstimatedFeeOpStack = async (
     const data = await response.json();
     return BigInt(data.estimatedFee);
   } catch (error) {
-    throw new Error(`GelatoRelaySDK/getEstimatedFeePost: Failed with error: ${error}`);
+    throw new Error(`GelatoRelaySDK/getEstimatedFeeOpStack: Failed with error: ${error}`);
   }
 };

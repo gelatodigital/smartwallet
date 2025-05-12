@@ -1,5 +1,9 @@
 import "dotenv/config";
-import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
+import {
+  createGelatoSmartWalletClient,
+  GelatoTaskStatus,
+  sponsored
+} from "@gelatonetwork/smartwallet";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -30,11 +34,17 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
       }
     ]
   })
-  .then(async (response) => {
+  .then((response) => {
     console.log(`Your Gelato id is: ${response.id}`);
+    console.log("Waiting for transaction to be confirmed...");
 
-    const txHash = await response.wait();
-    console.log(`Transaction hash: ${txHash}`);
-
-    process.exit(0);
+    // Listen for events
+    response.on("success", (status: GelatoTaskStatus) => {
+      console.log(`Transaction successful: ${status.transactionHash}`);
+      process.exit(0);
+    });
+    response.on("error", (error: Error) => {
+      console.error(`Transaction failed: ${error.message}`);
+      process.exit(1);
+    });
   });

@@ -1,4 +1,4 @@
-import type { Account, Call, Chain, Transport } from "viem";
+import { type Account, type Call, type Chain, type Transport } from "viem";
 
 import { encodeExecuteData } from "viem/experimental/erc7821";
 import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
@@ -7,12 +7,14 @@ import { signUserOp } from "../erc4337/signUserOp.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { estimateGas } from "./internal/estimateGas.js";
 import { getOpData } from "./internal/getOpData.js";
-import { resolveMockPaymentCalls, resolvePaymentCall } from "./internal/resolvePaymentCall.js";
+import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
+import { estimateFees } from "./internal/estimateFees.js";
+import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
+import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
 
 /**
  *
@@ -33,27 +35,35 @@ export async function execute<
   const authorized = await verifyAuthorization(client);
   const authorizationList = authorized ? undefined : await signAuthorizationList(client);
 
-  const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
+  let callsWithMockPayment = calls;
+  if (payment.type === "erc20" || payment.type === "native")
+    callsWithMockPayment = [...calls, await resolvePaymentCall(client, payment, 1n, false)];
 
   if (client._internal.erc4337) {
-    const userOp = await getPartialUserOp(client, callsWithMockPayment);
+    let userOp = await getPartialUserOp(client, callsWithMockPayment);
 
-    // TODO: estimate userOp gas limits here
+    userOp = {
+      ...userOp,
+      ...(await estimateUserOpGas(client, userOp))
+    };
+
     if (payment.type === "erc20" || payment.type === "native") {
-      const transfer = await resolvePaymentCall(client, payment, 500_000n, 0n);
+      const { estimatedFee } = await estimateUserOpFees(client, userOp, payment);
+
+      const transfer = await resolvePaymentCall(client, payment, estimatedFee);
       userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
     }
 
     userOp.signature = await signUserOp(client, userOp);
 
     const handleOps = encodeHandleOpsCall(client, userOp);
-
     return sendTransaction(client, handleOps.to, handleOps.data, payment, authorizationList);
   }
 
   if (payment.type === "erc20" || payment.type === "native") {
-    const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
-    const transfer = await resolvePaymentCall(client, payment, estimatedGas, estimatedL1Gas);
+    const { estimatedFee } = await estimateFees(client, callsWithMockPayment, payment);
+
+    const transfer = await resolvePaymentCall(client, payment, estimatedFee);
     calls.push(transfer);
   }
 
