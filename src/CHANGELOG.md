@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.6
+
+### Patch Changes
+
+- 6055f9b: chore: bump packages
+- 1d5eacb: fix: sdk internal state on network switch
+- 575b36b: chore: update delegation addresses
+
 ## 0.0.2-alpha.5
 
 ### Patch Changes
