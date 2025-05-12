@@ -1,5 +1,15 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.2-alpha.7
+
+### Patch Changes
+
+- 2ef980a: chore: make every dependency static versioned
+- 2ef980a: fix: revert dynamic to an older version
+- Updated dependencies [2ef980a]
+  - @gelatonetwork/smartwallet@0.0.2-alpha.7
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.7
+
 ## 0.0.2-alpha.6
 
 ### Patch Changes

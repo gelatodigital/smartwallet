@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.2-alpha.7
+
+### Patch Changes
+
+- 2ef980a: chore: make every dependency static versioned
+
 ## 0.0.2-alpha.6
 
 ### Patch Changes
