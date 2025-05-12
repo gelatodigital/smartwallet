@@ -1,5 +1,19 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.2-alpha.6
+
+### Patch Changes
+
+- 8ab4de1: refactor: switchNetwork method to accept chainId
+- 6055f9b: chore: bump packages
+- 8ab4de1: fix: network switching
+- Updated dependencies [8ab4de1]
+- Updated dependencies [6055f9b]
+- Updated dependencies [1d5eacb]
+- Updated dependencies [575b36b]
+  - @gelatonetwork/smartwallet-react-types@0.0.2-alpha.6
+  - @gelatonetwork/smartwallet@0.0.2-alpha.6
+
 ## 0.0.2-alpha.5
 
 ### Patch Changes
