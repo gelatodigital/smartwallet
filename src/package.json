@@ -19,11 +19,11 @@
     }
   },
   "dependencies": {
-    "isomorphic-ws": "^5.0.0",
+    "isomorphic-ws": "5.0.0",
     "viem": "catalog:",
-    "ws": "^8.18.2"
+    "ws": "8.18.2"
   },
   "devDependencies": {
-    "@types/ws": "^8.18.1"
+    "@types/ws": "8.18.1"
   }
 }
