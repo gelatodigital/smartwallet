@@ -9,6 +9,8 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
   workflow_dispatch:
+  push:
+    branches: [master]
 
 jobs:
   test:
