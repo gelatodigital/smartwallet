@@ -2,4 +2,4 @@
 "@gelatonetwork/smartwallet-react-dynamic": patch
 ---
 
-chore: upgade dynamic version
+chore: upgrade dynamic version
