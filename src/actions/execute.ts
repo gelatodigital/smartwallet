@@ -46,7 +46,7 @@ async function erc4337<
   return encodeHandleOpsCall(client, userOp);
 }
 
-async function erc7821<
+async function nonErc4337<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
@@ -100,7 +100,7 @@ export async function execute<
 
   const { to, data } = client._internal.erc4337
     ? await erc4337(client, { payment, calls, callsWithMockPayment })
-    : await erc7821(client, { payment, calls, callsWithMockPayment, nonceKey });
+    : await nonErc4337(client, { payment, calls, callsWithMockPayment, nonceKey });
 
   const result = await sendTransaction(client, to, data, payment, authorizationList);
 
