@@ -1,10 +1,12 @@
-import { type Account, type Call, type Chain, type Transport, ethAddress } from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
-import { getEstimatedFee } from "../oracle/index.js";
+import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
+import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
+import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { estimateGas } from "./internal/estimateGas.js";
-import { resolveMockPaymentCalls } from "./internal/resolvePaymentCall.js";
+import { estimateFees } from "./internal/estimateFees.js";
+import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
@@ -30,24 +32,29 @@ export async function estimate<
 
   await verifyAuthorization(client);
 
-  const callsWithMockPayment = [...calls, ...resolveMockPaymentCalls(client, payment)];
+  if (payment.type === "erc20" || payment.type === "native")
+    calls.push(await resolvePaymentCall(client, payment, 1n, false));
 
   if (client._internal.erc4337) {
-    throw new Error("ERC4337 estimation not yet supported");
+    let userOp = await getPartialUserOp(client, calls);
+
+    userOp = {
+      ...userOp,
+      ...(await estimateUserOpGas(client, userOp))
+    };
+
+    const { estimatedFee, estimatedGas, estimatedL1Gas } = await estimateUserOpFees(
+      client,
+      userOp,
+      payment
+    );
+
+    return {
+      estimatedFee,
+      estimatedGas,
+      estimatedL1Gas
+    };
   }
 
-  const { estimatedGas, estimatedL1Gas } = await estimateGas(client, callsWithMockPayment);
-
-  const estimatedFee = await getEstimatedFee(
-    client.chain.id,
-    payment.type === "erc20" ? payment.token : ethAddress,
-    estimatedGas,
-    estimatedL1Gas
-  );
-
-  return {
-    estimatedFee,
-    estimatedGas,
-    estimatedL1Gas
-  };
+  return estimateFees(client, calls, payment);
 }

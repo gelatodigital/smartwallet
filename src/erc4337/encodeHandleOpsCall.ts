@@ -1,4 +1,4 @@
-import { type Account, Call, type Chain, type Transport, encodeFunctionData } from "viem";
+import { type Account, type Chain, type Transport, encodeFunctionData } from "viem";
 
 import {
   type UserOperation,
