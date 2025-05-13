@@ -28,3 +28,6 @@ export const sponsored = (sponsorApiKey?: string): SponsoredPayment => ({
   type: "sponsored",
   sponsorApiKey
 });
+
+export const isSponsored = (payment: Payment): payment is SponsoredPayment =>
+  payment.type === "sponsored";
