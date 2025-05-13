@@ -14,7 +14,7 @@ export async function resolvePaymentCall<
   client: GelatoWalletClient<transport, chain, account>,
   payment: ERC20Payment | NativePayment,
   estimatedFee: bigint,
-  verify = true
+  verify = false
 ): Promise<Call> {
   if (payment.type === "erc20") {
     if (verify) {

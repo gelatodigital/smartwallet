@@ -44,24 +44,22 @@ export async function estimateFees<
     maxPriorityFeePerGas: 0n
   } as EstimateGasParameters);
 
-  if (!client._internal.authorized) estimatedGas += AUTHORIZATION_GAS;
+  if (!client._internal.authorized) {
+    estimatedGas += AUTHORIZATION_GAS;
+  }
 
   const paymentToken = payment.type === "erc20" ? payment.token : ethAddress;
 
   if (client._internal.isOpStack()) {
     // TODO: currently only supports EIP-1559 transactions so we cannot specify authorizationList
-    const estimatedFee = await getEstimatedFeeOpStack(
-      client.chain.id,
-      paymentToken,
-      estimatedGas,
-      data
-    );
-
-    // TODO: remove once this is returned by the fee oracle
-    const estimatedL1Gas = await client.estimateL1Gas({
-      to: client.account.address,
-      data
-    } as EstimateL1GasParameters);
+    const [estimatedFee, estimatedL1Gas] = await Promise.all([
+      getEstimatedFeeOpStack(client.chain.id, paymentToken, estimatedGas, data),
+      // TODO: remove once this is returned by the fee oracle
+      client.estimateL1Gas({
+        to: client.account.address,
+        data
+      } as EstimateL1GasParameters)
+    ]);
 
     return {
       estimatedFee,

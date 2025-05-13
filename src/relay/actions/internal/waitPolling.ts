@@ -40,7 +40,7 @@ export const waitPolling = async <
   if (!submission && submissionHash) {
     const response = await Promise.race([
       httpRequest(),
-      client.waitForTransactionReceipt({ hash: submissionHash, pollingInterval: pollInterval })
+      client.waitForTransactionReceipt({ hash: submissionHash, pollingInterval: _pollInterval })
     ]);
 
     if (response) {
