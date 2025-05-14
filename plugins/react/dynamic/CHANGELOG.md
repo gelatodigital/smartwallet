@@ -1,5 +1,49 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.2
+
+### Patch Changes
+
+- a4745d0: feat: provide gelato smart wallet client from react component
+- e0b9f69: feat: support kernel wallet (7702)
+- 9d15eea: feat: allow passing gelato apiKey
+- 2ef980a: chore: make every dependency static versioned
+- 5f11604: chore: add readmes
+- a7add59: fix: versioning
+- 8ab4de1: refactor: switchNetwork method to accept chainId
+- 6c57084: chore: upgrade dynamic version
+- b495e5d: fix: missing default chain for dynamic
+- 6055f9b: chore: bump packages
+- 8ab4de1: fix: network switching
+- 03ad775: chore: improve DX for defaultChain
+- 5474e52: chore: alpha release
+- 1f2c254: fix: peer dependency
+- 2ef980a: fix: revert dynamic to an older version
+- Updated dependencies [a4745d0]
+- Updated dependencies [e0b9f69]
+- Updated dependencies [9d15eea]
+- Updated dependencies [49a40ae]
+- Updated dependencies [2bdff53]
+- Updated dependencies [2ef980a]
+- Updated dependencies [b928e65]
+- Updated dependencies [5f11604]
+- Updated dependencies [a7add59]
+- Updated dependencies [8ab4de1]
+- Updated dependencies [9d15eea]
+- Updated dependencies [6055f9b]
+- Updated dependencies [ef7be72]
+- Updated dependencies [ffa3302]
+- Updated dependencies [5474e52]
+- Updated dependencies [1d5eacb]
+- Updated dependencies [575b36b]
+- Updated dependencies [1f2c254]
+- Updated dependencies [576b744]
+- Updated dependencies [576b744]
+- Updated dependencies [d69774c]
+- Updated dependencies [6895459]
+  - @gelatonetwork/smartwallet-react-types@0.0.2
+  - @gelatonetwork/smartwallet@0.0.2
+
 ## 0.0.2-alpha.7
 
 ### Patch Changes
