@@ -39,6 +39,9 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
     console.log("Waiting for transaction to be confirmed...");
 
     // Listen for events
+    response.on("submitted", (status: GelatoTaskStatus) => {
+      console.log(`Transaction submitted: ${status.transactionHash}`);
+    });
     response.on("success", (status: GelatoTaskStatus) => {
       console.log(`Transaction successful: ${status.transactionHash}`);
       process.exit(0);
