@@ -1,6 +1,7 @@
 import WebSocket from "isomorphic-ws";
 import type { ClientOptions, ErrorEvent, MessageEvent } from "isomorphic-ws";
 
+import { api } from "../../constants/index.js";
 import type {
   ErrorWebsocketMessage,
   TransactionStatusResponse,
@@ -10,7 +11,7 @@ import type {
 import { WebsocketEvent } from "./types.js";
 import { isFinalTaskState } from "./utils.js";
 
-export class WebsocketHandler {
+class WebsocketHandler {
   readonly #url: string;
   readonly #config: ClientOptions | undefined;
   readonly #subscriptions: Set<string> = new Set();
@@ -211,3 +212,5 @@ export class WebsocketHandler {
     }
   }
 }
+
+export const statusApiWebSocket = new WebsocketHandler(api("ws"));

@@ -13,7 +13,7 @@ import {
   type TransactionStatusResponse
 } from "../status/types.js";
 import { isSubmitted } from "../status/utils.js";
-import { statusApiWebSocket } from "../ws.js";
+import { statusApiWebSocket } from "../status/ws.js";
 
 type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
 

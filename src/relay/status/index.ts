@@ -5,7 +5,6 @@ import type { GelatoTaskEvent } from "./types.js";
 
 import { on } from "../actions/on.js";
 import { wait } from "../actions/wait.js";
-export { WebsocketHandler } from "./ws.js";
 export { getTaskStatus } from "./http.js";
 export {
   TaskState,
