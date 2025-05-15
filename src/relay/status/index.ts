@@ -1,10 +1,10 @@
 import type { Account, Chain, PublicActions, Transport } from "viem";
+import type { GelatoResponse } from "../index.js";
 import type { GelatoTaskWaitEvent } from "./types.js";
 import type { GelatoTaskEvent } from "./types.js";
-import type { GelatoResponse } from "../index.js";
 
-import { wait } from "../actions/wait.js";
 import { on } from "../actions/on.js";
+import { wait } from "../actions/wait.js";
 export { WebsocketHandler } from "./ws.js";
 export { getTaskStatus } from "./http.js";
 export {
