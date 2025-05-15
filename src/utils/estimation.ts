@@ -1,6 +1,15 @@
-import { type Account, type Chain, type Hex, type Transport, ethAddress, hexToBytes } from "viem";
+import {
+  type Account,
+  type Chain,
+  type Hex,
+  type StateOverride,
+  type Transport,
+  ethAddress,
+  hexToBytes
+} from "viem";
 import type { EstimateL1GasParameters } from "viem/op-stack";
 import type { GelatoWalletClient } from "../actions/index.js";
+import { delegationCode } from "../constants/index.js";
 import { getEstimatedFee, getEstimatedFeeOpStack } from "../oracle/index.js";
 import type { Payment } from "../payment/index.js";
 
@@ -9,6 +18,23 @@ const AUTHORIZATION_GAS = 25_000n;
 
 const calculateCalldataGas = (data: Hex): bigint =>
   hexToBytes(data).reduce((gas, byte) => gas + (byte === 0 ? 4n : 16n), 0n);
+
+export function addDelegationOverride<
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
+  client: GelatoWalletClient<transport, chain, account>,
+  override: StateOverride = []
+): StateOverride {
+  if (!client._internal.authorized) {
+    override.push({
+      address: client.account.address,
+      code: delegationCode(client._internal.delegation)
+    });
+  }
+  return override;
+}
 
 export function addAuthorizationGas<
   transport extends Transport = Transport,

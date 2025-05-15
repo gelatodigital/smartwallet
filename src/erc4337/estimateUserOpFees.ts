@@ -14,7 +14,11 @@ import { erc4337SimulationsAbi, erc4337SimulationsBytecode } from "../abis/erc43
 import type { GelatoWalletClient } from "../actions/index.js";
 import { delegationCode, feeCollector } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
-import { addAuthorizationGas, estimateL1GasAndFee } from "../utils/estimation.js";
+import {
+  addAuthorizationGas,
+  addDelegationOverride,
+  estimateL1GasAndFee
+} from "../utils/estimation.js";
 
 const GAS_BUFFER = 3_000n;
 
@@ -40,17 +44,12 @@ export async function estimateUserOpFees<
   let estimatedGas = await client.estimateGas({
     to: entryPoint07Address,
     data,
-    stateOverride: [
+    stateOverride: addDelegationOverride(client, [
       {
         address: entryPoint07Address,
         code: erc4337SimulationsBytecode
-      },
-      // TODO: we only need this if not already authorized
-      {
-        address: client.account.address,
-        code: delegationCode(client._internal.delegation)
       }
-    ],
+    ]),
     maxFeePerGas: 0n,
     maxPriorityFeePerGas: 0n
   } as EstimateGasParameters);
