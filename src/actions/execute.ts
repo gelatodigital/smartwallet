@@ -52,7 +52,12 @@ async function nonErc4337<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[]; callsWithMockPayment: Call[]; nonceKey?: bigint }
+  parameters: {
+    payment: Payment;
+    calls: Call[];
+    callsWithMockPayment: Call[];
+    nonceKey?: bigint;
+  }
 ): Promise<{ to: Address; data: Hex }> {
   const { payment, calls, callsWithMockPayment, nonceKey } = parameters;
 
@@ -100,7 +105,12 @@ export async function execute<
 
   const { to, data } = client._internal.erc4337
     ? await erc4337(client, { payment, calls, callsWithMockPayment })
-    : await nonErc4337(client, { payment, calls, callsWithMockPayment, nonceKey });
+    : await nonErc4337(client, {
+        payment,
+        calls,
+        callsWithMockPayment,
+        nonceKey
+      });
 
   const result = await sendTransaction(client, to, data, payment, authorizationList);
 

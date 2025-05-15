@@ -3,6 +3,7 @@ import { type Account, type Call, type Chain, type Transport, encodePacked } fro
 import { delegationAbi } from "../../abis/delegation.js";
 import { delegationCode } from "../../constants/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
+import { addDelegationOverride } from "../../utils/estimation.js";
 import type { GelatoWalletClient } from "../index.js";
 
 export async function getOpData<
@@ -20,12 +21,7 @@ export async function getOpData<
     abi: delegationAbi,
     functionName: "getNonce",
     args: [nonceKey],
-    stateOverride: [
-      {
-        address: client.account.address,
-        code: delegationCode(client._internal.delegation)
-      }
-    ]
+    stateOverride: addDelegationOverride(client)
   });
 
   const typedData = serializeTypedData(

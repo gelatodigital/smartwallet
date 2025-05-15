@@ -14,12 +14,10 @@ export function encodeHandleOpsCall<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, userOp: UserOperation) {
-  const packedUserOp = toPackedUserOperation(userOp);
-
   const data = encodeFunctionData({
     abi: entryPoint07Abi,
     functionName: "handleOps",
-    args: [[packedUserOp], feeCollector(client.chain.id)]
+    args: [[toPackedUserOperation(userOp)], feeCollector(client.chain.id)]
   });
 
   return {
