@@ -1,10 +1,9 @@
-import type { Account, Chain, Hash, Transport } from "viem";
-import type { GelatoWalletClient } from "../../actions/index.js";
+import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
 import { statusApiPollingInterval } from "../../constants/index.js";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
 import { isSubmitted } from "../status/utils.js";
-import { statusApiWebSocket } from "../ws.js";
+import { statusApiWebSocket } from "../status/ws.js";
 import { type ErrorCallback, onError } from "./internal/onError.js";
 
 type SuccessCallback = (data: TransactionStatusResponse) => void;
@@ -18,13 +17,13 @@ export const on = <
   account extends Account = Account
 >(
   taskId: string,
-  client: GelatoWalletClient<transport, chain, account>,
   parameters: {
+    client?: PublicActions<transport, chain, account>;
     update: GelatoTaskEvent | "error";
     callback: Callback;
   }
 ) => {
-  const { update, callback } = parameters;
+  const { update, callback, client } = parameters;
 
   if (update === "error") {
     return onError(taskId, { update, callback: callback as ErrorCallback });
@@ -68,13 +67,15 @@ export const on = <
         resolvePromise = resolve;
       });
 
-      const _result = await Promise.race([
-        promise,
-        client.waitForTransactionReceipt({
-          hash: result.taskStatus.transactionHash as Hash,
-          pollingInterval: statusApiPollingInterval()
-        })
-      ]);
+      const _result = client
+        ? await Promise.race([
+            promise,
+            client.waitForTransactionReceipt({
+              hash: result.taskStatus.transactionHash as Hash,
+              pollingInterval: statusApiPollingInterval()
+            })
+          ])
+        : await promise;
 
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
         result.taskStatus = _result.taskStatus;

@@ -1,12 +1,9 @@
-export { erc20, native, sponsored } from "./payment/index.js";
-export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
-
-import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
+import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
-import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
+import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import { type Wallet, delegationAddress } from "./constants/index.js";
 import { isOpStack } from "./utils/opstack.js";
 
@@ -45,3 +42,7 @@ export const createGelatoSmartWalletClient = <
     account
   >;
 };
+
+export { track } from "./relay/status/index.js";
+export { erc20, native, sponsored } from "./payment/index.js";
+export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";

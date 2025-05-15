@@ -1,4 +1,4 @@
-import { statusApiWebSocket } from "../../ws.js";
+import { statusApiWebSocket } from "../../status/ws.js";
 
 export type ErrorCallback = (error: Error) => void;
 
