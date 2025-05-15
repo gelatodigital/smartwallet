@@ -1,8 +1,8 @@
 import { type Account, type Chain, type Hex, type Transport, ethAddress, hexToBytes } from "viem";
 import type { EstimateL1GasParameters } from "viem/op-stack";
-import type { GelatoWalletClient } from "../actions";
-import { getEstimatedFee, getEstimatedFeeOpStack } from "../oracle";
-import type { Payment } from "../payment";
+import type { GelatoWalletClient } from "../actions/index.js";
+import { getEstimatedFee, getEstimatedFeeOpStack } from "../oracle/index.js";
+import type { Payment } from "../payment/index.js";
 
 const BASE_GAS = 21_000n;
 const AUTHORIZATION_GAS = 25_000n;
