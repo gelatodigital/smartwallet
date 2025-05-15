@@ -5,6 +5,9 @@ import { encodeExecuteData } from "viem/experimental/erc7821";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { kernelECDSAValidatorKey } from "../constants/index.js";
 
+const MOCK_SIGNATURE =
+  "0x578a956c04cac0db87212ba62d98f49270dce9372449f6a68e8a97e7d75597233d9fd7d49f627eae7ec061681cba5732aea2c77566faad9a8d736e3967d3c5031b";
+
 export async function getPartialUserOp<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
@@ -26,6 +29,6 @@ export async function getPartialUserOp<
     preVerificationGas: 0n,
     verificationGasLimit: 0n,
     callGasLimit: 0n,
-    signature: "0x"
+    signature: MOCK_SIGNATURE
   };
 }

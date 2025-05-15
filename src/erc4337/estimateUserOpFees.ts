@@ -1,9 +1,22 @@
-import { type Account, type Chain, type Transport, ethAddress } from "viem";
-
-import type { UserOperation } from "viem/account-abstraction";
+import {
+  type Account,
+  type Chain,
+  type EstimateGasParameters,
+  type Transport,
+  encodeFunctionData
+} from "viem";
+import {
+  type UserOperation,
+  entryPoint07Address,
+  toPackedUserOperation
+} from "viem/account-abstraction";
+import { erc4337SimulationsAbi, erc4337SimulationsBytecode } from "../abis/erc4337.js";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { getEstimatedFee } from "../oracle/index.js";
+import { delegationCode, feeCollector } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
+import { addAuthorizationGas, estimateL1GasAndFee } from "../utils/estimation.js";
+
+const GAS_BUFFER = 3_000n;
 
 export async function estimateUserOpFees<
   transport extends Transport = Transport,
@@ -11,20 +24,46 @@ export async function estimateUserOpFees<
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  _userOp: UserOperation,
+  userOp: UserOperation,
   payment: Payment
 ): Promise<{
   estimatedFee: bigint;
   estimatedGas: bigint;
   estimatedL1Gas: bigint;
 }> {
-  // TODO: estimate rather than using hardcoded values
-  const estimatedGas = 500_000n;
-  const estimatedL1Gas = 0n;
+  const data = encodeFunctionData({
+    abi: erc4337SimulationsAbi,
+    functionName: "simulateHandleOps",
+    args: [[toPackedUserOperation(userOp)], feeCollector(client.chain.id)]
+  });
 
-  const paymentToken = payment.type === "erc20" ? payment.token : ethAddress;
+  let estimatedGas = await client.estimateGas({
+    to: entryPoint07Address,
+    data,
+    stateOverride: [
+      {
+        address: entryPoint07Address,
+        code: erc4337SimulationsBytecode
+      },
+      // TODO: we only need this if not already authorized
+      {
+        address: client.account.address,
+        code: delegationCode(client._internal.delegation)
+      }
+    ],
+    maxFeePerGas: 0n,
+    maxPriorityFeePerGas: 0n
+  } as EstimateGasParameters);
 
-  const estimatedFee = await getEstimatedFee(client.chain.id, paymentToken, estimatedGas);
+  estimatedGas += GAS_BUFFER;
+  estimatedGas = addAuthorizationGas(client, estimatedGas);
+
+  const { estimatedFee, estimatedL1Gas } = await estimateL1GasAndFee(
+    client,
+    payment,
+    estimatedGas,
+    data
+  );
 
   return {
     estimatedFee,

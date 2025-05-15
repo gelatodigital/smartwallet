@@ -20,6 +20,7 @@ export async function getOpData<
     abi: delegationAbi,
     functionName: "getNonce",
     args: [nonceKey],
+    // TODO: we only need this if not already authorized
     stateOverride: [
       {
         address: client.account.address,
