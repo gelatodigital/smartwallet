@@ -2,7 +2,7 @@ import type { Account, Chain, SignedAuthorizationList, Transport } from "viem";
 
 import type { GelatoWalletClient } from "../actions/index.js";
 import { api } from "../constants/index.js";
-import { on, wait } from "./actions/index.js";
+import { track } from "./status/index.js";
 import type {
   GelatoTaskEvent,
   GelatoTaskWaitEvent,
@@ -67,11 +67,7 @@ const callGelatoApi = async <
 
   if (message) throw new Error(message);
 
-  return {
-    id: taskId,
-    wait: (e: GelatoTaskWaitEvent = "execution") => wait(taskId, client, e === "submission"),
-    on: (update: GelatoTaskEvent | "error", callback) => on(taskId, client, { update, callback })
-  };
+  return track(taskId, client);
 };
 
 export const sponsoredCall = <

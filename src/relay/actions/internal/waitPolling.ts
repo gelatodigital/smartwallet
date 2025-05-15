@@ -1,8 +1,6 @@
-import type { Account, Chain, Hash, Transport } from "viem";
+import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
 
 import { waitHttp } from "./waitHttp.js";
-
-import type { GelatoWalletClient } from "../../../actions/index.js";
 import { statusApiPollingInterval, statusApiPollingMaxRetries } from "../../../constants/index.js";
 import { ExecutionTimeoutError } from "../../status/types.js";
 
@@ -12,13 +10,17 @@ export const waitPolling = async <
   account extends Account = Account
 >(
   taskId: string,
-  submission: boolean,
-  client: GelatoWalletClient<transport, chain, account>,
-  submissionHash?: Hash,
-  pollInterval?: number,
-  maxRetries?: number
+  parameters: {
+    submission: boolean;
+    submissionHash?: Hash;
+    client?: PublicActions<transport, chain, account>;
+    pollingInterval?: number;
+    maxRetries?: number;
+  }
 ): Promise<Hash> => {
-  const _pollInterval = pollInterval ?? statusApiPollingInterval();
+  const { submission, submissionHash, client, pollingInterval, maxRetries } = parameters;
+
+  const _pollInterval = pollingInterval ?? statusApiPollingInterval();
   const _maxRetries = maxRetries ?? statusApiPollingMaxRetries();
 
   const httpRequest = async () => {
@@ -38,10 +40,12 @@ export const waitPolling = async <
   // Waiting for execution but TX hash gathered from submission event already
   // race with provider's receipt
   if (!submission && submissionHash) {
-    const response = await Promise.race([
-      httpRequest(),
-      client.waitForTransactionReceipt({ hash: submissionHash, pollingInterval: _pollInterval })
-    ]);
+    const response = client
+      ? await Promise.race([
+          httpRequest(),
+          client.waitForTransactionReceipt({ hash: submissionHash, pollingInterval: _pollInterval })
+        ])
+      : await httpRequest();
 
     if (response) {
       return response.transactionHash;
