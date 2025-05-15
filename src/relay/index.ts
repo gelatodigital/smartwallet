@@ -70,7 +70,7 @@ const callGelatoApi = async <
   return {
     id: taskId,
     wait: (e: GelatoTaskWaitEvent = "execution") => wait(taskId, client, e === "submission"),
-    on: (update: GelatoTaskEvent | "error", callback) => on(taskId, { update, callback })
+    on: (update: GelatoTaskEvent | "error", callback) => on(taskId, client, { update, callback })
   };
 };
 

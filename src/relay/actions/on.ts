@@ -1,3 +1,6 @@
+import type { Account, Chain, Hash, Transport } from "viem";
+import type { GelatoWalletClient } from "../../actions/index.js";
+import { statusApiPollingInterval } from "../../constants/index.js";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
 import { isSubmitted } from "../status/utils.js";
@@ -7,8 +10,15 @@ import { type ErrorCallback, onError } from "./internal/onError.js";
 type SuccessCallback = (data: TransactionStatusResponse) => void;
 type Callback = SuccessCallback | ErrorCallback;
 
-export const on = (
+type TaskStatusReturn = { taskStatus: TransactionStatusResponse; waitForReceipt?: boolean };
+
+export const on = <
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
   taskId: string,
+  client: GelatoWalletClient<transport, chain, account>,
   parameters: {
     update: GelatoTaskEvent | "error";
     callback: Callback;
@@ -22,27 +32,60 @@ export const on = (
 
   const successCallback = callback as SuccessCallback;
 
+  let resolvePromise: (value: TaskStatusReturn) => void;
+
   const updateHandler = (taskStatus: TransactionStatusResponse) => {
     if (taskStatus.taskId !== taskId) return;
 
-    if (update === "success" && taskStatus.taskState === TaskState.ExecSuccess) {
-      successCallback(taskStatus);
-    } else if (update === "revert" && taskStatus.taskState === TaskState.ExecReverted) {
-      successCallback(taskStatus);
-    } else if (update === "cancel" && taskStatus.taskState === TaskState.Cancelled) {
-      successCallback(taskStatus);
+    if (taskStatus.taskState === TaskState.ExecReverted && update === "revert") {
+      resolvePromise({ taskStatus });
+    } else if (taskStatus.taskState === TaskState.Cancelled && update === "cancel") {
+      resolvePromise({ taskStatus });
+    } else if (taskStatus.taskState === TaskState.ExecSuccess && update === "success") {
+      resolvePromise({ taskStatus });
     } else if (
-      update === "submitted" &&
       isSubmitted(taskStatus.taskState) &&
-      taskStatus.transactionHash
+      taskStatus.transactionHash &&
+      (update === "submitted" || update === "success")
     ) {
-      successCallback(taskStatus);
+      resolvePromise({ taskStatus, waitForReceipt: update === "success" });
     }
   };
 
+  const promise = new Promise<TaskStatusReturn>((resolve) => {
+    resolvePromise = resolve;
+  });
   statusApiWebSocket.onUpdate(updateHandler);
 
-  statusApiWebSocket.subscribe(taskId);
+  statusApiWebSocket.subscribe(taskId).then(async () => {
+    // Wait for general events on task status to resolve
+    const result = await promise;
+
+    // If result is `waitForReceipt`, this means we're waiting for "success" event and we got
+    // execution submitted from status API, so race with client's TX receipt and Status API's ExecSuccess
+    while (result.waitForReceipt) {
+      const promise = new Promise<TaskStatusReturn>((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      const _result = await Promise.race([
+        promise,
+        client.waitForTransactionReceipt({
+          hash: result.taskStatus.transactionHash as Hash,
+          pollingInterval: statusApiPollingInterval()
+        })
+      ]);
+
+      if ("waitForReceipt" in _result && _result.waitForReceipt) {
+        result.taskStatus = _result.taskStatus;
+        result.waitForReceipt = _result.waitForReceipt;
+      } else {
+        break;
+      }
+    }
+
+    successCallback(result.taskStatus);
+  });
 
   // Cleanup function
   return () => {
