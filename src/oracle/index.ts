@@ -15,7 +15,7 @@ export const getGelatoOracles = async (): Promise<string[]> => {
     const data = await response.json();
     return data.oracles;
   } catch (error) {
-    throw new Error(`GelatoRelaySDK/getGelatoOracles: Failed with error: ${error}`);
+    throw new Error(`GelatoSmartWalletSDK/getGelatoOracles: Failed with error: ${error}`);
   }
 };
 
@@ -28,7 +28,7 @@ export const getPaymentTokens = async (chainId: number): Promise<string[]> => {
     const data = await response.json();
     return data.paymentTokens;
   } catch (error) {
-    throw new Error(`GelatoRelaySDK/getPaymentTokens: Failed with error: ${error}`);
+    throw new Error(`GelatoSmartWalletSDK/getPaymentTokens: Failed with error: ${error}`);
   }
 };
 
@@ -52,7 +52,7 @@ export const getEstimatedFee = async (
     const data = await response.json();
     return BigInt(data.estimatedFee);
   } catch (error) {
-    throw new Error(`GelatoRelaySDK/getEstimatedFee: Failed with error: ${error}`);
+    throw new Error(`GelatoSmartWalletSDK/getEstimatedFee: Failed with error: ${error}`);
   }
 };
 
@@ -84,6 +84,6 @@ export const getEstimatedFeeOpStack = async (
     const data = await response.json();
     return BigInt(data.estimatedFee);
   } catch (error) {
-    throw new Error(`GelatoRelaySDK/getEstimatedFeeOpStack: Failed with error: ${error}`);
+    throw new Error(`GelatoSmartWalletSDK/getEstimatedFeeOpStack: Failed with error: ${error}`);
   }
 };
