@@ -75,8 +75,6 @@ export const walletPrepareCalls = async <
   client: GelatoWalletClient<transport, chain, account>,
   params: WalletPrepareCallsParams
 ): Promise<WalletPrepareCallsResponse> => {
-  console.log("params: ", params);
-
   // Ensure the calls have string values instead of BigInt
   const serializedCalls = serializeCalls(params.calls);
   const serializedNonceKey = serializeNonceKey(params.nonceKey);
@@ -107,7 +105,6 @@ export const walletPrepareCalls = async <
   });
 
   const data = await raw.json();
-  console.log("data: ", data);
   if (data.error || data.message)
     throw new Error(data.error?.message || data.message || "walletPrepareCalls failed");
 
