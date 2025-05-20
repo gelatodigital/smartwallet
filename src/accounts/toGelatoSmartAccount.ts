@@ -1,9 +1,9 @@
 import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
-import { BaseError, decodeFunctionData, encodeFunctionData } from "viem";
+import { BaseError, decodeAbiParameters, decodeFunctionData, encodeFunctionData } from "viem";
 import type { SmartAccount, SmartAccountImplementation } from "viem/account-abstraction";
 import { entryPoint08Abi, entryPoint08Address, toSmartAccount } from "viem/account-abstraction";
 import type { PrivateKeyAccount } from "viem/accounts";
-import { getCode, readContract } from "viem/actions";
+import { getChainId, getCode, readContract } from "viem/actions";
 import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { getAction } from "viem/utils";
@@ -28,20 +28,6 @@ export type GelatoSmartAccountImplementation = SmartAccountImplementation<
   true
 >;
 
-const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
-};
-
-const delegationAddress = (chainId: number) => {
-  const address = GELATO_V0_0_DELEGATION_ADDRESSES[chainId];
-  if (!address) {
-    throw new Error(`Unsupported chain: ${chainId}`);
-  }
-  return address;
-};
-
 export async function toGelatoSmartAccount(
   parameters: ToGelatoSmartAccountParameters
 ): Promise<ToGelatoSmartAccountReturnType> {
@@ -54,13 +40,29 @@ export async function toGelatoSmartAccount(
   } as const;
 
   let deployed = false;
+  let chainId: number;
+
+  const getMemoizedChainId = async () => {
+    if (chainId) return chainId;
+    chainId = client.chain
+      ? client.chain.id
+      : await getAction(client, getChainId, "getChainId")({});
+    return chainId;
+  };
+
+  const { authorization } = await (async () => {
+    const chainId = await getMemoizedChainId();
+
+    return {
+      authorization: { account: owner, address: delegationAddress(chainId) }
+    };
+  })();
 
   return toSmartAccount({
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
-    authorization: { account: owner, address: delegationAddress(client.chain!.id) },
+    authorization,
     abi,
     client,
-    extend: { abi, owner }, // not removing abi from here as this will be a breaking change
+    extend: { abi, owner },
     entryPoint,
 
     async decodeCalls(data) {
@@ -70,46 +72,24 @@ export async function toGelatoSmartAccount(
       });
 
       if (result.functionName === "execute") {
-        // TODO: handle opMode
+        // First argument is the opMode
         const [_, executionData] = result.args as [Hex, Hex];
 
-        const callsOffset = Number(BigInt(`0x${executionData.slice(2, 66)}`));
-        const callsLengthHex = `0x${executionData.slice(2 + callsOffset * 2, 2 + callsOffset * 2 + 64)}`;
-        const callsLength = Number(BigInt(callsLengthHex));
+        const [decodedCalls] = decodeAbiParameters(
+          [
+            {
+              type: "tuple[]",
+              components: [
+                { type: "address", name: "to" },
+                { type: "uint256", name: "value" },
+                { type: "bytes", name: "data" }
+              ]
+            }
+          ],
+          executionData
+        ) as [Call[]];
 
-        const callsData = executionData.slice(2 + callsOffset * 2 + 64);
-
-        const calls: Call[] = [];
-        let offset = 0;
-        for (let i = 0; i < callsLength; i++) {
-          // Each call has 3 components: to (address), value (uint256), and data (bytes)
-
-          // Extract 'to' address (20 bytes)
-          const to = `0x${callsData.slice(offset, offset + 40)}` as Address;
-          offset += 40;
-
-          // Extract 'value' (32 bytes)
-          const valueHex = `0x${callsData.slice(offset, offset + 64)}`;
-          const value = BigInt(valueHex);
-          offset += 64;
-
-          // Extract data length and data
-          const dataOffsetRelative = Number(BigInt(`0x${callsData.slice(offset, offset + 64)}`));
-          offset += 64;
-
-          // Calculate absolute offset for data within the callsData
-          const dataStartPos = dataOffsetRelative * 2;
-          const dataLengthHex = `0x${callsData.slice(dataStartPos, dataStartPos + 64)}`;
-          const dataLength = Number(BigInt(dataLengthHex));
-
-          // Extract the actual data bytes
-          const data =
-            dataLength === 0
-              ? "0x"
-              : (`0x${callsData.slice(dataStartPos + 64, dataStartPos + 64 + dataLength * 2)}` as Hex);
-
-          calls.push({ to, value, data });
-        }
+        const calls: Call[] = decodedCalls;
 
         return calls;
       }
@@ -120,7 +100,7 @@ export async function toGelatoSmartAccount(
       return encodeFunctionData({
         abi,
         functionName: "execute",
-        // TODO handle opMode
+        // SmartAccount interface is not supporting ERC-7821, thus opMode could not be handled here
         args: [mode("default"), encodeCalls(calls)]
       });
     },
@@ -170,10 +150,6 @@ export async function toGelatoSmartAccount(
       return { factory: "0x7702", factoryData: "0x" };
     },
 
-    async getStubSignature() {
-      throw new Error("getStubSignature is not supported");
-    },
-
     async signMessage(parameters) {
       const { message } = parameters;
       return await owner.signMessage({ message });
@@ -192,8 +168,28 @@ export async function toGelatoSmartAccount(
       });
     },
 
+    async getStubSignature() {
+      throw new Error("getStubSignature is not supported");
+    },
+
     async signUserOperation(_) {
       throw new Error("signUserOperation is not supported");
     }
   });
 }
+
+/// Constants
+
+const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
+  [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
+};
+
+const delegationAddress = (chainId: number) => {
+  const address = GELATO_V0_0_DELEGATION_ADDRESSES[chainId];
+  if (!address) {
+    throw new Error(`Unsupported chain: ${chainId}`);
+  }
+  return address;
+};
