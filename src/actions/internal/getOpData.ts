@@ -1,9 +1,6 @@
 import { type Account, type Call, type Chain, type Transport, encodePacked } from "viem";
 
-import { delegationAbi } from "../../abis/delegation.js";
-import { delegationCode } from "../../constants/index.js";
 import { serializeTypedData } from "../../utils/eip712.js";
-import { addDelegationOverride } from "../../utils/estimation.js";
 import type { GelatoWalletClient } from "../index.js";
 
 export async function getOpData<
@@ -16,12 +13,12 @@ export async function getOpData<
   nonceKey: bigint,
   mock = false
 ) {
-  const nonce = await client.readContract({
-    address: client.account.address,
-    abi: delegationAbi,
-    functionName: "getNonce",
-    args: [nonceKey],
-    stateOverride: addDelegationOverride(client)
+  if (!client.account.getNonce) {
+    throw new Error("Account is not supported");
+  }
+
+  const nonce = await client.account.getNonce({
+    key: nonceKey
   });
 
   const typedData = serializeTypedData(

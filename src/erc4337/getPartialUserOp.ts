@@ -1,11 +1,11 @@
 import type { Account, Call, Chain, Transport } from "viem";
 import { encodeFunctionData, encodePacked } from "viem";
 
-import { type UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
+import type { UserOperation } from "viem/account-abstraction";
 import { encodeCalls } from "viem/experimental/erc7821";
-import { delegationAbi as abi } from "../abis/delegation.js";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { kernelECDSAValidatorKey, mode } from "../constants/index.js";
+import { mode } from "../constants/index.js";
+import { delegationAbi as abi } from "../abis/delegation.js";
 
 const MOCK_SIGNATURE =
   "0x578a956c04cac0db87212ba62d98f49270dce9372449f6a68e8a97e7d75597233d9fd7d49f627eae7ec061681cba5732aea2c77566faad9a8d736e3967d3c5031b";
@@ -15,12 +15,11 @@ export async function getPartialUserOp<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]): Promise<UserOperation> {
-  const nonce = await client.readContract({
-    address: entryPoint07Address,
-    abi: entryPoint07Abi,
-    functionName: "getNonce",
-    args: [client.account.address, kernelECDSAValidatorKey()]
-  });
+  if (!client.account.getNonce) {
+    throw new Error("getNonce is not implemented");
+  }
+
+  const nonce = await client.account.getNonce();
 
   const executionMode =
     calls.length === 1 && client._internal.wallet.type === "kernel"
