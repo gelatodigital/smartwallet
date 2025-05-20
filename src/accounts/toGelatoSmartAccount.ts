@@ -1,19 +1,16 @@
 import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
 import { BaseError, decodeFunctionData, encodeFunctionData } from "viem";
 import type { SmartAccount, SmartAccountImplementation } from "viem/account-abstraction";
-import {
-  entryPoint08Abi,
-  entryPoint08Address,
-  getUserOperationTypedData,
-  toSmartAccount
-} from "viem/account-abstraction";
+import { entryPoint08Abi, entryPoint08Address, toSmartAccount } from "viem/account-abstraction";
 import type { PrivateKeyAccount } from "viem/accounts";
+import { getCode, readContract } from "viem/actions";
 import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
-
-import { readContract } from "viem/actions";
 import { encodeCalls } from "viem/experimental/erc7821";
+import { getAction } from "viem/utils";
+
 import { delegationAbi as abi } from "../abis/delegation.js";
 import { delegationCode, mode } from "../constants/index.js";
+import { lowercase } from "../utils/index.js";
 
 export type ToGelatoSmartAccountParameters = {
   client: GelatoSmartAccountImplementation["client"];
@@ -55,6 +52,8 @@ export async function toGelatoSmartAccount(
     address: entryPoint08Address,
     version: "0.8"
   } as const;
+
+  let deployed = false;
 
   return toSmartAccount({
     // biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -127,19 +126,40 @@ export async function toGelatoSmartAccount(
     },
 
     async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
+      const isDeployed = await this.isDeployed();
+
       return readContract(client, {
         abi,
         address: owner.address,
         functionName: "getNonce",
         args: [parameters?.key],
-        stateOverride: [
-          // TODO keep state of this account if delegated already
-          {
-            address: owner.address,
-            code: delegationCode(this.authorization.address)
-          }
-        ]
+        stateOverride: isDeployed
+          ? undefined
+          : [
+              {
+                address: owner.address,
+                code: delegationCode(this.authorization.address)
+              }
+            ]
       });
+    },
+
+    async isDeployed() {
+      if (deployed) return true;
+      const code = await getAction(
+        client,
+        getCode,
+        "getCode"
+      )({
+        address: owner.address
+      });
+
+      deployed = Boolean(
+        code?.length &&
+          code.length > 0 &&
+          lowercase(code) === lowercase(delegationCode(this.authorization.address))
+      );
+      return deployed;
     },
 
     async getAddress() {
