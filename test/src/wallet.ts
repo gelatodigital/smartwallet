@@ -4,6 +4,7 @@ import {
   type Chain,
   type Transport,
   type WalletClient,
+  createPublicClient,
   createWalletClient
 } from "viem";
 import { sepolia } from "viem/chains";
@@ -11,6 +12,11 @@ import { sepolia } from "viem/chains";
 import { rpcUrl } from "./anvil.js";
 
 const walletClients: Map<string, WalletClient<Transport, Chain, Account>> = new Map();
+
+export const publicClient = createPublicClient({
+  chain: sepolia,
+  transport: http(rpcUrl())
+});
 
 export const walletClient = (account: Account): WalletClient<Transport, Chain, Account> => {
   if (walletClients.has(account.address)) {
