@@ -1,7 +1,13 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
 import type { SignAuthorizationReturnType } from "viem/accounts";
-import type { Payment } from "../payment/index.js";
+import { encodeExecuteData } from "viem/experimental/erc7821";
+import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
+import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
+import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
+import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
+import { signUserOp } from "../erc4337/signUserOp.js";
+import { type Payment, isSponsored } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
 import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
