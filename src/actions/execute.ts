@@ -3,14 +3,68 @@ import type { Account, Call, Chain, Transport } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
-import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
-import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
-import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
-import { isEIP7702 } from "../wallet/index.js";
+import { type Context, walletPrepareCalls, walletSendCalls } from "../relay/rpc/index.js";
 import type { GelatoWalletClient } from "./index.js";
+import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
+import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
+
+async function erc4337<
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
+  client: GelatoWalletClient<transport, chain, account>,
+  parameters: { payment: Payment; calls: Call[]; callsWithMockPayment: Call[] }
+): Promise<{ to: Address; data: Hex }> {
+  const { payment, calls, callsWithMockPayment } = parameters;
+
+  const partialUserOp = await getPartialUserOp(client, callsWithMockPayment);
+  const estimateGas = await estimateUserOpGas(client, partialUserOp);
+
+  const userOp = {
+    ...partialUserOp,
+    ...estimateGas
+  };
+
+  if (!isSponsored(payment)) {
+    const { estimatedFee } = await estimateUserOpFees(client, userOp, payment);
+
+    const transfer = await resolvePaymentCall(client, payment, estimatedFee);
+    userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
+  }
+
+  userOp.signature = await signUserOp(client, userOp);
+
+  return encodeHandleOpsCall(client, userOp);
+}
+
+async function nonErc4337<
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(
+  client: GelatoWalletClient<transport, chain, account>,
+  parameters: {
+    payment: Payment;
+    calls: Call[];
+    nonceKey?: bigint;
+  }
+): Promise<{ context: Context; signature: Hex }> {
+  const { payment, calls, nonceKey } = parameters;
+
+  const { context, signatureRequest } = await walletPrepareCalls(client, {
+    calls,
+    payment,
+    nonceKey
+  });
+
+  const signature = await signSignatureRequest(client, signatureRequest);
+
+  return { context, signature };
+}
 
 /**
  *
@@ -30,40 +84,25 @@ export async function execute<
 
   await initializeNetworkCapabilities(client);
 
-  let authorizationList: SignAuthorizationReturnType[] | undefined;
+  if (client._internal.erc4337) {
+    let callsWithMockPayment = calls;
+    // if the payment is not sponsored, we need to add a payment call to the calls array
+    if (!isSponsored(payment)) {
+      callsWithMockPayment = [...calls, await resolvePaymentCall(client, payment, 1n, false)];
+    }
 
-  let context: Context;
-  let signatureRequest: SignatureRequest;
+    const { to, data } = await erc4337(client, { payment, calls, callsWithMockPayment });
 
-  if (isEIP7702(client)) {
-    const authorized = await verifyAuthorization(client);
-
-    const [authResult, walletPrepareCallsResult] = await Promise.all([
-      (async () => {
-        const authorizationList = authorized ? undefined : await signAuthorizationList(client);
-        return { authorizationList };
-      })(),
-
-      walletPrepareCalls(client, {
-        calls,
-        payment,
-        nonceKey
-      })
-    ]);
-
-    authorizationList = authResult.authorizationList;
-    ({ context, signatureRequest } = walletPrepareCallsResult);
-  } else {
-    ({ context, signatureRequest } = await walletPrepareCalls(client, {
-      calls,
-      payment,
-      nonceKey
-    }));
+    return await sendTransaction(client, to, data, payment, authorizationList);
   }
 
-  const signature = await signSignatureRequest(client, signatureRequest);
+  const { context, signature } = await nonErc4337(client, {
+    payment,
+    calls,
+    nonceKey
+  });
 
-  return await walletSendPreparedCalls(client, {
+  return await walletSendCalls(client, {
     context,
     signature,
     authorizationList
