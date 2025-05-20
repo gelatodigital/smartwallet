@@ -50,7 +50,6 @@ export async function toGelatoSmartAccount(
 ): Promise<ToGelatoSmartAccountReturnType> {
   const { client, owner } = parameters;
 
-  // TODO do we need this?
   const entryPoint = {
     abi: entryPoint08Abi,
     address: entryPoint08Address,
@@ -151,9 +150,8 @@ export async function toGelatoSmartAccount(
       return { factory: "0x7702", factoryData: "0x" };
     },
 
-    // TODO disable this?
     async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+      throw new Error("getStubSignature is not supported");
     },
 
     async signMessage(parameters) {
@@ -174,21 +172,8 @@ export async function toGelatoSmartAccount(
       });
     },
 
-    // TODO disable this?
-    async signUserOperation(parameters) {
-      // biome-ignore lint/style/noNonNullAssertion: <explanation>
-      const { chainId = client.chain!.id, ...userOperation } = parameters;
-
-      const address = await this.getAddress();
-      const typedData = getUserOperationTypedData({
-        chainId,
-        entryPointAddress: entryPoint.address,
-        userOperation: {
-          ...userOperation,
-          sender: address
-        }
-      });
-      return await owner.signTypedData(typedData);
+    async signUserOperation(_) {
+      throw new Error("signUserOperation is not supported");
     }
   });
 }
