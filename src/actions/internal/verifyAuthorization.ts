@@ -1,10 +1,7 @@
 import type { Account, Chain, Transport } from "viem";
-import { getCode } from "viem/actions";
 
-import { delegationCode } from "../../constants/index.js";
-import { delegateAddress } from "../../relay/rpc/utils/networkCapabilities.js";
-import { lowercase } from "../../utils/index.js";
 import type { GelatoWalletClient } from "../index.js";
+import { delegateAddress } from "../../relay/rpc/utils/networkCapabilities.js";
 
 export async function verifyAuthorization<
   transport extends Transport = Transport,
@@ -15,14 +12,11 @@ export async function verifyAuthorization<
     return client._internal.authorization.authorized;
   }
 
-  const address = client.account.address;
-  const bytecode = await getCode(client, { address });
+  if (!client.account.isDeployed) {
+    throw new Error("Account is not supported");
+  }
 
-  const isEip7702Authorized = Boolean(
-    bytecode?.length &&
-      bytecode.length > 0 &&
-      lowercase(bytecode) === lowercase(delegationCode(delegateAddress(client)))
-  );
+  const isEip7702Authorized = await client.account.isDeployed();
 
   client._internal.authorization = {
     address: delegateAddress(client),
