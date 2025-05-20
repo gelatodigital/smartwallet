@@ -8,12 +8,12 @@ import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
 import { signUserOp } from "../erc4337/signUserOp.js";
 import { type Payment, isSponsored } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
+import { type Context, walletPrepareCalls, walletSendCalls } from "../relay/rpc/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { estimateFees } from "./internal/estimateFees.js";
-import { getOpData } from "./internal/getOpData.js";
 import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
+import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 async function erc4337<
@@ -55,27 +55,20 @@ async function nonErc4337<
   parameters: {
     payment: Payment;
     calls: Call[];
-    callsWithMockPayment: Call[];
     nonceKey?: bigint;
   }
-): Promise<{ to: Address; data: Hex }> {
-  const { payment, calls, callsWithMockPayment, nonceKey } = parameters;
+): Promise<{ context: Context; signature: Hex }> {
+  const { payment, calls, nonceKey } = parameters;
 
-  if (!isSponsored(payment)) {
-    const { estimatedFee } = await estimateFees(client, callsWithMockPayment, payment);
-    const transfer = await resolvePaymentCall(client, payment, estimatedFee);
-    calls.push(transfer);
-  }
+  const { context, signatureRequest } = await walletPrepareCalls(client, {
+    calls,
+    payment,
+    nonceKey
+  });
 
-  const opData = await getOpData(client, calls, nonceKey || 0n);
+  const signature = await signSignatureRequest(client, signatureRequest);
 
-  return {
-    to: client.account.address,
-    data: encodeExecuteData({
-      calls,
-      opData
-    })
-  };
+  return { context, signature };
 }
 
 /**
@@ -97,22 +90,27 @@ export async function execute<
   const authorized = await verifyAuthorization(client);
   const authorizationList = authorized ? undefined : await signAuthorizationList(client);
 
-  let callsWithMockPayment = calls;
-  // if the payment is not sponsored, we need to add a payment call to the calls array
-  if (!isSponsored(payment)) {
-    callsWithMockPayment = [...calls, await resolvePaymentCall(client, payment, 1n, false)];
+  if (client._internal.erc4337) {
+    let callsWithMockPayment = calls;
+    // if the payment is not sponsored, we need to add a payment call to the calls array
+    if (!isSponsored(payment)) {
+      callsWithMockPayment = [...calls, await resolvePaymentCall(client, payment, 1n, false)];
+    }
+
+    const { to, data } = await erc4337(client, { payment, calls, callsWithMockPayment });
+
+    return await sendTransaction(client, to, data, payment, authorizationList);
   }
 
-  const { to, data } = client._internal.erc4337
-    ? await erc4337(client, { payment, calls, callsWithMockPayment })
-    : await nonErc4337(client, {
-        payment,
-        calls,
-        callsWithMockPayment,
-        nonceKey
-      });
+  const { context, signature } = await nonErc4337(client, {
+    payment,
+    calls,
+    nonceKey
+  });
 
-  const result = await sendTransaction(client, to, data, payment, authorizationList);
-
-  return result;
+  return await walletSendCalls(client, {
+    context,
+    signature,
+    authorizationList
+  });
 }
