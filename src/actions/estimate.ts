@@ -30,7 +30,9 @@ export async function estimate<
 }> {
   const { payment, calls } = structuredClone(parameters);
 
-  await verifyAuthorization(client);
+  if (client.account.authorization) {
+    await verifyAuthorization(client);
+  }
 
   if (payment.type === "erc20" || payment.type === "native")
     calls.push(await resolvePaymentCall(client, payment, 1n, false));
