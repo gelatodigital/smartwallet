@@ -1,10 +1,12 @@
 import { http, createTestClient, erc20Abi, erc20Abi_bytes32, parseEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { setBalance, writeContract } from "viem/actions";
+import { toGelatoSmartAccount } from "../../src/index.js";
 import { erc20MintableAbi } from "../abi/erc20";
 import { rpcUrl } from "./anvil";
 import { erc20Address } from "./constants.js";
 import { waitBlockTime } from "./utils.js";
+import { publicClient } from "./wallet.js";
 
 const accounts = [
   {
@@ -52,7 +54,10 @@ export async function getAccount(balance: bigint | undefined = parseEther("10000
   }
 
   return {
-    account,
+    account: await toGelatoSmartAccount({
+      owner: account,
+      client: publicClient
+    }),
     privateKey
   };
 }
