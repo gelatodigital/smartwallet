@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.3
+
+### Patch Changes
+
+- e605a7d: feat: erc4337 estimations
+- 203f43d: chore: deploy basecamp
+- 86b38da: feat: expose track utility
+
 ## 0.0.2
 
 ### Patch Changes

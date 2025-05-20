@@ -1,5 +1,5 @@
 import type { Address, Hex } from "viem";
-import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
+import { baseSepolia, basecampTestnet, inkSepolia, sepolia } from "viem/chains";
 
 const GELATO_API = "https://api.staging.gelato.digital";
 const GELATO_API_WS = "wss://api.staging.gelato.digital";
@@ -21,7 +21,8 @@ const GELATO_DOMAIN_NAME_AND_VERSION = {
 const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
   [baseSepolia.id]: "0x3AC05161b76a35c1c28dC99Aa01BEd7B24cEA3bf",
-  [inkSepolia.id]: "0x92478C7eCCb3c7a3932263712C1555DbaEa7D56C"
+  [inkSepolia.id]: "0x92478C7eCCb3c7a3932263712C1555DbaEa7D56C",
+  [basecampTestnet.id]: "0x92478C7eCCb3c7a3932263712C1555DbaEa7D56C"
 };
 
 const GELATO_STATUS_API_POLLING_INTERVAL = 1000;

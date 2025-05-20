@@ -4,7 +4,7 @@ import type { SmartAccount, SmartAccountImplementation } from "viem/account-abst
 import { entryPoint08Abi, entryPoint08Address, toSmartAccount } from "viem/account-abstraction";
 import type { PrivateKeyAccount } from "viem/accounts";
 import { getChainId, getCode, readContract } from "viem/actions";
-import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
+import { baseSepolia, basecampTestnet, inkSepolia, sepolia } from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { getAction } from "viem/utils";
 
@@ -183,7 +183,8 @@ export async function toGelatoSmartAccount(
 const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
   [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
+  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [basecampTestnet.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
 };
 
 const delegationAddress = (chainId: number) => {
