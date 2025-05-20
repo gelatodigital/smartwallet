@@ -15,9 +15,7 @@ export async function verifyAuthorization<
     throw new Error("Account is not supported");
   }
 
-  const isEip7702Authorized = await client.account.isDeployed();
+  client._internal.authorized = await client.account.isDeployed();
 
-  client._internal.authorized = isEip7702Authorized;
-
-  return isEip7702Authorized;
+  return client._internal.authorized;
 }
