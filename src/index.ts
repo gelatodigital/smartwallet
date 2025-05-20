@@ -46,3 +46,4 @@ export const createGelatoSmartWalletClient = <
 export { track } from "./relay/status/index.js";
 export { erc20, native, sponsored } from "./payment/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
+export * from "./accounts/index.js";
