@@ -55,14 +55,16 @@ async function nonErc4337<
   parameters: {
     payment: Payment;
     calls: Call[];
+    authorized: boolean;
     nonceKey?: bigint;
   }
 ): Promise<{ context: Context; signature: Hex }> {
-  const { payment, calls, nonceKey } = parameters;
+  const { payment, calls, authorized, nonceKey } = parameters;
 
   const { context, signatureRequest } = await walletPrepareCalls(client, {
     calls,
     payment,
+    authorized,
     nonceKey
   });
 
@@ -105,6 +107,7 @@ export async function execute<
   const { context, signature } = await nonErc4337(client, {
     payment,
     calls,
+    authorized,
     nonceKey
   });
 

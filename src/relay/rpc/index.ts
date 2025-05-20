@@ -32,14 +32,23 @@ export type SignatureRequest = {
 export interface WalletPrepareCallsParams {
   calls: Call[];
   payment: Payment;
+  authorized: boolean;
   nonceKey?: bigint;
+}
+
+export interface Quote {
+  fee: { estimatedFee: string; decimals: number; conversionRate: number };
+  gas: bigint;
+  l1Gas: bigint;
 }
 
 export type Context = {
   payment: Payment;
   calls: Call[];
   nonceKey: string;
-  gatewaySignature?: GatewaySignature;
+  timestamp?: number;
+  signature?: Hex;
+  quote?: Quote;
 };
 
 export interface WalletPrepareCallsResponse {
@@ -87,14 +96,20 @@ export const walletPrepareCalls = async <
           chainId: client.chain.id,
           from: client.account.address,
           calls: serializedCalls,
-          capabilities: { payment: params.payment, nonceKey: serializedNonceKey }
+          capabilities: {
+            payment: params.payment,
+            isAuthorized: params.authorized,
+            nonceKey: serializedNonceKey
+          }
         }
       ]
     })
   });
 
   const data = await raw.json();
-  if (data.error) throw new Error(data.error.message || "walletPrepareCalls failed");
+  console.log("data: ", data);
+  if (data.error || data.message)
+    throw new Error(data.error?.message || data.message || "walletPrepareCalls failed");
 
   return data.result as WalletPrepareCallsResponse;
 };
@@ -130,8 +145,8 @@ export const walletSendCalls = async <
   });
   const data = await response.json();
 
-  if (data.error) {
-    throw new Error(data.error.message || "walletSendCalls failed");
+  if (data.error || data.message) {
+    throw new Error(data.error?.message || data.message || "walletSendCalls failed");
   }
 
   const { id } = data.result as WalletSendCallsResponse;
