@@ -10,9 +10,10 @@ import {
 import type { PrivateKeyAccount } from "viem/accounts";
 import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 
+import { readContract } from "viem/actions";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { delegationAbi as abi } from "../abis/delegation.js";
-import { mode } from "../constants/index.js";
+import { delegationCode, mode } from "../constants/index.js";
 
 export type ToGelatoSmartAccountParameters = {
   client: GelatoSmartAccountImplementation["client"];
@@ -63,7 +64,6 @@ export async function toGelatoSmartAccount(
     client,
     extend: { abi, owner }, // not removing abi from here as this will be a breaking change
     entryPoint,
-    // getNonce, // TODO: handle our custom nonce
 
     async decodeCalls(data) {
       const result = decodeFunctionData({
@@ -124,6 +124,22 @@ export async function toGelatoSmartAccount(
         functionName: "execute",
         // TODO handle opMode
         args: [mode("default"), encodeCalls(calls)]
+      });
+    },
+
+    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
+      return readContract(client, {
+        abi,
+        address: owner.address,
+        functionName: "getNonce",
+        args: [parameters?.key],
+        stateOverride: [
+          // TODO keep state of this account if delegated already
+          {
+            address: owner.address,
+            code: delegationCode(this.authorization.address)
+          }
+        ]
       });
     },
 
