@@ -1,5 +1,6 @@
 import type { Account, Address, Call, Chain, Hex, Transport } from "viem";
 
+import type { SignAuthorizationReturnType } from "viem/accounts";
 import { encodeExecuteData } from "viem/experimental/erc7821";
 import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
 import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
@@ -94,8 +95,11 @@ export async function execute<
 ): Promise<GelatoResponse> {
   const { payment, calls, nonceKey } = structuredClone(parameters);
 
-  const authorized = await verifyAuthorization(client);
-  const authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  let authorizationList: SignAuthorizationReturnType[] | undefined;
+  if (client.account.authorization) {
+    const authorized = await verifyAuthorization(client);
+    authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  }
 
   let callsWithMockPayment = calls;
   // if the payment is not sponsored, we need to add a payment call to the calls array

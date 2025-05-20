@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "isomorphic-ws": "5.0.0",
+    "permissionless": "^0.2.47",
     "viem": "catalog:",
     "ws": "8.18.2"
   },

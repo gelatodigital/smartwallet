@@ -24,15 +24,16 @@ export function addDelegationOverride<
   chain extends Chain = Chain,
   account extends Account = Account
 >(
-  client: GelatoWalletClient<transport, chain, account>,
+  _client: GelatoWalletClient<transport, chain, account>,
   override: StateOverride = []
 ): StateOverride {
-  if (!client._internal.authorized) {
-    override.push({
-      address: client.account.address,
-      code: delegationCode(client._internal.delegation)
-    });
-  }
+  // if (!client._internal.authorized) {
+  //   override.push({
+  //     address: client.account.address,
+  //     // biome-ignore lint/style/noNonNullAssertion: TODO!
+  //     code: delegationCode(client.account.authorization!.address)
+  //   });
+  // }
   return override;
 }
 
