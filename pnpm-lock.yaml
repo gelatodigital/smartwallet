@@ -366,9 +366,6 @@ importers:
       isomorphic-ws:
         specifier: 5.0.0
         version: 5.0.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      permissionless:
-        specifier: ^0.2.47
-        version: 0.2.47(ox@0.6.7(typescript@5.8.3)(zod@3.24.4))(viem@2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -12769,6 +12766,7 @@ snapshots:
       viem: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
     optionalDependencies:
       ox: 0.6.7(typescript@5.8.3)(zod@3.24.4)
+    optional: true
 
   picocolors@1.1.1: {}
 

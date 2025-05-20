@@ -1,7 +1,23 @@
-import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type {
+  Address,
+  Call,
+  ContractFunctionExecutionErrorType,
+  Hex,
+  Prettify,
+  TypedData,
+  TypedDataDefinition
+} from "viem";
 import {
+  BaseError,
+  ContractFunctionRevertedError,
+  InvalidInputRpcError,
+  RawContractError,
+  RpcRequestError,
+  UnknownRpcError,
+  concat,
   concatHex,
   decodeAbiParameters,
+  decodeErrorResult,
   decodeFunctionData,
   domainSeparator,
   encodeAbiParameters,
@@ -27,11 +43,10 @@ import {
   toSmartAccount
 } from "viem/account-abstraction";
 import type { PrivateKeyAccount } from "viem/accounts";
-import { getChainId, getCode, readContract } from "viem/actions";
+import { getChainId, getCode, readContract, simulateContract } from "viem/actions";
 import { baseSepolia, sepolia } from "viem/chains";
 import { getAction } from "viem/utils";
 
-import { getSenderAddress } from "permissionless/actions";
 import { delegationAbi as abi } from "../abis/delegation.js";
 
 type FactoryArgsHandler = () => Promise<{ factory: Hex; factoryData: Hex }>;
@@ -76,7 +91,6 @@ const getAccountInitCode = async ({
   index: bigint;
   useMetaFactory: boolean;
 }): Promise<Hex> => {
-  // Build the account initialization data
   const initializationData = getInitializationData({
     validatorData
   });
@@ -116,6 +130,158 @@ export async function toKernelSmartAccount(
       ? client.chain.id
       : await getAction(client, getChainId, "getChainId")({});
     return chainId;
+  };
+
+  const getSenderAddress = async (parameters: {
+    factory: Address;
+    factoryData: Hex;
+  }): Promise<Address> => {
+    try {
+      await getAction(
+        client,
+        simulateContract,
+        "simulateContract"
+      )({
+        address: entryPoint.address,
+        abi: entryPoint.abi,
+        functionName: "getSenderAddress",
+        args: [concat([parameters.factory as Hex, parameters.factoryData])]
+      });
+    } catch (error) {
+      const revertError = (error as ContractFunctionExecutionErrorType).walk(
+        (err) =>
+          err instanceof ContractFunctionRevertedError ||
+          err instanceof RpcRequestError ||
+          err instanceof InvalidInputRpcError ||
+          err instanceof UnknownRpcError
+      );
+
+      if (!revertError) {
+        // biome-ignore lint/suspicious/noExplicitAny:
+        const cause = (error as ContractFunctionExecutionErrorType).cause as any;
+        const errorName = cause?.data?.errorName ?? "";
+        if (errorName === "SenderAddressResult" && cause?.data?.args && cause?.data?.args[0]) {
+          return cause.data?.args[0] as Address;
+        }
+      }
+
+      if (revertError instanceof ContractFunctionRevertedError) {
+        const errorName = revertError.data?.errorName ?? "";
+        if (
+          errorName === "SenderAddressResult" &&
+          revertError.data?.args &&
+          revertError.data?.args[0]
+        ) {
+          return revertError.data?.args[0] as Address;
+        }
+      }
+
+      if (revertError instanceof RpcRequestError) {
+        const hexStringRegex = /0x[a-fA-F0-9]+/;
+        // biome-ignore lint/suspicious/noExplicitAny:
+        const match = (revertError as unknown as any).cause.data.match(hexStringRegex);
+
+        if (!match) {
+          throw new Error("Failed to parse revert bytes from RPC response");
+        }
+
+        const data: Hex = match[0];
+
+        const error = decodeErrorResult({
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "sender",
+                  type: "address"
+                }
+              ],
+              name: "SenderAddressResult",
+              type: "error"
+            }
+          ],
+          data
+        });
+
+        return error.args[0] as Address;
+      }
+
+      if (revertError instanceof InvalidInputRpcError) {
+        const { data: data_ } = (
+          error instanceof RawContractError
+            ? error
+            : error instanceof BaseError
+              ? error.walk((err) => "data" in (err as Error)) || error.walk()
+              : {}
+        ) as RawContractError;
+
+        const data = typeof data_ === "string" ? data_ : data_?.data;
+
+        if (data === undefined) {
+          throw new Error("Failed to parse revert bytes from RPC response");
+        }
+
+        const decodeError = decodeErrorResult({
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "sender",
+                  type: "address"
+                }
+              ],
+              name: "SenderAddressResult",
+              type: "error"
+            }
+          ],
+          data
+        });
+
+        return decodeError.args[0] as Address;
+      }
+
+      if (revertError instanceof UnknownRpcError) {
+        const parsedBody = JSON.parse(
+          // biome-ignore lint/suspicious/noExplicitAny:
+          (revertError as unknown as any).cause.body
+        );
+        const revertData = parsedBody.error.data;
+
+        const hexStringRegex = /0x[a-fA-F0-9]+/;
+        const match = revertData.match(hexStringRegex);
+
+        if (!match) {
+          throw new Error("Failed to parse revert bytes from RPC response");
+        }
+
+        const data: Hex = match[0];
+
+        const error = decodeErrorResult({
+          abi: [
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "sender",
+                  type: "address"
+                }
+              ],
+              name: "SenderAddressResult",
+              type: "error"
+            }
+          ],
+          data
+        });
+
+        return error.args[0] as Address;
+      }
+
+      throw error;
+    }
+
+    throw new Error("Failed to get sender address");
   };
 
   const generateInitCode = async (_useMetaFactory: boolean) => {
@@ -208,10 +374,9 @@ export async function toKernelSmartAccount(
 
     const { factory, factoryData } = await getFactoryArgs();
 
-    let accountAddress = await getSenderAddress(client, {
+    let accountAddress = await getSenderAddress({
       factory,
-      factoryData,
-      entryPointAddress: entryPoint.address
+      factoryData
     });
 
     if (address === accountAddress) {
@@ -222,10 +387,9 @@ export async function toKernelSmartAccount(
       getFactoryArgs = getFactoryArgsFunc(false);
       const { factory, factoryData } = await getFactoryArgs();
 
-      accountAddress = await getSenderAddress(client, {
+      accountAddress = await getSenderAddress({
         factory,
-        factoryData,
-        entryPointAddress: entryPoint.address
+        factoryData
       });
     }
 
