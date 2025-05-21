@@ -15,6 +15,11 @@ export async function signSignatureRequest<
       account: client.account,
       ...signatureRequest.data
     });
+  } else if (signatureRequest.type === SignatureRequestType.EthSign) {
+    signature = await client.signMessage({
+      account: client.account,
+      message: { raw: signatureRequest.data }
+    });
   } else {
     throw new Error("Unsupported signature request type");
   }
