@@ -8,32 +8,33 @@ import type {
   TypedDataDefinition
 } from "viem";
 
+import type { UserOperation } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../../actions/index.js";
-import { api } from "../../constants/index.js";
+import { type Wallet, api } from "../../constants/index.js";
 import type { Payment } from "../../payment/index.js";
 import type { GelatoResponse } from "../index.js";
 import { track } from "../status/index.js";
 
-export type GatewaySignature = {
-  estimatedFee: string;
-  timestamp: number;
-  signature: Hex;
-};
-
 export enum SignatureRequestType {
-  TypedData = "eth_signTypedData_v4"
+  TypedData = "eth_signTypedData_v4",
+  EthSign = "eth_sign"
 }
 
-export type SignatureRequest = {
+type TypedDataSignatureRequest = {
   type: SignatureRequestType.TypedData;
   data: TypedDataDefinition;
 };
 
-export interface WalletPrepareCallsParams {
-  calls: Call[];
-  payment: Payment;
-  authorized: boolean;
-  nonceKey?: bigint;
+type EthSignSignatureRequest = {
+  type: SignatureRequestType.EthSign;
+  data: Hex;
+};
+
+export type SignatureRequest = TypedDataSignatureRequest | EthSignSignatureRequest;
+
+export enum ContextType {
+  SmartWallet = "smartwallet",
+  EntryPoint = "entrypoint"
 }
 
 export interface Quote {
@@ -42,14 +43,33 @@ export interface Quote {
   l1Gas: bigint;
 }
 
-export type Context = {
+export interface WalletPrepareCallsParams {
+  calls: Call[];
+  payment: Payment;
+  authorized: boolean;
+  nonceKey?: bigint;
+}
+
+export interface SmartWalletContext {
+  type: ContextType.SmartWallet;
   payment: Payment;
   calls: Call[];
   nonceKey: string;
   timestamp?: number;
   signature?: Hex;
   quote?: Quote;
-};
+}
+
+export interface EntryPointContext {
+  type: ContextType.EntryPoint;
+  payment: Payment;
+  userOp: UserOperation;
+  timestamp?: number;
+  signature?: Hex;
+  quote?: Quote;
+}
+
+export type Context = SmartWalletContext | EntryPointContext;
 
 export interface WalletPrepareCallsResponse {
   chainId: number;
@@ -57,13 +77,13 @@ export interface WalletPrepareCallsResponse {
   signatureRequest: SignatureRequest;
 }
 
-export interface WalletSendCallsParams {
+export interface WalletSendPreparedCallsParams {
   context: Context;
   signature: Hex;
   authorizationList?: SignedAuthorizationList;
 }
 
-export interface WalletSendCallsResponse {
+export interface WalletSendPreparedCallsResponse {
   id: string;
 }
 
@@ -75,9 +95,16 @@ export const walletPrepareCalls = async <
   client: GelatoWalletClient<transport, chain, account>,
   params: WalletPrepareCallsParams
 ): Promise<WalletPrepareCallsResponse> => {
-  // Ensure the calls have string values instead of BigInt
-  const serializedCalls = serializeCalls(params.calls);
-  const serializedNonceKey = serializeNonceKey(params.nonceKey);
+  const { payment } = params;
+
+  const calls = serializeCalls(params.calls);
+  const type = contextType(client._internal.wallet);
+  const nonceKey =
+    type === ContextType.SmartWallet ? serializeNonceKey(params.nonceKey) : undefined;
+  const delegation = {
+    address: client._internal.delegation,
+    authorized: params.authorized
+  };
 
   const raw = await fetch(`${api()}/smartwallet`, {
     method: "POST",
@@ -93,11 +120,12 @@ export const walletPrepareCalls = async <
         {
           chainId: client.chain.id,
           from: client.account.address,
-          calls: serializedCalls,
+          calls,
           capabilities: {
-            payment: params.payment,
-            isAuthorized: params.authorized,
-            nonceKey: serializedNonceKey
+            type,
+            payment,
+            delegation,
+            nonceKey
           }
         }
       ]
@@ -105,20 +133,24 @@ export const walletPrepareCalls = async <
   });
 
   const data = await raw.json();
+
   if (data.error || data.message)
     throw new Error(data.error?.message || data.message || "walletPrepareCalls failed");
 
   return data.result as WalletPrepareCallsResponse;
 };
 
-export const walletSendCalls = async <
+export const walletSendPreparedCalls = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  params: WalletSendCallsParams
+  params: WalletSendPreparedCallsParams
 ): Promise<GelatoResponse> => {
+  const { context, signature } = params;
+  const authorizationList = serializeAuthorizationList(params.authorizationList);
+
   const response = await fetch(`${api()}/smartwallet`, {
     method: "POST",
     headers: {
@@ -128,14 +160,14 @@ export const walletSendCalls = async <
     body: JSON.stringify({
       jsonrpc: "2.0",
       id: 1,
-      method: "wallet_sendCalls",
+      method: "wallet_sendPreparedCalls",
       params: [
         {
           chainId: client.chain.id,
           from: client.account.address,
-          context: params.context,
-          signature: params.signature,
-          authorizationList: params.authorizationList
+          context,
+          signature,
+          authorizationList
         }
       ]
     })
@@ -146,11 +178,13 @@ export const walletSendCalls = async <
     throw new Error(data.error?.message || data.message || "walletSendCalls failed");
   }
 
-  const { id } = data.result as WalletSendCallsResponse;
+  const { id } = data.result as WalletSendPreparedCallsResponse;
   return track(id, client);
 };
 
-// Serialize BigInt values to strings for JSON compatibility
+const contextType = (wallet: Wallet) =>
+  wallet === "gelato" ? ContextType.SmartWallet : ContextType.EntryPoint;
+
 function serializeCalls(calls: Call[]) {
   if (!calls) return [];
 
@@ -162,4 +196,15 @@ function serializeCalls(calls: Call[]) {
 
 function serializeNonceKey(nonceKey?: bigint) {
   return nonceKey !== undefined ? nonceKey.toString() : undefined;
+}
+
+function serializeAuthorizationList(authorizationList?: SignedAuthorizationList) {
+  if (!authorizationList || !Array.isArray(authorizationList) || authorizationList.length === 0) {
+    return authorizationList;
+  }
+
+  return authorizationList.map((auth) => ({
+    ...auth,
+    v: typeof auth.v === "bigint" ? auth.v.toString() : auth.v
+  }));
 }
