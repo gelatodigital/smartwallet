@@ -24,7 +24,7 @@ export const erc20 = (token: Address): ERC20Payment => ({
   token
 });
 
-export const sponsored = (sponsorApiKey?: string): SponsoredPayment => ({
+export const sponsored = (sponsorApiKey: string): SponsoredPayment => ({
   type: "sponsored",
   sponsorApiKey
 });
