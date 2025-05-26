@@ -1,5 +1,5 @@
-import { publicActions } from "viem";
 import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
+import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import type { GelatoWalletClient } from "./actions/index.js";
@@ -43,6 +43,6 @@ export const createGelatoSmartWalletClient = <
   >;
 };
 
-export { track } from "./relay/status/index.js";
 export { erc20, native, sponsored } from "./payment/index.js";
+export { track } from "./relay/status/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
