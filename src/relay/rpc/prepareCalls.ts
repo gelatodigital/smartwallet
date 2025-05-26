@@ -2,15 +2,12 @@ import type { Account, Chain, Transport } from "viem";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
-import { WalletType } from "../../wallet/index.js";
-import type {
-  Capabilities,
-  KernelCapabilities,
-  SmartWalletCapabilities,
-  WalletPrepareCallsParams,
-  WalletPrepareCallsResponse
+import {
+  ContextType,
+  type WalletPrepareCallsParams,
+  type WalletPrepareCallsResponse
 } from "./interfaces/index.js";
-import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
+import { contextType, serializeCalls, serializeNonceKey } from "./utils/index.js";
 
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
@@ -23,25 +20,13 @@ export const walletPrepareCalls = async <
   const { payment } = params;
 
   const calls = serializeCalls(params.calls);
-
-  let capabilities: Capabilities;
-
-  if (client._internal.wallet.type === WalletType.Gelato) {
-    capabilities = <SmartWalletCapabilities>{
-      wallet: client._internal.wallet,
-      payment,
-      authorization: client._internal.authorization,
-      nonceKey: serializeNonceKey(params.nonceKey)
-    };
-  } else {
-    capabilities = <KernelCapabilities>{
-      wallet: client._internal.wallet,
-      payment,
-      authorization: client._internal.authorization,
-      factory: client._internal.factory,
-      entryPoint: client._internal.entryPoint
-    };
-  }
+  const type = contextType(client._internal.wallet);
+  const nonceKey =
+    type === ContextType.SmartWallet ? serializeNonceKey(params.nonceKey) : undefined;
+  const delegation = {
+    address: client._internal.delegation,
+    authorized: params.authorized
+  };
 
   const raw = await fetch(`${api()}/smartwallet`, {
     method: "POST",
@@ -58,7 +43,12 @@ export const walletPrepareCalls = async <
           chainId: client.chain.id,
           from: client.account.address,
           calls,
-          capabilities
+          capabilities: {
+            type,
+            payment,
+            delegation,
+            nonceKey
+          }
         }
       ]
     })

@@ -1,4 +1,4 @@
-import type { Account, Chain, Transport } from "viem";
+import { type Account, type Chain, type Transport, toHex } from "viem";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
@@ -21,20 +21,16 @@ export const walletGetCapabilities = async <
       jsonrpc: "2.0",
       id: 1,
       method: "wallet_getCapabilities",
-      params: [
-        {
-          chainIds: [client.chain.id]
-        }
-      ]
+      params: []
     })
   });
 
   const data = await raw.json();
 
   if (data.error || data.message)
-    throw new Error(data.error?.message || data.message || "walletGetCapabilities failed");
+    throw new Error(data.error?.message || data.message || "walletPrepareCalls failed");
 
   const capabilities = data.result as WalletGetCapabilitiesResponse;
 
-  return capabilities;
+  return capabilities[toHex(client.chain.id)];
 };
