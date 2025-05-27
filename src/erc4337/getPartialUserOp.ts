@@ -27,7 +27,10 @@ export async function getPartialUserOp<
 
   const calldata =
     calls.length === 1 && client._internal.wallet === "kernel"
-      ? encodePacked(["address", "uint256", "bytes"], [calls[0].to, calls[0].value || 0n, calls[0].data || "0x"])
+      ? encodePacked(
+          ["address", "uint256", "bytes"],
+          [calls[0].to, calls[0].value || 0n, calls[0].data || "0x"]
+        )
       : encodeCalls(calls);
 
   return {
