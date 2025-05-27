@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.4
+
+### Patch Changes
+
+- 661273b: feat: kernel single call encoding
+
 ## 0.0.3
 
 ### Patch Changes
