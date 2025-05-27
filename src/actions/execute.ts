@@ -43,7 +43,7 @@ async function erc4337<
 
   userOp.signature = await signUserOp(client, userOp);
 
-  return encodeHandleOpsCall(client, userOp);
+  return encodeHandleOpsCall(userOp);
 }
 
 async function nonErc4337<
