@@ -1,5 +1,5 @@
 import type { Account, Call, Chain, Transport } from "viem";
-import { concatHex, encodeFunctionData, toHex } from "viem";
+import { encodeFunctionData, encodePacked } from "viem";
 
 import { type UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
 import { encodeCalls } from "viem/experimental/erc7821";
@@ -27,7 +27,7 @@ export async function getPartialUserOp<
 
   const calldata =
     calls.length === 1 && client._internal.wallet === "kernel"
-      ? concatHex([calls[0].to, toHex(calls[0].value || 0n, { size: 32 }), calls[0].data || "0x"])
+      ? encodePacked(["address", "uint256", "bytes"], [calls[0].to, calls[0].value || 0n, calls[0].data || "0x"])
       : encodeCalls(calls);
 
   return {
