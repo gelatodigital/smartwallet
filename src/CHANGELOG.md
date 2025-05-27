@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.5
+
+### Patch Changes
+
+- 83104fb: chore: set static beneficiary for erc4337
+
 ## 0.0.4
 
 ### Patch Changes
