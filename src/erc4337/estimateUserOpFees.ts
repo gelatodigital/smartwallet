@@ -1,5 +1,4 @@
 import {
-  type Account,
   type Chain,
   type EstimateGasParameters,
   type Transport,
@@ -7,6 +6,7 @@ import {
 } from "viem";
 import {
   type UserOperation,
+  type SmartAccount,
   entryPoint07Address,
   toPackedUserOperation
 } from "viem/account-abstraction";
@@ -25,7 +25,7 @@ const GAS_BUFFER = 3_000n;
 export async function estimateUserOpFees<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   userOp: UserOperation,

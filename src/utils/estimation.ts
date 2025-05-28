@@ -1,5 +1,4 @@
 import {
-  type Account,
   type Chain,
   type Hex,
   type StateOverride,
@@ -7,9 +6,10 @@ import {
   ethAddress,
   hexToBytes
 } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 import type { EstimateL1GasParameters } from "viem/op-stack";
+
 import type { GelatoWalletClient } from "../actions/index.js";
-import { delegationCode } from "../constants/index.js";
 import { getEstimatedFee, getEstimatedFeeOpStack } from "../oracle/index.js";
 import type { Payment } from "../payment/index.js";
 
@@ -22,7 +22,7 @@ const calculateCalldataGas = (data: Hex): bigint =>
 export function addDelegationOverride<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   _client: GelatoWalletClient<transport, chain, account>,
   override: StateOverride = []
@@ -40,7 +40,7 @@ export function addDelegationOverride<
 export function addAuthorizationGas<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, gas: bigint): bigint {
   if (!client._internal.authorization) {
     throw new Error("Internal error: addAuthorizationGas: Authorization has not been set up");
@@ -56,7 +56,7 @@ export function subtractBaseAndCalldataGas(gas: bigint, data: Hex): bigint {
 export async function estimateL1GasAndFee<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   payment: Payment,

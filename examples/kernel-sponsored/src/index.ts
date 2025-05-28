@@ -1,9 +1,11 @@
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  sponsored,
-  toKernelSmartAccount
+  sponsored
 } from "@gelatonetwork/smartwallet";
+import {
+  kernel
+} from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia, sepolia } from "viem/chains";
@@ -23,9 +25,10 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toKernelSmartAccount({
+  const account = await kernel({
     owner,
-    client: publicClient
+    client: publicClient,
+    eip7702: true
   });
 
   console.log("Account address:", account.address);

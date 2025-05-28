@@ -1,4 +1,6 @@
-import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
+import type { Chain, Hash, PublicActions, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
+
 import { statusApiPollingInterval } from "../../constants/index.js";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
@@ -14,7 +16,7 @@ type TaskStatusReturn = { taskStatus: TransactionStatusResponse; waitForReceipt?
 export const on = <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   taskId: string,
   parameters: {

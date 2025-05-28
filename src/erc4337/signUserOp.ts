@@ -1,12 +1,12 @@
-import type { Account, Chain, Hex, Transport } from "viem";
+import type { Chain, Hex, Transport } from "viem";
+import type { SmartAccount, UserOperation } from "viem/account-abstraction";
 
-import type { UserOperation } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../actions/index.js";
 
 export async function signUserOp<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, userOp: UserOperation): Promise<Hex> {
   if (!client.account.signUserOperation) {
     throw new Error("signUserOperation is not supported");

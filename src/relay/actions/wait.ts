@@ -1,4 +1,5 @@
-import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
+import type { Chain, Hash, PublicActions, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
@@ -26,7 +27,7 @@ type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
 export const wait = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   taskId: string,
   parameters: {

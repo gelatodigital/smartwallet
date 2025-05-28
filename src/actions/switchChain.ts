@@ -1,4 +1,5 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { isOpStack } from "../utils/opstack.js";
 import type { GelatoWalletClient } from "./index.js";
@@ -6,7 +7,7 @@ import type { GelatoWalletClient } from "./index.js";
 export async function switchChain<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { id: number }
