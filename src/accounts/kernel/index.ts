@@ -35,17 +35,17 @@ import {
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 import { delegationAbi as abi } from "../../abis/delegation.js";
+import { getSenderAddress } from "../actions/getSenderAddress.js";
 import {
-  delegationAddress,
   KERNEL_V3_3_ECDSA_VALIDATOR_KEY,
   KERNEL_V3_3_FACTORY_ADDRESS,
   KERNEL_V3_3_META_FACTORY_ADDRESS,
-  kernelV3_3_EcdsaRootIdentifier,
   KernelV3AccountAbi,
   KernelV3FactoryAbi,
-  KernelV3MetaFactoryDeployWithFactoryAbi
+  KernelV3MetaFactoryDeployWithFactoryAbi,
+  delegationAddress,
+  kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
-import { getSenderAddress } from "../actions/getSenderAddress.js";
 
 export type KernelSmartAccountImplementation<eip7702 extends boolean = boolean> =
   SmartAccountImplementation<
@@ -129,7 +129,7 @@ export async function kernel<eip7702 extends boolean = boolean>(
     version: "0.7"
   } as const;
 
-  let isDelegated = false; // When 7702+4337 is used
+  const isDelegated = false; // When 7702+4337 is used
   let chainId: number;
 
   const getMemoizedChainId = async () => {

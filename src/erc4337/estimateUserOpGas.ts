@@ -1,5 +1,9 @@
 import type { Chain, EstimateGasParameters, Transport } from "viem";
-import { type SmartAccount, type UserOperation, entryPoint07Address } from "viem/account-abstraction";
+import {
+  type SmartAccount,
+  type UserOperation,
+  entryPoint07Address
+} from "viem/account-abstraction";
 
 import type { GelatoWalletClient } from "../actions/index.js";
 import { addDelegationOverride, subtractBaseAndCalldataGas } from "../utils/estimation.js";

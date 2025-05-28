@@ -9,7 +9,6 @@ import type {
 } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 
-
 import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";

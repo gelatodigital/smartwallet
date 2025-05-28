@@ -1,7 +1,7 @@
 import type { Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
-import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 import type { SmartAccount } from "viem/account-abstraction";
+import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
