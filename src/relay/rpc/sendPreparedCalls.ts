@@ -8,7 +8,7 @@ import type {
   WalletSendPreparedCallsParams,
   WalletSendPreparedCallsResponse
 } from "./interfaces/index.js";
-import { serializeAuthorizationList } from "./utils/index.js";
+import { serializeAuthorizationList } from "./utils/serialize.js";
 
 export const walletSendPreparedCalls = async <
   transport extends Transport = Transport,

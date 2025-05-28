@@ -4,6 +4,8 @@ import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
 import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
 import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
 import type { Payment } from "../payment/index.js";
+import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
+import { isERC7821, isViaEntryPoint } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { estimateFees } from "./internal/estimateFees.js";
 import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
@@ -30,12 +32,14 @@ export async function estimate<
 }> {
   const { payment, calls } = structuredClone(parameters);
 
+  await initializeNetworkCapabilities(client);
+
   await verifyAuthorization(client);
 
   if (payment.type === "erc20" || payment.type === "native")
     calls.push(await resolvePaymentCall(client, payment, 1n, false));
 
-  if (client._internal.erc4337) {
+  if (isViaEntryPoint(client) && isERC7821(client)) {
     let userOp = await getPartialUserOp(client, calls);
 
     userOp = {

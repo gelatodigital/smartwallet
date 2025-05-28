@@ -1,6 +1,4 @@
 import type { Call, SignedAuthorizationList } from "viem";
-import type { Wallet } from "../../../constants";
-import { ContextType } from "../interfaces";
 
 export function serializeCalls(calls: Call[]) {
   if (!calls) return [];
@@ -25,6 +23,3 @@ export function serializeAuthorizationList(authorizationList?: SignedAuthorizati
     v: typeof auth.v === "bigint" ? auth.v.toString() : auth.v
   }));
 }
-
-export const contextType = (wallet: Wallet): ContextType =>
-  wallet === "gelato" ? ContextType.SmartWallet : ContextType.EntryPoint;

@@ -1,8 +1,11 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
+import type { SignAuthorizationReturnType } from "viem/accounts";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
+import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
+import { isEIP7702 } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
@@ -24,13 +27,18 @@ export async function execute<
 ): Promise<GelatoResponse> {
   const { payment, calls, nonceKey } = structuredClone(parameters);
 
-  const authorized = await verifyAuthorization(client);
-  const authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  await initializeNetworkCapabilities(client);
+
+  let authorizationList: SignAuthorizationReturnType[] | undefined;
+
+  if (isEIP7702(client)) {
+    const authorized = await verifyAuthorization(client);
+    authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  }
 
   const { context, signatureRequest } = await walletPrepareCalls(client, {
     calls,
     payment,
-    authorized,
     nonceKey
   });
 

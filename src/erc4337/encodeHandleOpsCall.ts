@@ -7,7 +7,7 @@ import {
   toPackedUserOperation
 } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { feeCollector } from "../constants/index.js";
+import { feeCollector } from "../relay/rpc/utils/networkCapabilities.js";
 
 export function encodeHandleOpsCall<
   transport extends Transport = Transport,
@@ -17,7 +17,7 @@ export function encodeHandleOpsCall<
   const data = encodeFunctionData({
     abi: entryPoint07Abi,
     functionName: "handleOps",
-    args: [[toPackedUserOperation(userOp)], feeCollector(client.chain.id)]
+    args: [[toPackedUserOperation(userOp)], feeCollector(client)]
   });
 
   return {

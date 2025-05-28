@@ -2,12 +2,8 @@ import type { Account, Chain, Transport } from "viem";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
-import {
-  ContextType,
-  type WalletPrepareCallsParams,
-  type WalletPrepareCallsResponse
-} from "./interfaces/index.js";
-import { contextType, serializeCalls, serializeNonceKey } from "./utils/index.js";
+import type { WalletPrepareCallsParams, WalletPrepareCallsResponse } from "./interfaces/index.js";
+import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
 
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
@@ -20,13 +16,17 @@ export const walletPrepareCalls = async <
   const { payment } = params;
 
   const calls = serializeCalls(params.calls);
-  const type = contextType(client._internal.wallet);
-  const nonceKey =
-    type === ContextType.SmartWallet ? serializeNonceKey(params.nonceKey) : undefined;
-  const delegation = {
-    address: client._internal.delegation,
-    authorized: params.authorized
+
+  const wallet = {
+    type: client._internal.wallet.type,
+    encoding: client._internal.wallet.encoding,
+    isViaEntryPoint: client._internal.wallet.isViaEntryPoint
   };
+  const delegation = {
+    address: client._internal.delegation?.address,
+    authorized: client._internal.delegation?.authorized
+  };
+  const nonceKey = wallet.type === "gelato" ? serializeNonceKey(params.nonceKey) : undefined;
 
   const raw = await fetch(`${api()}/smartwallet`, {
     method: "POST",
@@ -44,7 +44,7 @@ export const walletPrepareCalls = async <
           from: client.account.address,
           calls,
           capabilities: {
-            type,
+            wallet,
             payment,
             delegation,
             nonceKey

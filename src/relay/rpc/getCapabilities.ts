@@ -1,4 +1,4 @@
-import { type Account, type Chain, type Transport, toHex } from "viem";
+import type { Account, Chain, Transport } from "viem";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
@@ -21,7 +21,11 @@ export const walletGetCapabilities = async <
       jsonrpc: "2.0",
       id: 1,
       method: "wallet_getCapabilities",
-      params: []
+      params: [
+        {
+          chainIds: [client.chain.id]
+        }
+      ]
     })
   });
 
@@ -32,5 +36,5 @@ export const walletGetCapabilities = async <
 
   const capabilities = data.result as WalletGetCapabilitiesResponse;
 
-  return capabilities[toHex(client.chain.id)];
+  return capabilities;
 };

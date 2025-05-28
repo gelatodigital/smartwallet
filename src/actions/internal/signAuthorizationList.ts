@@ -6,10 +6,14 @@ export async function signAuthorizationList<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, mock = false) {
+  if (!client._internal.delegation) {
+    throw new Error("Delegation needs to be set before signing authorization list");
+  }
+
   if (mock) {
     return [
       await client._internal.mock.signer.signAuthorization({
-        contractAddress: client._internal.delegation,
+        contractAddress: client._internal.delegation.address,
         chainId: client.chain.id,
         nonce: 0
       })
@@ -19,7 +23,7 @@ export async function signAuthorizationList<
   return [
     await client.signAuthorization({
       account: client.account,
-      contractAddress: client._internal.delegation
+      contractAddress: client._internal.delegation.address
     })
   ];
 }
