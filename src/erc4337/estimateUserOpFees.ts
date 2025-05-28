@@ -1,12 +1,7 @@
+import { type Chain, type EstimateGasParameters, type Transport, encodeFunctionData } from "viem";
 import {
-  type Chain,
-  type EstimateGasParameters,
-  type Transport,
-  encodeFunctionData
-} from "viem";
-import {
-  type UserOperation,
   type SmartAccount,
+  type UserOperation,
   entryPoint07Address,
   toPackedUserOperation
 } from "viem/account-abstraction";
