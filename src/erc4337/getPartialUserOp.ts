@@ -1,9 +1,11 @@
 import type { Account, Call, Chain, Transport } from "viem";
+import { encodeFunctionData, encodePacked } from "viem";
 
 import { type UserOperation, entryPoint07Abi, entryPoint07Address } from "viem/account-abstraction";
-import { encodeExecuteData } from "viem/experimental/erc7821";
+import { encodeCalls } from "viem/experimental/erc7821";
+import { delegationAbi as abi } from "../abis/delegation.js";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { kernelECDSAValidatorKey } from "../constants/index.js";
+import { kernelECDSAValidatorKey, mode } from "../constants/index.js";
 
 const MOCK_SIGNATURE =
   "0x578a956c04cac0db87212ba62d98f49270dce9372449f6a68e8a97e7d75597233d9fd7d49f627eae7ec061681cba5732aea2c77566faad9a8d736e3967d3c5031b";
@@ -20,8 +22,23 @@ export async function getPartialUserOp<
     args: [client.account.address, kernelECDSAValidatorKey()]
   });
 
+  const executionMode =
+    calls.length === 1 && client._internal.wallet === "kernel" ? mode("single") : mode("default");
+
+  const calldata =
+    calls.length === 1 && client._internal.wallet === "kernel"
+      ? encodePacked(
+          ["address", "uint256", "bytes"],
+          [calls[0].to, calls[0].value || 0n, calls[0].data || "0x"]
+        )
+      : encodeCalls(calls);
+
   return {
-    callData: encodeExecuteData({ calls }),
+    callData: encodeFunctionData({
+      abi,
+      functionName: "execute",
+      args: [executionMode, calldata]
+    }),
     nonce,
     sender: client.account.address,
     maxFeePerGas: 0n,

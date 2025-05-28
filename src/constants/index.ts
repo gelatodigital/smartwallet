@@ -4,11 +4,12 @@ import { baseSepolia, basecampTestnet, inkSepolia, sepolia } from "viem/chains";
 const GELATO_API = "https://api.staging.gelato.digital";
 const GELATO_API_WS = "wss://api.staging.gelato.digital";
 
-export type Mode = "default" | "opData";
+export type Mode = "single" | "default" | "opData";
 
 export type Wallet = "gelato" | "kernel";
 
 const EXECUTION_MODE: { [mode in Mode]: Address } = {
+  single: "0x0000000000000000000000000000000000000000000000000000000000000000",
   default: "0x0100000000000000000000000000000000000000000000000000000000000000",
   opData: "0x0100000000007821000100000000000000000000000000000000000000000000"
 };
