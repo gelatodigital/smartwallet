@@ -1,9 +1,6 @@
 import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
 import { BaseError, decodeAbiParameters, decodeFunctionData, isAddressEqual } from "viem";
-import type {
-  SmartAccount,
-  SmartAccountImplementation
-} from "viem/account-abstraction";
+import type { SmartAccount, SmartAccountImplementation } from "viem/account-abstraction";
 import {
   entryPoint08Abi,
   entryPoint08Address,

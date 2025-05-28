@@ -3,9 +3,7 @@ import {
   createGelatoSmartWalletClient,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import {
-  kernel
-} from "@gelatonetwork/smartwallet/accounts";
+import { kernel } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia, sepolia } from "viem/chains";
