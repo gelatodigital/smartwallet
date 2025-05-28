@@ -1,5 +1,6 @@
-import type { Account, Call, Chain, Transport } from "viem";
+import type { Call, Chain, Transport } from "viem";
 import { encodeFunctionData, erc20Abi, formatEther, formatUnits } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import type { ERC20Payment, NativePayment } from "../../payment/index.js";
 import { feeCollector } from "../../relay/rpc/utils/networkCapabilities.js";
@@ -9,7 +10,7 @@ import { verifyERC20Payment } from "./verifyERC20Payment.js";
 export async function resolvePaymentCall<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   payment: ERC20Payment | NativePayment,

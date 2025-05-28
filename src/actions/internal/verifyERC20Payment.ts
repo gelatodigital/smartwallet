@@ -1,4 +1,5 @@
-import { type Account, type Chain, type Transport, erc20Abi } from "viem";
+import { type Chain, type Transport, erc20Abi } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { getPaymentTokens } from "../../oracle/index.js";
 import type { ERC20Payment } from "../../payment/index.js";
@@ -8,7 +9,7 @@ import type { GelatoWalletClient } from "../index.js";
 export async function verifyERC20Payment<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, payment: ERC20Payment) {
   const [tokens, [balance, decimals, symbol]] = await Promise.all([
     getPaymentTokens(client.chain.id),

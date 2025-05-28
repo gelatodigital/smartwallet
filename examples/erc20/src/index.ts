@@ -2,9 +2,9 @@ import "dotenv/config";
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  erc20,
-  toGelatoSmartAccount
+  erc20
 } from "@gelatonetwork/smartwallet";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -26,7 +26,7 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toGelatoSmartAccount({
+  const account = await gelato({
     owner,
     client: publicClient
   });

@@ -1,5 +1,4 @@
 import {
-  type Account,
   type Address,
   type Chain,
   type Hex,
@@ -7,6 +6,7 @@ import {
   type Transport,
   ethAddress
 } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import type { Payment } from "../../payment/index.js";
 import { type GelatoResponse, smartWalletCall, sponsoredCall } from "../../relay/index.js";
@@ -15,7 +15,7 @@ import type { GelatoWalletClient } from "../index.js";
 export async function sendTransaction<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   target: Address,

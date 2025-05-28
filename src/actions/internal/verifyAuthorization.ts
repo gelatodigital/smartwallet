@@ -1,11 +1,12 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import type { GelatoWalletClient } from "../index.js";
 
 export async function verifyAuthorization<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (client._internal.authorization !== undefined) {
     return client._internal.authorization.authorized;

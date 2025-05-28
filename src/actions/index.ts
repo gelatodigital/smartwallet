@@ -1,5 +1,4 @@
 import type {
-  Account,
   Call,
   Chain,
   Client,
@@ -8,6 +7,8 @@ import type {
   Transport,
   WalletClient
 } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
+
 
 import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
@@ -50,7 +51,7 @@ export type GelatoSmartWalletInternals = {
 export type GelatoWalletClient<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 > = WalletClient<transport, chain, account> &
   PublicActions<transport, chain, account> &
   PublicActionsL2<chain, account> &
@@ -59,7 +60,7 @@ export type GelatoWalletClient<
 export function actions<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   return {
     execute: (args: { payment: Payment; calls: Call[] }) => execute(client, args),
@@ -109,7 +110,7 @@ export function internal({
 export function merge<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: Client<transport, chain, account>, actions: GelatoSmartWalletActions) {
   return Object.assign(client, actions);
 }

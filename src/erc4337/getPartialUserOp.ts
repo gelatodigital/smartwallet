@@ -1,7 +1,7 @@
-import type { Account, Call, Chain, Transport } from "viem";
 import { encodeFunctionData, encodePacked } from "viem";
+import type { Call, Chain, Transport } from "viem";
+import type { SmartAccount, UserOperation } from "viem/account-abstraction";
 
-import type { UserOperation } from "viem/account-abstraction";
 import { encodeCalls } from "viem/experimental/erc7821";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { mode } from "../constants/index.js";
@@ -13,13 +13,14 @@ const MOCK_SIGNATURE =
 export async function getPartialUserOp<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, calls: Call[]): Promise<UserOperation> {
   if (!client.account.getNonce) {
     throw new Error("getNonce is not implemented");
   }
 
   const nonce = await client.account.getNonce();
+  const isDeployed = await client.account.isDeployed();
 
   const executionMode =
     calls.length === 1 && client._internal.wallet.type === "kernel"
@@ -40,6 +41,7 @@ export async function getPartialUserOp<
       functionName: "execute",
       args: [executionMode, calldata]
     }),
+    ...(isDeployed ? {} : await client.account.getFactoryArgs()),
     nonce,
     sender: client.account.address,
     maxFeePerGas: 0n,
