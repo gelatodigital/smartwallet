@@ -14,12 +14,12 @@ export function serializeNonceKey(nonceKey?: bigint) {
 }
 
 export function serializeAuthorizationList(authorizationList?: SignedAuthorizationList) {
-  if (!authorizationList || !Array.isArray(authorizationList) || authorizationList.length === 0) {
+  if (authorizationList === undefined || authorizationList.length === 0) {
     return authorizationList;
   }
 
   return authorizationList.map((auth) => ({
     ...auth,
-    v: typeof auth.v === "bigint" ? auth.v.toString() : auth.v
+    v: undefined
   }));
 }
