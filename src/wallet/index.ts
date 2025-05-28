@@ -1,4 +1,6 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
+
 import type { GelatoWalletClient } from "../actions/index.js";
 
 export enum WalletType {
@@ -59,7 +61,7 @@ export const gelato = (): Gelato => ({
 export function isEIP7702<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   return client._internal.factory === undefined;
 }
@@ -67,7 +69,7 @@ export function isEIP7702<
 export function isViaEntryPoint<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   return client._internal.entryPoint?.address && client._internal.entryPoint?.version;
 }

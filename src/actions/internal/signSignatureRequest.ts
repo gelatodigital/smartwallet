@@ -1,4 +1,5 @@
-import type { Account, Chain, Hex, Transport } from "viem";
+import type { Chain, Hex, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { type SignatureRequest, SignatureRequestType } from "../../relay/rpc/index.js";
 import type { GelatoWalletClient } from "../index.js";
@@ -6,7 +7,7 @@ import type { GelatoWalletClient } from "../index.js";
 export async function signSignatureRequest<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, signatureRequest: SignatureRequest) {
   let signature: Hex;
 
