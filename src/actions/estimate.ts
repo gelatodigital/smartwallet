@@ -1,9 +1,8 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
 import type { Payment } from "../payment/index.js";
-import type { Quote } from "../relay/rpc/interfaces/index.js";
-import { walletPrepareCalls } from "../relay/rpc/prepareCalls.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
+import { isERC7821, isViaEntryPoint } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
@@ -33,7 +32,8 @@ export async function estimate<
     calls
   });
 
-  const { quote } = context;
+  if (isViaEntryPoint(client) && isERC7821(client)) {
+    let userOp = await getPartialUserOp(client, calls);
 
   return quote;
 }

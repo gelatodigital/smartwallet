@@ -11,8 +11,8 @@ export async function verifyAuthorization<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>) {
-  if (client._internal.authorization !== undefined) {
-    return client._internal.authorization.authorized;
+  if (client._internal.delegation !== undefined) {
+    return client._internal.delegation.authorized;
   }
 
   const address = client.account.address;
@@ -24,7 +24,7 @@ export async function verifyAuthorization<
       lowercase(bytecode) === lowercase(delegationCode(delegateAddress(client)))
   );
 
-  client._internal.authorization = {
+  client._internal.delegation = {
     address: delegateAddress(client),
     authorized: isEip7702Authorized
   };

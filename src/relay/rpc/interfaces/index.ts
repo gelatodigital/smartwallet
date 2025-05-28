@@ -2,6 +2,7 @@ import type { Address, Call, Hex, SignedAuthorizationList, TypedDataDefinition }
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { Payment } from "../../../payment/index.js";
+import type { Delegation, Gelato, Kernel } from "../../../wallet/index.js";
 
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
@@ -34,30 +35,29 @@ export interface Quote {
 export interface WalletPrepareCallsParams {
   calls: Call[];
   payment: Payment;
-  authorized: boolean;
   nonceKey?: bigint;
 }
 
-export interface SmartWalletContext {
-  type: ContextType.SmartWallet;
-  payment: Payment;
-  calls: Call[];
-  nonceKey: string;
-  timestamp?: number;
-  signature?: Hex;
-  quote?: Quote;
+export interface GatewaySignature {
+  timestamp: number;
+  signature: Hex;
+  quote: Quote;
 }
 
-export interface EntryPointContext {
-  type: ContextType.EntryPoint;
+export interface SmartWalletContext extends Omit<Gelato, "eip7702">, Partial<GatewaySignature> {
+  payment: Payment;
+  delegation: Delegation;
+  nonceKey: string;
+  calls: Call[];
+}
+
+export interface KernelContext extends Omit<Kernel, "eip7702">, Partial<GatewaySignature> {
   payment: Payment;
   userOp: UserOperation;
-  timestamp?: number;
-  signature?: Hex;
-  quote?: Quote;
+  calls: Call[];
 }
 
-export type Context = SmartWalletContext | EntryPointContext;
+export type Context = SmartWalletContext | KernelContext;
 
 export interface WalletPrepareCallsResponse {
   chainId: number;
@@ -75,20 +75,23 @@ export interface WalletSendPreparedCallsResponse {
   id: string;
 }
 
-export type NetworkCapabilities = {
+export interface SingleNetworkCapabilities {
   feeCollector: Address;
   tokens: { address: Address; symbol: string; decimals: number }[];
   contracts: {
-    delegation?: Record<
+    delegation: Record<
       string,
       {
-        address: string;
+        address: Address;
         version: string;
       }[]
     >;
   };
-};
+}
+export interface NetworkCapabilities {
+  [chainId: number]: SingleNetworkCapabilities;
+}
 
 export interface WalletGetCapabilitiesResponse {
-  [chainId: Hex]: NetworkCapabilities;
+  [chainId: number]: SingleNetworkCapabilities;
 }

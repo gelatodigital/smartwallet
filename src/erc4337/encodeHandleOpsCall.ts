@@ -6,6 +6,8 @@ import {
   entryPoint07Address,
   toPackedUserOperation
 } from "viem/account-abstraction";
+import type { GelatoWalletClient } from "../actions/index.js";
+import { feeCollector } from "../relay/rpc/utils/networkCapabilities.js";
 
 export function encodeHandleOpsCall(userOp: UserOperation) {
   // Static EOA beneficiary (defining a no code EOA is cheaper)
@@ -15,7 +17,7 @@ export function encodeHandleOpsCall(userOp: UserOperation) {
   const data = encodeFunctionData({
     abi: entryPoint07Abi,
     functionName: "handleOps",
-    args: [[toPackedUserOperation(userOp)], beneficiary]
+    args: [[toPackedUserOperation(userOp)], feeCollector(client)]
   });
 
   return {

@@ -1,5 +1,5 @@
-import type { Account, Chain, Transport } from "viem";
-import type { GelatoWalletClient } from "../actions/index.js";
+import type { Account, Address, Chain, Transport } from "viem";
+import type { GelatoWalletClient } from "../actions";
 
 export enum WalletType {
   Gelato = "gelato",
@@ -12,48 +12,53 @@ export enum WalletEncoding {
   Safe = "safe"
 }
 
-export interface BaseWallet {
-  readonly type: WalletType;
-  readonly encoding: WalletEncoding;
-  readonly version?: string;
+export interface Delegation {
+  address: Address;
+  authorized: boolean;
 }
 
-export interface Gelato extends BaseWallet {
+export interface Gelato {
   readonly type: WalletType.Gelato;
   readonly encoding: WalletEncoding.ERC7821;
+  readonly isViaEntryPoint: boolean;
+  readonly eip7702: boolean;
 }
 
-export interface Kernel extends BaseWallet {
+export interface Kernel {
   readonly type: WalletType.Kernel;
   readonly encoding: WalletEncoding.ERC7821;
+  readonly isViaEntryPoint: boolean;
+  readonly eip7702: boolean;
 }
 
-export interface Safe extends BaseWallet {
+export interface Safe {
   readonly type: WalletType.Safe;
   readonly encoding: WalletEncoding.Safe;
+  readonly isViaEntryPoint: boolean;
+  readonly eip7702: boolean;
 }
 
 export type Wallet = Gelato | Kernel | Safe;
 
-export const kernel = ({
-  version
-}: {
-  version?: string;
-} = {}): Kernel => ({
+export const kernel = (isViaEntryPoint = true, eip7702 = true): Kernel => ({
   type: WalletType.Kernel,
   encoding: WalletEncoding.ERC7821,
-  version
+  isViaEntryPoint,
+  eip7702
 });
 
-export const safe = ({ version }: { version?: string } = {}): Safe => ({
+export const safe = (isViaEntryPoint = true, eip7702 = true): Safe => ({
   type: WalletType.Safe,
   encoding: WalletEncoding.Safe,
-  version
+  isViaEntryPoint,
+  eip7702
 });
 
-export const gelato = (): Gelato => ({
+export const gelato = (isViaEntryPoint = false, eip7702 = true): Gelato => ({
   type: WalletType.Gelato,
-  encoding: WalletEncoding.ERC7821
+  encoding: WalletEncoding.ERC7821,
+  isViaEntryPoint,
+  eip7702
 });
 
 export function isEIP7702<
@@ -61,7 +66,7 @@ export function isEIP7702<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>) {
-  return client._internal.factory === undefined;
+  return client._internal.wallet.eip7702;
 }
 
 export function isViaEntryPoint<
@@ -69,5 +74,13 @@ export function isViaEntryPoint<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>) {
-  return client._internal.entryPoint?.address && client._internal.entryPoint?.version;
+  return client._internal.wallet.isViaEntryPoint;
+}
+
+export function isERC7821<
+  transport extends Transport = Transport,
+  chain extends Chain = Chain,
+  account extends Account = Account
+>(client: GelatoWalletClient<transport, chain, account>) {
+  return client._internal.wallet.encoding === WalletEncoding.ERC7821;
 }

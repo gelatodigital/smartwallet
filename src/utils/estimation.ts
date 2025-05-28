@@ -27,14 +27,14 @@ export function addDelegationOverride<
   client: GelatoWalletClient<transport, chain, account>,
   override: StateOverride = []
 ): StateOverride {
-  if (!client._internal.authorization) {
-    throw new Error("Internal error: addDelegationOverride: Authorization has not been set up");
+  if (!client._internal.delegation) {
+    throw new Error("Delegation needs to be set before adding override");
   }
 
-  if (!client._internal.authorization.authorized) {
+  if (!client._internal.authorized) {
     override.push({
       address: client.account.address,
-      code: delegationCode(client._internal.authorization.address)
+      code: delegationCode(client._internal.delegation.address)
     });
   }
   return override;

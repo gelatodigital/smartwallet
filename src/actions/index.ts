@@ -13,15 +13,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
-import type {
-  Authorization,
-  EntryPoint,
-  Factory,
-  NetworkCapabilities,
-  Quote
-} from "../relay/rpc/interfaces/index.js";
-import type { Wallet } from "../wallet/index.js";
-
+import type { NetworkCapabilities } from "../relay/rpc/interfaces/index.js";
+import type { Delegation, Wallet } from "../wallet/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
 import { switchChain } from "./switchChain.js";
@@ -34,10 +27,9 @@ export type GelatoSmartWalletActions = {
 export type GelatoSmartWalletInternals = {
   _internal: {
     wallet: Wallet;
-    authorization: Authorization | undefined;
-    entryPoint: EntryPoint | undefined;
-    factory: Factory | undefined;
+    delegation: Delegation | undefined;
     networkCapabilities: NetworkCapabilities | undefined;
+    authorized: boolean | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
     innerSwitchChain: (args: { id: number }) => Promise<void>;
@@ -70,18 +62,14 @@ export function actions<
 
 export function internal({
   wallet,
-  authorization,
-  entryPoint,
-  factory,
+  delegation,
   networkCapabilities,
   apiKey,
   isOpStack,
   innerSwitchChain
 }: {
   wallet: Wallet;
-  authorization: Authorization | undefined;
-  entryPoint: EntryPoint | undefined;
-  factory: Factory | undefined;
+  delegation: Delegation | undefined;
   networkCapabilities: NetworkCapabilities | undefined;
   apiKey?: string;
   isOpStack: boolean;
@@ -90,15 +78,14 @@ export function internal({
   return {
     _internal: {
       wallet,
-      authorization,
-      entryPoint,
-      factory,
+      delegation,
       networkCapabilities,
       mock: {
         signer: privateKeyToAccount(
           "0x1111111111111111111111111111111111111111111111111111111111111111"
         )
       },
+      authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack,
       innerSwitchChain
