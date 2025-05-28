@@ -1,6 +1,7 @@
-import type { Account, Chain, PublicActions, Transport, WalletClient } from "viem";
+import type { Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
@@ -11,7 +12,7 @@ import { type Wallet, gelato } from "./wallet/index.js";
 export type GelatoSmartWalletClient<
   transport extends Transport,
   chain extends Chain,
-  account extends Account
+  account extends SmartAccount
 > = WalletClient<transport, chain, account> &
   PublicActions<transport, chain, account> &
   PublicActionsL2<chain, account> &
@@ -20,7 +21,7 @@ export type GelatoSmartWalletClient<
 export const createGelatoSmartWalletClient = <
   transport extends Transport,
   chain extends Chain,
-  account extends Account
+  account extends SmartAccount
 >(
   client: WalletClient<transport, chain, account>,
   params?: { apiKey?: string; wallet?: Wallet; entryPoint?: EntryPoint; factory?: Factory }

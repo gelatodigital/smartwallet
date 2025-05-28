@@ -1,6 +1,6 @@
-import type { Account, Chain, EstimateGasParameters, Transport } from "viem";
+import type { Chain, EstimateGasParameters, Transport } from "viem";
+import { type SmartAccount, type UserOperation, entryPoint07Address } from "viem/account-abstraction";
 
-import { type UserOperation, entryPoint07Address } from "viem/account-abstraction";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { addDelegationOverride, subtractBaseAndCalldataGas } from "../utils/estimation.js";
 
@@ -9,7 +9,7 @@ const MAX_VERIFICATION_GAS = 2_000_000n;
 export async function estimateUserOpGas<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   userOp: UserOperation

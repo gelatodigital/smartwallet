@@ -1,6 +1,7 @@
-import type { Account, Call, Chain, EstimateGasParameters, Transport } from "viem";
+import type { Call, Chain, EstimateGasParameters, Transport } from "viem";
 import { encodeFunctionData } from "viem";
 import { encodeCalls } from "viem/experimental/erc7821";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { simulationAbi, simulationBytecode } from "../../abis/simulation.js";
 import { mode } from "../../constants/index.js";
@@ -12,7 +13,7 @@ import { getOpData } from "./getOpData.js";
 export async function estimateFees<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   calls: Call[],

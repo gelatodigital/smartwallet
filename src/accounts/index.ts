@@ -1,2 +1,2 @@
-export { toGelatoSmartAccount } from "./toGelatoSmartAccount.js";
-export { toKernelSmartAccount } from "./toKernelSmartAccount.js";
+export { gelato } from "./gelato/index.js";
+export { kernel } from "./kernel/index.js";

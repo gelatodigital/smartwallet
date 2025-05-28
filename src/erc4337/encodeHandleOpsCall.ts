@@ -1,4 +1,5 @@
-import { type Account, type Chain, type Transport, encodeFunctionData } from "viem";
+import { type Chain, type Transport, encodeFunctionData } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import {
   type UserOperation,

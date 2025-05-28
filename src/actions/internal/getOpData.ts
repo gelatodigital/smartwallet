@@ -1,4 +1,5 @@
-import { type Account, type Call, type Chain, type Transport, encodePacked } from "viem";
+import { type Call, type Chain, type Transport, encodePacked } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import { serializeTypedData } from "../../utils/eip712.js";
 import type { GelatoWalletClient } from "../index.js";
@@ -6,7 +7,7 @@ import type { GelatoWalletClient } from "../index.js";
 export async function getOpData<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   calls: Call[],
