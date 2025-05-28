@@ -5,7 +5,7 @@ import {
   sponsored
 } from "@gelatonetwork/smartwallet";
 import "dotenv/config";
-import { http, type Hex, createWalletClient } from "viem";
+import { type Hex, createWalletClient, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
