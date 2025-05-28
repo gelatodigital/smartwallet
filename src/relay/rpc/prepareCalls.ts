@@ -1,4 +1,5 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
@@ -15,7 +16,7 @@ import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   params: WalletPrepareCallsParams
