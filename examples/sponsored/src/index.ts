@@ -3,8 +3,8 @@ import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
   sponsored,
-  toGelatoSmartAccount
 } from "@gelatonetwork/smartwallet";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -24,7 +24,7 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toGelatoSmartAccount({
+  const account = await gelato({
     owner,
     client: publicClient
   });

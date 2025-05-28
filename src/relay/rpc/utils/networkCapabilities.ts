@@ -1,11 +1,13 @@
-import type { Account, Chain, Transport } from "viem";
-import type { GelatoWalletClient } from "../../../actions/index.js";
-import { walletGetCapabilities } from "../getCapabilities.js";
+import type { Chain, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
+
+import type { GelatoWalletClient } from "../../../actions";
+import { walletGetCapabilities } from "../getCapabilities";
 
 export async function initializeNetworkCapabilities<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (!client._internal.networkCapabilities?.[client.chain.id]) {
     const networkCapabilities = await walletGetCapabilities(client);
@@ -18,7 +20,7 @@ export async function initializeNetworkCapabilities<
 export function feeCollector<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (
     !client._internal.networkCapabilities ||
@@ -33,7 +35,7 @@ export function feeCollector<
 export function delegateAddress<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends SmartAccount = SmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (
     !client._internal.networkCapabilities ||
