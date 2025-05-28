@@ -3,9 +3,9 @@ import type { Call, Chain, Transport } from "viem";
 import type { SmartAccount, UserOperation } from "viem/account-abstraction";
 
 import { encodeCalls } from "viem/experimental/erc7821";
+import { delegationAbi as abi } from "../abis/delegation.js";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { mode } from "../constants/index.js";
-import { delegationAbi as abi } from "../abis/delegation.js";
 
 const MOCK_SIGNATURE =
   "0x578a956c04cac0db87212ba62d98f49270dce9372449f6a68e8a97e7d75597233d9fd7d49f627eae7ec061681cba5732aea2c77566faad9a8d736e3967d3c5031b";

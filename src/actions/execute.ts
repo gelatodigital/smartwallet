@@ -1,6 +1,6 @@
 import type { Call, Chain, Transport } from "viem";
-import type { SignAuthorizationReturnType } from "viem/accounts";
 import type { SmartAccount } from "viem/account-abstraction";
+import type { SignAuthorizationReturnType } from "viem/accounts";
 
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
