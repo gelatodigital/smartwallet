@@ -7,7 +7,6 @@ import type { GelatoResponse } from "../relay/index.js";
 import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
 import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
-import { isEIP7702 } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
@@ -33,8 +32,10 @@ export async function execute<
 
   let authorizationList: SignAuthorizationReturnType[] | undefined;
 
-  let context: Context;
-  let signatureRequest: SignatureRequest;
+  if (client.account.authorization) {
+    const authorized = await verifyAuthorization(client);
+    authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  }
 
   if (isEIP7702(client)) {
     const authorized = await verifyAuthorization(client);
