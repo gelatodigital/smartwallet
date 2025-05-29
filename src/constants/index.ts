@@ -1,7 +1,7 @@
 import type { Address, Hex } from "viem";
 import { baseSepolia, basecampTestnet, inkSepolia, sepolia } from "viem/chains";
 
-const GELATO_API = "https://api.staging.gelato.digital";
+const GELATO_API = "http://localhost:3100";
 const GELATO_API_WS = "wss://api.staging.gelato.digital";
 
 export type Mode = "single" | "default" | "opData";

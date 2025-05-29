@@ -35,6 +35,10 @@ export const walletPrepareCalls = async <
     ? client._internal.wallet.address
     : client.account.address;
 
+  console.log("wallet_prepareCalls from", from);
+  console.log("wallet_prepareCalls factory", factory);
+  console.log("wallet_prepareCalls delegation", delegation);
+
   const nonceKey = wallet.type === "gelato" ? serializeNonceKey(params.nonceKey) : undefined;
 
   const raw = await fetch(`${api()}/smartwallet`, {

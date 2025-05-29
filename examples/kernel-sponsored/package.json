@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "@gelatonetwork/smartwallet": "workspace:*",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/sdk": "^5.4.36",
     "viem": "catalog:"
   },
   "devDependencies": {
