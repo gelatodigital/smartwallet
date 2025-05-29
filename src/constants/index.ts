@@ -29,7 +29,8 @@ const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
 
 const KERNEL_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
-  [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
+  [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
+  [inkSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
 };
 
 const FEE_COLLECTOR_ADDRESSES: { [chainId: number]: Address } = {
