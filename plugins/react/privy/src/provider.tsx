@@ -1,15 +1,16 @@
 import {
   type GelatoSmartWalletClient,
-  createGelatoSmartWalletClient
+  type Wallet,
+  createGelatoSmartWalletClient,
+  gelato
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import type { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
-import { createContext, useContext, useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   type Account,
   type Chain,
@@ -125,7 +126,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
 
         const walletClientGelato = createGelatoSmartWalletClient<Transport, Chain, Account>(
           client,
-          { apiKey, wallet }
+          { apiKey, wallet: wallet || gelato() }
         );
         setSmartWalletClient(walletClientGelato);
       } catch (error) {
