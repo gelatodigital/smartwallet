@@ -38,23 +38,23 @@ export interface WalletPrepareCallsParams {
   nonceKey?: bigint;
 }
 
-export interface GatewaySignature {
-  timestamp: number;
-  signature: Hex;
-  quote: Quote;
-}
-
-export interface SmartWalletContext extends Omit<Gelato, "eip7702">, Partial<GatewaySignature> {
+export interface SmartWalletContext extends Omit<Gelato, "eip7702"> {
   payment: Payment;
   delegation: Delegation;
   nonceKey: string;
   calls: Call[];
+  quote: Quote;
+  timestamp?: number;
+  signature?: Hex;
 }
 
-export interface KernelContext extends Omit<Kernel, "eip7702">, Partial<GatewaySignature> {
+export interface KernelContext extends Omit<Kernel, "eip7702"> {
   payment: Payment;
   userOp: UserOperation;
   calls: Call[];
+  quote: Quote;
+  timestamp?: number;
+  signature?: Hex;
 }
 
 export type Context = SmartWalletContext | KernelContext;

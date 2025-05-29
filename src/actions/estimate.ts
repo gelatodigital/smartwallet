@@ -1,14 +1,10 @@
 import type { Account, Call, Chain, Transport } from "viem";
 
-import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
-import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
-import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
 import type { Payment } from "../payment/index.js";
+import type { Quote } from "../relay/rpc/interfaces/index.js";
+import { walletPrepareCalls } from "../relay/rpc/prepareCalls.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
-import { isERC7821, isViaEntryPoint } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { estimateFees } from "./internal/estimateFees.js";
-import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
@@ -25,40 +21,19 @@ export async function estimate<
 >(
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[] }
-): Promise<{
-  estimatedFee: bigint;
-  estimatedGas: bigint;
-  estimatedL1Gas: bigint;
-}> {
+): Promise<Quote> {
   const { payment, calls } = structuredClone(parameters);
 
   await initializeNetworkCapabilities(client);
 
   await verifyAuthorization(client);
 
-  if (payment.type === "erc20" || payment.type === "native")
-    calls.push(await resolvePaymentCall(client, payment, 1n, false));
+  const { context } = await walletPrepareCalls(client, {
+    payment,
+    calls
+  });
 
-  if (isViaEntryPoint(client) && isERC7821(client)) {
-    let userOp = await getPartialUserOp(client, calls);
+  const { quote } = context;
 
-    userOp = {
-      ...userOp,
-      ...(await estimateUserOpGas(client, userOp))
-    };
-
-    const { estimatedFee, estimatedGas, estimatedL1Gas } = await estimateUserOpFees(
-      client,
-      userOp,
-      payment
-    );
-
-    return {
-      estimatedFee,
-      estimatedGas,
-      estimatedL1Gas
-    };
-  }
-
-  return estimateFees(client, calls, payment);
+  return quote;
 }
