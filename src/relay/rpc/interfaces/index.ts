@@ -32,6 +32,11 @@ export interface Quote {
   l1Gas: bigint;
 }
 
+export interface Factory {
+  address: Address;
+  data: Hex;
+}
+
 export interface WalletPrepareCallsParams {
   calls: Call[];
   payment: Payment;
@@ -40,9 +45,9 @@ export interface WalletPrepareCallsParams {
 
 export interface SmartWalletContext extends Omit<Gelato, "eip7702"> {
   payment: Payment;
-  delegation: Delegation;
-  nonceKey: string;
   calls: Call[];
+  nonceKey: string;
+  delegation: Delegation;
   quote: Quote;
   timestamp?: number;
   signature?: Hex;
@@ -50,8 +55,10 @@ export interface SmartWalletContext extends Omit<Gelato, "eip7702"> {
 
 export interface KernelContext extends Omit<Kernel, "eip7702"> {
   payment: Payment;
-  userOp: UserOperation;
   calls: Call[];
+  userOp: UserOperation;
+  delegation?: Delegation;
+  factory?: Factory;
   quote: Quote;
   timestamp?: number;
   signature?: Hex;

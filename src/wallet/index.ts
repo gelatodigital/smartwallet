@@ -1,4 +1,4 @@
-import type { Account, Address, Chain, Transport } from "viem";
+import type { Account, Address, Chain, Hex, Transport } from "viem";
 import type { GelatoWalletClient } from "../actions";
 
 export enum WalletType {
@@ -17,48 +17,88 @@ export interface Delegation {
   authorized: boolean;
 }
 
-export interface Gelato {
-  readonly type: WalletType.Gelato;
-  readonly encoding: WalletEncoding.ERC7821;
-  readonly isViaEntryPoint: boolean;
-  readonly eip7702: boolean;
-}
+type OptionalEIP7702<T> =
+  | (T & { readonly eip7702: true; readonly factory?: never })
+  | (T & {
+      readonly eip7702: false;
+      readonly factory: { address: Address | undefined; data: Hex | undefined };
+    });
 
-export interface Kernel {
+// Wallet interfaces using the type helper
+export type Kernel = OptionalEIP7702<{
   readonly type: WalletType.Kernel;
   readonly encoding: WalletEncoding.ERC7821;
   readonly isViaEntryPoint: boolean;
-  readonly eip7702: boolean;
-}
+}>;
 
-export interface Safe {
+export type Safe = OptionalEIP7702<{
   readonly type: WalletType.Safe;
   readonly encoding: WalletEncoding.Safe;
   readonly isViaEntryPoint: boolean;
-  readonly eip7702: boolean;
-}
+}>;
+
+export type Gelato = {
+  readonly type: WalletType.Gelato;
+  readonly encoding: WalletEncoding.ERC7821;
+  readonly isViaEntryPoint: false;
+  readonly eip7702: true;
+};
 
 export type Wallet = Gelato | Kernel | Safe;
 
-export const kernel = ({
-  isViaEntryPoint = true,
-  eip7702 = true
-}: { isViaEntryPoint?: boolean; eip7702?: boolean } = {}): Kernel => ({
-  type: WalletType.Kernel,
-  encoding: WalletEncoding.ERC7821,
-  isViaEntryPoint,
-  eip7702
-});
+export const kernel = (
+  params:
+    | { eip7702: true }
+    | { eip7702: false; factory: { address: Address | undefined; data: Hex | undefined } }
+): Kernel => {
+  const { eip7702 } = params;
 
-export const safe = ({
-  isViaEntryPoint = true,
-  eip7702 = true
-}: { isViaEntryPoint?: boolean; eip7702?: boolean } = {}): Safe => ({
-  type: WalletType.Safe,
-  encoding: WalletEncoding.Safe,
-  isViaEntryPoint,
-  eip7702
-});
+  if (eip7702) {
+    // Currently only support isViaEntryPoint
+    return {
+      type: WalletType.Kernel,
+      encoding: WalletEncoding.ERC7821,
+      isViaEntryPoint: true,
+      eip7702
+    };
+  }
+
+  const { factory } = params;
+  return {
+    type: WalletType.Kernel,
+    encoding: WalletEncoding.ERC7821,
+    isViaEntryPoint: true,
+    eip7702,
+    factory
+  };
+};
+
+export const safe = (
+  params:
+    | { eip7702: true }
+    | { eip7702: false; factory: { address: Address | undefined; data: Hex | undefined } }
+): Safe => {
+  const { eip7702 } = params;
+
+  if (eip7702) {
+    // Currently only support isViaEntryPoint
+    return {
+      type: WalletType.Safe,
+      encoding: WalletEncoding.Safe,
+      isViaEntryPoint: true,
+      eip7702
+    };
+  }
+
+  const { factory } = params;
+  return {
+    type: WalletType.Safe,
+    encoding: WalletEncoding.Safe,
+    isViaEntryPoint: true,
+    eip7702,
+    factory
+  };
+};
 
 export const gelato = (): Gelato => ({
   type: WalletType.Gelato,

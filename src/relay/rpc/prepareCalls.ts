@@ -22,10 +22,16 @@ export const walletPrepareCalls = async <
     encoding: client._internal.wallet.encoding,
     isViaEntryPoint: client._internal.wallet.isViaEntryPoint
   };
-  const delegation = {
-    address: client._internal.delegation?.address,
-    authorized: client._internal.delegation?.authorized
-  };
+
+  const delegation = client._internal.delegation
+    ? {
+        address: client._internal.delegation.address,
+        authorized: client._internal.delegation.authorized
+      }
+    : undefined;
+
+  const factory = !client._internal.wallet.eip7702 ? client._internal.wallet.factory : undefined;
+
   const nonceKey = wallet.type === "gelato" ? serializeNonceKey(params.nonceKey) : undefined;
 
   const raw = await fetch(`${api()}/smartwallet`, {
@@ -47,6 +53,7 @@ export const walletPrepareCalls = async <
             wallet,
             payment,
             delegation,
+            factory,
             nonceKey
           }
         }

@@ -29,7 +29,6 @@ export type GelatoSmartWalletInternals = {
     wallet: Wallet;
     delegation: Delegation | undefined;
     networkCapabilities: NetworkCapabilities | undefined;
-    authorized: boolean | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
     innerSwitchChain: (args: { id: number }) => Promise<void>;
@@ -85,7 +84,6 @@ export function internal({
           "0x1111111111111111111111111111111111111111111111111111111111111111"
         )
       },
-      authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack,
       innerSwitchChain
