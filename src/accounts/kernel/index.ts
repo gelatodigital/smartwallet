@@ -51,7 +51,7 @@ export type KernelSmartAccountImplementation<eip7702 extends boolean = boolean> 
   SmartAccountImplementation<
     typeof entryPoint07Abi,
     "0.7",
-    { abi: typeof abi; owner: PrivateKeyAccount },
+    { abi: typeof abi; owner: PrivateKeyAccount; scw: "kernel" },
     eip7702
   >;
 
@@ -117,7 +117,7 @@ export async function kernel<eip7702 extends boolean = boolean>(
     index = 0n,
     address,
     eip7702: _eip7702,
-    authorization
+    authorization: _authorization
   } = parameters;
 
   const eip7702 = _eip7702 ?? true;
@@ -145,6 +145,20 @@ export async function kernel<eip7702 extends boolean = boolean>(
       useMetaFactory: _useMetaFactory
     });
   };
+
+  const { authorization } = await (async () => {
+    if (_authorization) {
+      return {
+        authorization: _authorization
+      };
+    }
+
+    const chainId = await getMemoizedChainId();
+
+    return {
+      authorization: { account: owner, address: delegationAddress(chainId) }
+    };
+  })();
 
   const wrappedMessage = async (hash: Hex) => {
     const chainId = await getMemoizedChainId();
@@ -223,7 +237,7 @@ export async function kernel<eip7702 extends boolean = boolean>(
     getFactoryArgs,
     abi,
     client,
-    extend: { abi, owner },
+    extend: { abi, owner, scw: "kernel" as const },
     entryPoint,
     async signAuthorization() {
       if (!authorization) {
