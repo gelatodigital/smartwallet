@@ -6,9 +6,9 @@ import {
 } from "@gelatonetwork/smartwallet";
 import { custom } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
-import { generatePrivateKey, privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
-import { baseSepolia, sepolia } from "viem/chains";
 import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { baseSepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
