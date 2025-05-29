@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.6
+
+### Patch Changes
+
+- e7e770a: feat: ink sepolia kernel address
+- cf3022d: chore: deploy story testnet
+
 ## 0.0.5
 
 ### Patch Changes
