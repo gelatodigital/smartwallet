@@ -39,7 +39,7 @@ const publicClient = createPublicClient({
 
   createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
     .execute({
-      payment: sponsored(),
+      payment: sponsored(sponsorApiKey),
       calls: [
         {
           to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",

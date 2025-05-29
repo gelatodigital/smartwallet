@@ -58,14 +58,6 @@ export const gelato = (): Gelato => ({
   encoding: WalletEncoding.ERC7821
 });
 
-export function isEIP7702<
-  transport extends Transport = Transport,
-  chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
->(client: GelatoWalletClient<transport, chain, account>) {
-  return client._internal.factory === undefined;
-}
-
 export function isViaEntryPoint<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
