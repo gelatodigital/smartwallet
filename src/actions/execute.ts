@@ -1,6 +1,5 @@
 import type { Call, Chain, Transport } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
-import type { SignAuthorizationReturnType } from "viem/accounts";
 
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
@@ -8,9 +7,7 @@ import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.
 import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
-import { signAuthorizationList } from "./internal/signAuthorizationList.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
-import { verifyAuthorization } from "./internal/verifyAuthorization.js";
 
 /**
  *
@@ -30,39 +27,23 @@ export async function execute<
 
   await initializeNetworkCapabilities(client);
 
-  let authorizationList: SignAuthorizationReturnType[] | undefined;
-
-  if (client.account.authorization) {
-    const authorized = await verifyAuthorization(client);
-    authorizationList = authorized ? undefined : await signAuthorizationList(client);
-  }
-
-  if (isEIP7702(client)) {
-    const [authResult, walletPrepareCallsResult] = await Promise.all([
-      (async () => {
-        const authorized = await verifyAuthorization(client);
-        const authorizationList = authorized ? undefined : await signAuthorizationList(client);
-        return { authorizationList };
-      })(),
-
-      walletPrepareCalls(client, {
-        calls,
-        payment,
-        nonceKey
-      })
-    ]);
-
-    authorizationList = authResult.authorizationList;
-    ({ context, signatureRequest } = walletPrepareCallsResult);
-  } else {
-    ({ context, signatureRequest } = await walletPrepareCalls(client, {
-      calls,
-      payment,
-      nonceKey
-    }));
-  }
+  const { context, signatureRequest } = await walletPrepareCalls(client, {
+    calls,
+    payment,
+    nonceKey
+  });
 
   const signature = await signSignatureRequest(client, signatureRequest);
+
+  const authorizationList = client.account.authorization
+    ? // smart account must implement "signAuthorization"
+      [
+        await client.signAuthorization({
+          account: client.account.authorization.account,
+          contractAddress: client.account.authorization.address
+        })
+      ]
+    : undefined;
 
   return await walletSendPreparedCalls(client, {
     context,
