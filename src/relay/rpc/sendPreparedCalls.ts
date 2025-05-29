@@ -21,6 +21,10 @@ export const walletSendPreparedCalls = async <
   const { context, signature } = params;
   const authorizationList = serializeAuthorizationList(params.authorizationList);
 
+  const from = !client._internal.wallet.eip7702
+    ? client._internal.wallet.address
+    : client.account.address;
+
   const response = await fetch(`${api()}/smartwallet`, {
     method: "POST",
     headers: {
@@ -34,7 +38,7 @@ export const walletSendPreparedCalls = async <
       params: [
         {
           chainId: client.chain.id,
-          from: client.account.address,
+          from,
           context,
           signature,
           authorizationList
