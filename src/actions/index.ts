@@ -13,7 +13,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
-import type { NetworkCapabilities } from "../relay/rpc/interfaces/index.js";
+import type { NetworkCapabilities, Quote } from "../relay/rpc/interfaces/index.js";
 import type { Delegation, Wallet } from "../wallet/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";

@@ -40,14 +40,20 @@ export interface Safe {
 
 export type Wallet = Gelato | Kernel | Safe;
 
-export const kernel = ({ isViaEntryPoint = true, eip7702 = true }): Kernel => ({
+export const kernel = ({
+  isViaEntryPoint = true,
+  eip7702 = true
+}: { isViaEntryPoint?: boolean; eip7702?: boolean } = {}): Kernel => ({
   type: WalletType.Kernel,
   encoding: WalletEncoding.ERC7821,
   isViaEntryPoint,
   eip7702
 });
 
-export const safe = ({ isViaEntryPoint = true, eip7702 = true }): Safe => ({
+export const safe = ({
+  isViaEntryPoint = true,
+  eip7702 = true
+}: { isViaEntryPoint?: boolean; eip7702?: boolean } = {}): Safe => ({
   type: WalletType.Safe,
   encoding: WalletEncoding.Safe,
   isViaEntryPoint,
