@@ -26,7 +26,7 @@ export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> 
   SmartAccountImplementation<
     typeof entryPoint08Abi,
     "0.8",
-    { abi: typeof abi; owner: PrivateKeyAccount },
+    { abi: typeof abi; owner: PrivateKeyAccount; scw: "gelato" },
     eip7702
   >;
 
@@ -82,7 +82,7 @@ export async function gelato<eip7702 extends boolean = true>(
   return toSmartAccount({
     abi,
     client,
-    extend: { abi, owner, eip7702 },
+    extend: { abi, owner, eip7702, scw: "gelato" as const },
     entryPoint,
     authorization,
     async signAuthorization() {
