@@ -31,6 +31,9 @@ export const walletPrepareCalls = async <
     : undefined;
 
   const factory = !client._internal.wallet.eip7702 ? client._internal.wallet.factory : undefined;
+  const from = !client._internal.wallet.eip7702
+    ? client._internal.wallet.address
+    : client.account.address;
 
   const nonceKey = wallet.type === "gelato" ? serializeNonceKey(params.nonceKey) : undefined;
 
@@ -47,7 +50,7 @@ export const walletPrepareCalls = async <
       params: [
         {
           chainId: client.chain.id,
-          from: client.account.address,
+          from,
           calls,
           capabilities: {
             wallet,

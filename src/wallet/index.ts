@@ -21,6 +21,7 @@ type OptionalEIP7702<T> =
   | (T & { readonly eip7702: true; readonly factory?: never })
   | (T & {
       readonly eip7702: false;
+      readonly address: Address;
       readonly factory: { address: Address | undefined; data: Hex | undefined };
     });
 
@@ -49,7 +50,11 @@ export type Wallet = Gelato | Kernel | Safe;
 export const kernel = (
   params:
     | { eip7702: true }
-    | { eip7702: false; factory: { address: Address | undefined; data: Hex | undefined } }
+    | {
+        eip7702: false;
+        address: Address;
+        factory: { address: Address | undefined; data: Hex | undefined };
+      }
 ): Kernel => {
   const { eip7702 } = params;
 
@@ -63,12 +68,13 @@ export const kernel = (
     };
   }
 
-  const { factory } = params;
+  const { address, factory } = params;
   return {
     type: WalletType.Kernel,
     encoding: WalletEncoding.ERC7821,
     isViaEntryPoint: true,
     eip7702,
+    address,
     factory
   };
 };
@@ -76,7 +82,11 @@ export const kernel = (
 export const safe = (
   params:
     | { eip7702: true }
-    | { eip7702: false; factory: { address: Address | undefined; data: Hex | undefined } }
+    | {
+        eip7702: false;
+        address: Address;
+        factory: { address: Address | undefined; data: Hex | undefined };
+      }
 ): Safe => {
   const { eip7702 } = params;
 
@@ -90,12 +100,13 @@ export const safe = (
     };
   }
 
-  const { factory } = params;
+  const { address, factory } = params;
   return {
     type: WalletType.Safe,
     encoding: WalletEncoding.Safe,
     isViaEntryPoint: true,
     eip7702,
+    address,
     factory
   };
 };
