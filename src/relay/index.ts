@@ -9,6 +9,7 @@ import type {
   GelatoTaskWaitEvent,
   TransactionStatusResponse
 } from "./status/index.js";
+import type { GelatoSmartAccount } from "../accounts/index.js";
 
 interface BaseCallRequest {
   chainId: number;
@@ -43,7 +44,7 @@ const callGelatoApi = async <
   T extends object,
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   endpoint: string,
   request: T,
@@ -74,7 +75,7 @@ const callGelatoApi = async <
 export const sponsoredCall = <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   request: SponsoredCallRequest,
   client: GelatoWalletClient<transport, chain, account>
@@ -83,7 +84,7 @@ export const sponsoredCall = <
 export const smartWalletCall = <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   request: SmartWalletCallRequest,
   client: GelatoWalletClient<transport, chain, account>
