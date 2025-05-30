@@ -27,14 +27,14 @@ export function addDelegationOverride<
   client: GelatoWalletClient<transport, chain, account>,
   override: StateOverride = []
 ): StateOverride {
-  if (!client._internal.delegation) {
-    throw new Error("Internal error: addDelegationOverride: Delegation has not been set up");
+  if (!client._internal.authorization) {
+    throw new Error("Internal error: addDelegationOverride: Authorization has not been set up");
   }
 
-  if (!client._internal.authorized) {
+  if (!client._internal.authorization.authorized) {
     override.push({
       address: client.account.address,
-      code: delegationCode(client._internal.delegation.address)
+      code: delegationCode(client._internal.authorization.address)
     });
   }
   return override;
@@ -45,7 +45,11 @@ export function addAuthorizationGas<
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, gas: bigint): bigint {
-  return client._internal.authorized ? gas : gas + AUTHORIZATION_GAS;
+  if (!client._internal.authorization) {
+    throw new Error("Internal error: addAuthorizationGas: Authorization has not been set up");
+  }
+
+  return client._internal.authorization.authorized ? gas : gas + AUTHORIZATION_GAS;
 }
 
 export function subtractBaseAndCalldataGas(gas: bigint, data: Hex): bigint {

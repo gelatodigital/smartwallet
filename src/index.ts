@@ -4,6 +4,7 @@ import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
+import type { EntryPoint, Factory } from "./relay/rpc/interfaces/index.js";
 import { isOpStack } from "./utils/opstack.js";
 import { type Wallet, gelato } from "./wallet/index.js";
 
@@ -22,13 +23,15 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  params?: { apiKey?: string; wallet?: Wallet }
+  params?: { apiKey?: string; wallet?: Wallet; entryPoint?: EntryPoint; factory?: Factory }
 ) => {
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),
     internal({
       wallet: params?.wallet || gelato(),
-      delegation: undefined,
+      authorization: undefined,
+      entryPoint: undefined,
+      factory: undefined,
       networkCapabilities: undefined,
       apiKey: params?.apiKey,
       isOpStack: isOpStack(client.chain),

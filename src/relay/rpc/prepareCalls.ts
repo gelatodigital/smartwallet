@@ -2,7 +2,14 @@ import type { Account, Chain, Transport } from "viem";
 
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
-import type { WalletPrepareCallsParams, WalletPrepareCallsResponse } from "./interfaces/index.js";
+import { WalletType } from "../../wallet/index.js";
+import type {
+  Capabilities,
+  KernelCapabilities,
+  SmartWalletCapabilities,
+  WalletPrepareCallsParams,
+  WalletPrepareCallsResponse
+} from "./interfaces/index.js";
 import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
 
 export const walletPrepareCalls = async <
@@ -17,16 +24,24 @@ export const walletPrepareCalls = async <
 
   const calls = serializeCalls(params.calls);
 
-  const wallet = {
-    type: client._internal.wallet.type,
-    encoding: client._internal.wallet.encoding,
-    isViaEntryPoint: client._internal.wallet.isViaEntryPoint
-  };
-  const delegation = {
-    address: client._internal.delegation?.address,
-    authorized: client._internal.delegation?.authorized
-  };
-  const nonceKey = wallet.type === "gelato" ? serializeNonceKey(params.nonceKey) : undefined;
+  let capabilities: Capabilities;
+
+  if (client._internal.wallet.type === WalletType.Gelato) {
+    capabilities = <SmartWalletCapabilities>{
+      wallet: client._internal.wallet,
+      payment,
+      authorization: client._internal.authorization,
+      nonceKey: serializeNonceKey(params.nonceKey)
+    };
+  } else {
+    capabilities = <KernelCapabilities>{
+      wallet: client._internal.wallet,
+      payment,
+      authorization: client._internal.authorization,
+      factory: client._internal.factory,
+      entryPoint: client._internal.entryPoint
+    };
+  }
 
   const raw = await fetch(`${api()}/smartwallet`, {
     method: "POST",
@@ -43,12 +58,7 @@ export const walletPrepareCalls = async <
           chainId: client.chain.id,
           from: client.account.address,
           calls,
-          capabilities: {
-            wallet,
-            payment,
-            delegation,
-            nonceKey
-          }
+          capabilities
         }
       ]
     })
