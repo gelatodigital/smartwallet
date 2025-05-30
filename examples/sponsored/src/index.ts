@@ -37,32 +37,46 @@ const publicClient = createPublicClient({
     transport: http()
   });
 
-  createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
-    .execute({
-      payment: sponsored(sponsorApiKey),
-      calls: [
-        {
-          to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
-          data: "0xd09de08a",
-          value: 0n
-        }
-      ]
-    })
-    .then((response) => {
-      console.log(`Your Gelato id is: ${response.id}`);
-      console.log("Waiting for transaction to be confirmed...");
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
 
-      // Listen for events
-      response.on("submitted", (status: GelatoTaskStatus) => {
-        console.log(`Transaction submitted: ${status.transactionHash}`);
-      });
-      response.on("success", (status: GelatoTaskStatus) => {
-        console.log(`Transaction successful: ${status.transactionHash}`);
-        process.exit(0);
-      });
-      response.on("error", (error: Error) => {
-        console.error(`Transaction failed: ${error.message}`);
-        process.exit(1);
-      });
-    });
+  console.log("Preparing transaction...");
+  const preparedCalls = await swc.prepare({
+    payment: sponsored(sponsorApiKey),
+    calls: [
+      {
+        to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+        data: "0xd09de08a",
+        value: 0n
+      }
+    ]
+  });
+
+  console.log("Sending transaction...");
+
+  const start = performance.now();
+  const response = await swc.send({
+    preparedCalls
+  });
+  const end = performance.now();
+  console.log(`Time to send: ${(end - start).toFixed(2)}ms`);
+  console.log(`Your Gelato id is: ${response.id}`);
+
+  // Listen for events
+  response.on("submitted", (status: GelatoTaskStatus) => {
+    const end = performance.now();
+    console.log(`Transaction submitted: ${status.transactionHash}`);
+    console.log(`Time from sending to submission: ${(end - start).toFixed(2)}ms`);
+  });
+  response.on("success", (status: GelatoTaskStatus) => {
+    const end = performance.now();
+    console.log(`Transaction successful: ${status.transactionHash}`);
+    console.log(`Time from sending to success: ${(end - start).toFixed(2)}ms`);
+    process.exit(0);
+  });
+  response.on("error", (error: Error) => {
+    const end = performance.now();
+    console.error(`Transaction failed: ${error.message}`);
+    console.log(`Time from sending to error: ${(end - start).toFixed(2)}ms`);
+    process.exit(1);
+  });
 })();
