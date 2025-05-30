@@ -1,5 +1,6 @@
 import type { Chain, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
 import type { GelatoResponse } from "../index.js";
@@ -9,7 +10,6 @@ import type {
   WalletSendPreparedCallsResponse
 } from "./interfaces/index.js";
 import { serializeAuthorizationList } from "./utils/serialize.js";
-import type { GelatoSmartAccount } from "../../accounts/index.js";
 
 export const walletSendPreparedCalls = async <
   transport extends Transport = Transport,

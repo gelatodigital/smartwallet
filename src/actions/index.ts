@@ -3,15 +3,12 @@ import type { Call, Chain, Client, PublicActions, Transport, WalletClient } from
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
-import type {
-  NetworkCapabilities,
-  Quote
-} from "../relay/rpc/interfaces/index.js";
+import type { NetworkCapabilities, Quote } from "../relay/rpc/interfaces/index.js";
 
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
 import { switchChain } from "./switchChain.js";
-import type { GelatoSmartAccount } from "../accounts/index.js";
 
 export type GelatoSmartWalletActions = {
   execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
