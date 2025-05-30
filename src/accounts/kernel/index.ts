@@ -46,12 +46,13 @@ import {
   delegationAddress,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
+import type { GelatoSmartAccountExtension } from "../index.js";
 
 export type KernelSmartAccountImplementation<eip7702 extends boolean = boolean> =
   SmartAccountImplementation<
     typeof entryPoint07Abi,
     "0.7",
-    { abi: typeof abi; owner: PrivateKeyAccount; scw: "kernel" },
+    { abi: typeof abi; } & GelatoSmartAccountExtension,
     eip7702
   >;
 
@@ -237,7 +238,7 @@ export async function kernel<eip7702 extends boolean = boolean>(
     getFactoryArgs,
     abi,
     client,
-    extend: { abi, owner, scw: "kernel" as const },
+    extend: { abi, owner, eip7702, scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const },
     entryPoint,
     async signAuthorization() {
       if (!authorization) {
