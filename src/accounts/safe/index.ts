@@ -1,11 +1,11 @@
 // Adapted from permissionless/accounts/safe: https://github.com/pimlicolabs/permissionless.js/blob/main/packages/permissionless/accounts/safe/toSafeSmartAccount.ts
 
 import {
+  type Abi,
   type Account,
   type Address,
   type Assign,
   BaseError,
-  type Abi,
   type Chain,
   type Client,
   type Hex,
