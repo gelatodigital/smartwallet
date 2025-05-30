@@ -1,9 +1,10 @@
-import "dotenv/config";
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
+  kernel,
   sponsored
 } from "@gelatonetwork/smartwallet";
+import "dotenv/config";
 import { http, type Hex, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
@@ -23,9 +24,9 @@ const client = createWalletClient({
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey, wallet: "kernel" })
+createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey, wallet: kernel() })
   .execute({
-    payment: sponsored(),
+    payment: sponsored(sponsorApiKey),
     calls: [
       {
         to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",

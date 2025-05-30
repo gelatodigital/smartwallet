@@ -1,6 +1,6 @@
-import "dotenv/config";
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
-import { http, type Hex, createWalletClient, formatEther } from "viem";
+import "dotenv/config";
+import { http, type Hex, createWalletClient, formatUnits } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
@@ -30,8 +30,8 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
       }
     ]
   })
-  .then(async ({ estimatedFee, estimatedGas }) => {
-    console.log(`Estimated fee: ${formatEther(estimatedFee)} ETH`);
-    console.log(`Estimated gas: ${estimatedGas} GAS`);
+  .then(async ({ fee, gas }) => {
+    console.log(`Estimated fee: ${formatUnits(BigInt(fee.estimatedFee), fee.decimals)} ETH`);
+    console.log(`Estimated gas: ${gas} GAS`);
     process.exit(0);
   });

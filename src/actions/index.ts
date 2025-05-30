@@ -1,10 +1,8 @@
 import type {
   Account,
-  Address,
   Call,
   Chain,
   Client,
-  Hex,
   PrivateKeyAccount,
   PublicActions,
   Transport,
@@ -13,28 +11,33 @@ import type {
 
 import { privateKeyToAccount } from "viem/accounts";
 import type { PublicActionsL2 } from "viem/op-stack";
-import type { Wallet } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
+import type {
+  Authorization,
+  EntryPoint,
+  Factory,
+  NetworkCapabilities,
+  Quote
+} from "../relay/rpc/interfaces/index.js";
+import type { Wallet } from "../wallet/index.js";
+
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
 import { switchChain } from "./switchChain.js";
 
 export type GelatoSmartWalletActions = {
   execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
-  estimate: (args: { payment: Payment; calls: Call[] }) => Promise<{
-    estimatedFee: bigint;
-    estimatedGas: bigint;
-    estimatedL1Gas: bigint;
-  }>;
+  estimate: (args: { payment: Payment; calls: Call[] }) => Promise<Quote>;
 };
 
 export type GelatoSmartWalletInternals = {
   _internal: {
     wallet: Wallet;
-    erc4337: boolean;
-    delegation: Address;
-    authorized: boolean | undefined;
+    authorization: Authorization | undefined;
+    entryPoint: EntryPoint | undefined;
+    factory: Factory | undefined;
+    networkCapabilities: NetworkCapabilities | undefined;
     apiKey: () => string | undefined;
     isOpStack: () => boolean;
     innerSwitchChain: (args: { id: number }) => Promise<void>;
@@ -67,15 +70,19 @@ export function actions<
 
 export function internal({
   wallet,
-  erc4337,
-  delegation,
+  authorization,
+  entryPoint,
+  factory,
+  networkCapabilities,
   apiKey,
   isOpStack,
   innerSwitchChain
 }: {
   wallet: Wallet;
-  erc4337: boolean;
-  delegation: Address;
+  authorization: Authorization | undefined;
+  entryPoint: EntryPoint | undefined;
+  factory: Factory | undefined;
+  networkCapabilities: NetworkCapabilities | undefined;
   apiKey?: string;
   isOpStack: boolean;
   innerSwitchChain: (args: { id: number }) => Promise<void>;
@@ -83,14 +90,15 @@ export function internal({
   return {
     _internal: {
       wallet,
+      authorization,
+      entryPoint,
+      factory,
+      networkCapabilities,
       mock: {
         signer: privateKeyToAccount(
           "0x1111111111111111111111111111111111111111111111111111111111111111"
         )
       },
-      erc4337,
-      delegation,
-      authorized: undefined,
       apiKey: () => apiKey,
       isOpStack: () => isOpStack,
       innerSwitchChain

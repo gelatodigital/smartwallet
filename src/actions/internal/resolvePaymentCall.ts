@@ -1,8 +1,8 @@
 import type { Account, Call, Chain, Transport } from "viem";
 import { encodeFunctionData, erc20Abi, formatEther, formatUnits } from "viem";
 
-import { feeCollector } from "../../constants/index.js";
 import type { ERC20Payment, NativePayment } from "../../payment/index.js";
+import { feeCollector } from "../../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "../index.js";
 import { verifyERC20Payment } from "./verifyERC20Payment.js";
 
@@ -35,7 +35,7 @@ export async function resolvePaymentCall<
       data: encodeFunctionData({
         abi: erc20Abi,
         functionName: "transfer",
-        args: [feeCollector(client.chain.id), estimatedFee]
+        args: [feeCollector(client), estimatedFee]
       })
     };
   }
@@ -51,7 +51,7 @@ export async function resolvePaymentCall<
   }
 
   return {
-    to: feeCollector(client.chain.id),
+    to: feeCollector(client),
     value: estimatedFee
   };
 }

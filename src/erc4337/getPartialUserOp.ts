@@ -23,10 +23,12 @@ export async function getPartialUserOp<
   });
 
   const executionMode =
-    calls.length === 1 && client._internal.wallet === "kernel" ? mode("single") : mode("default");
+    calls.length === 1 && client._internal.wallet.type === "kernel"
+      ? mode("single")
+      : mode("default");
 
   const calldata =
-    calls.length === 1 && client._internal.wallet === "kernel"
+    calls.length === 1 && client._internal.wallet.type === "kernel"
       ? encodePacked(
           ["address", "uint256", "bytes"],
           [calls[0].to, calls[0].value || 0n, calls[0].data || "0x"]
