@@ -12,9 +12,9 @@ import type {
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
-import { switchChain } from "./switchChain.js";
 import { prepare } from "./prepare.js";
 import { send } from "./send.js";
+import { switchChain } from "./switchChain.js";
 
 export type GelatoSmartWalletActions = {
   execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
