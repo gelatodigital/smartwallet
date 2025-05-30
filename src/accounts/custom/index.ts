@@ -14,6 +14,7 @@ import type { PrivateKeyAccount } from "viem/accounts";
 import { getChainId, getCode, signAuthorization as signAuthorizationFromViem } from "viem/actions";
 import { verifyAuthorization } from "viem/utils";
 import { lowercase } from "../../utils/index.js";
+  import type { GelatoSmartAccountExtension, GelatoSmartAccountSCWEncoding } from "../index.js";
 
 export type CustomSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
@@ -47,6 +48,9 @@ export type CustomSmartAccountParameters<
     eip7702
   >["authorization"];
   eip7702: eip7702;
+  scw: {
+    encoding: GelatoSmartAccountSCWEncoding;
+  };
 } & (eip7702 extends true
   ? { factory?: undefined }
   : {
@@ -61,12 +65,11 @@ export type CustomSmartAccountReturnType = Prettify<SmartAccount<CustomSmartAcco
 export async function custom<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
-  extend extends object = object,
   eip7702 extends boolean = boolean
 >(
-  parameters: CustomSmartAccountParameters<entryPointAbi, entryPointVersion, extend, eip7702>
+  parameters: CustomSmartAccountParameters<entryPointAbi, entryPointVersion, GelatoSmartAccountExtension, eip7702>
 ): Promise<CustomSmartAccountReturnType> {
-  const { client, owner, authorization, eip7702, entryPoint: _entryPoint, factory } = parameters;
+  const { client, owner, authorization, eip7702, entryPoint: _entryPoint, factory, scw } = parameters;
 
   if (eip7702 && !authorization) {
     throw new Error("EIP-7702 is enabled. Authorization is required.");
@@ -94,7 +97,7 @@ export async function custom<
     extend: {
       owner,
       eip7702,
-      scw: "custom" as const,
+      scw: { owner, eip7702,type: "custom", encoding: scw.encoding } as const,
       async signAuthorization() {
         if (!eip7702) {
           throw new Error("EIP-7702 must be enabled. No support for non-EIP-7702 accounts.");
