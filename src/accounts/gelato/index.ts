@@ -24,12 +24,7 @@ import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
 
 export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> =
-  SmartAccountImplementation<
-    typeof entryPoint08Abi,
-    "0.8",
-    GelatoSmartAccountExtension,
-    eip7702
-  >;
+  SmartAccountImplementation<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, eip7702>;
 
 export type GelatoSmartAccountParameters<eip7702 extends boolean = true> = {
   client: GelatoSmartAccountImplementation<eip7702>["client"];

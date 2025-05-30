@@ -52,13 +52,15 @@ export type CustomSmartAccountParameters<
     encoding: GelatoSmartAccountSCWEncoding;
   };
 } & (eip7702 extends true
-  ? { factory?: undefined } | { getFactoryArgs?: undefined}
-  : {
-      factory: {
-        address: Address;
-        data: Hex;
-      };
-    }| { getFactoryArgs: () => Promise<ReturnType<typeof toSmartAccount>["getFactoryArgs"]> });
+  ? { factory?: undefined } | { getFactoryArgs?: undefined }
+  :
+      | {
+          factory: {
+            address: Address;
+            data: Hex;
+          };
+        }
+      | { getFactoryArgs: () => Promise<ReturnType<typeof toSmartAccount>["getFactoryArgs"]> });
 
 export type CustomSmartAccountReturnType = Prettify<SmartAccount<CustomSmartAccountImplementation>>;
 
@@ -74,14 +76,7 @@ export async function custom<
     eip7702
   >
 ): Promise<CustomSmartAccountReturnType> {
-  const {
-    client,
-    owner,
-    authorization,
-    eip7702,
-    entryPoint: _entryPoint,
-    scw
-  } = parameters;
+  const { client, owner, authorization, eip7702, entryPoint: _entryPoint, scw } = parameters;
 
   if (eip7702 && !authorization) {
     throw new Error("EIP-7702 is enabled. Authorization is required.");
@@ -160,11 +155,16 @@ export async function custom<
         return { factory: "0x7702", factoryData: "0x" };
       }
 
-      if ("getFactoryArgs" in parameters && typeof parameters.getFactoryArgs === 'function') {
+      if ("getFactoryArgs" in parameters && typeof parameters.getFactoryArgs === "function") {
         return parameters.getFactoryArgs();
       }
 
-      if ("factory" in parameters && parameters.factory && 'address' in parameters.factory && 'data' in parameters.factory) {
+      if (
+        "factory" in parameters &&
+        parameters.factory &&
+        "address" in parameters.factory &&
+        "data" in parameters.factory
+      ) {
         return {
           factory: parameters.factory.address,
           factoryData: parameters.factory.data
