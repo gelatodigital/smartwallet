@@ -27,7 +27,7 @@ export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> 
   SmartAccountImplementation<
     typeof entryPoint08Abi,
     "0.8",
-    { abi: typeof abi } & GelatoSmartAccountExtension,
+    GelatoSmartAccountExtension,
     eip7702
   >;
 

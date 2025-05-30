@@ -4,6 +4,7 @@ import type { PrivateKeyAccount } from "viem/accounts";
 
 export { gelato } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
+export { safe } from "./safe/index.js";
 export { custom } from "./custom/index.js";
 
 export type GelatoSmartAccountSCWEncoding = "erc7821" | "erc7579";
