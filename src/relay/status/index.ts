@@ -1,5 +1,4 @@
 import type { Chain, PublicActions, Transport } from "viem";
-import type { SmartAccount } from "viem/account-abstraction";
 
 import type { GelatoResponse } from "../index.js";
 import type { GelatoTaskWaitEvent } from "./types.js";
@@ -7,6 +6,7 @@ import type { GelatoTaskEvent } from "./types.js";
 
 import { on } from "../actions/on.js";
 import { wait } from "../actions/wait.js";
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 export { getTaskStatus } from "./http.js";
 export {
   TaskState,
@@ -22,7 +22,7 @@ export {
 export function track<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(taskId: string, client?: PublicActions<transport, chain, account>): GelatoResponse {
   return {
     id: taskId,
