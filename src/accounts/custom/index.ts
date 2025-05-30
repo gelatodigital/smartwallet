@@ -82,6 +82,8 @@ export async function custom<
     throw new Error("EIP-7702 is enabled. Authorization is required.");
   }
 
+  const erc4337 = Boolean(_entryPoint);
+
   const entryPoint =
     _entryPoint ??
     ({
@@ -104,6 +106,7 @@ export async function custom<
     extend: {
       owner,
       eip7702,
+      erc4337,
       scw: { owner, eip7702, type: "custom", encoding: scw.encoding } as const,
       async signAuthorization() {
         if (!eip7702) {
