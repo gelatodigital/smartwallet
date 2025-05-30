@@ -8,7 +8,7 @@ export { safe } from "./safe/index.js";
 export { custom } from "./custom/index.js";
 
 export type GelatoSmartAccountSCWEncoding = "erc7821" | "safe";
-export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "custom";
+export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "safe" | "custom";
 export type GelatoSmartAccountSCW = {
   type: GelatoSmartAccountSCWType;
   encoding: GelatoSmartAccountSCWEncoding;
