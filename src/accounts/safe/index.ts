@@ -40,6 +40,7 @@ import {
 } from "viem/account-abstraction";
 import { getChainId, readContract } from "viem/actions";
 import { getAction } from "viem/utils";
+import type { GelatoSmartAccountExtension } from "../index.js";
 import { signUserOperation } from "./actions/signUserOperation.js";
 import { type EthereumProvider, toOwner } from "./actions/toOwner.js";
 import {
@@ -50,7 +51,6 @@ import {
   multiSendAbi,
   setupAbi
 } from "./constants.js";
-import type { GelatoSmartAccountExtension } from "../index.js";
 
 const adjustVInSignature = (
   signingMethod: "eth_sign" | "eth_signTypedData",
