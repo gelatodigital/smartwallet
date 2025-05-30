@@ -50,6 +50,7 @@ import {
   multiSendAbi,
   setupAbi
 } from "./constants.js";
+import type { GelatoSmartAccountExtension } from "../index.js";
 
 const adjustVInSignature = (
   signingMethod: "eth_sign" | "eth_signTypedData",
@@ -476,7 +477,8 @@ export type SafeSmartAccountImplementation<entryPointVersion extends "0.6" | "0.
   Assign<
     SmartAccountImplementation<
       entryPointVersion extends "0.6" ? typeof entryPoint06Abi : typeof entryPoint07Abi,
-      entryPointVersion
+      entryPointVersion,
+      GelatoSmartAccountExtension
     >,
     { sign: NonNullable<SmartAccountImplementation["sign"]> }
   >;
