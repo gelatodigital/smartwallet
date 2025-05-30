@@ -35,12 +35,13 @@ export const walletPrepareCalls = async <
         }
       : undefined,
     // Only define factory if the account is not deployed and is non 7702
-    factory: isDeployed || client.account.authorization
-      ? undefined
-      : await client.account.getFactoryArgs().then(({ factory, factoryData }) => ({
-          address: factory,
-          data: factoryData
-        })),
+    factory:
+      isDeployed || client.account.authorization
+        ? undefined
+        : await client.account.getFactoryArgs().then(({ factory, factoryData }) => ({
+            address: factory,
+            data: factoryData
+          })),
     entryPoint: client.account.entryPoint
       ? {
           version: client.account.entryPoint.version,
