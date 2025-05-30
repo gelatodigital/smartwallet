@@ -4,6 +4,7 @@ import type { SignAuthorizationReturnType } from "viem/accounts";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
+import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import { isEIP7702 } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
@@ -31,16 +32,33 @@ export async function execute<
 
   let authorizationList: SignAuthorizationReturnType[] | undefined;
 
-  if (isEIP7702(client)) {
-    const authorized = await verifyAuthorization(client);
-    authorizationList = authorized ? undefined : await signAuthorizationList(client);
-  }
+  let context: Context;
+  let signatureRequest: SignatureRequest;
 
-  const { context, signatureRequest } = await walletPrepareCalls(client, {
-    calls,
-    payment,
-    nonceKey
-  });
+  if (isEIP7702(client)) {
+    const [authResult, walletPrepareCallsResult] = await Promise.all([
+      (async () => {
+        const authorized = await verifyAuthorization(client);
+        const authorizationList = authorized ? undefined : await signAuthorizationList(client);
+        return { authorizationList };
+      })(),
+
+      walletPrepareCalls(client, {
+        calls,
+        payment,
+        nonceKey
+      })
+    ]);
+
+    authorizationList = authResult.authorizationList;
+    ({ context, signatureRequest } = walletPrepareCallsResult);
+  } else {
+    ({ context, signatureRequest } = await walletPrepareCalls(client, {
+      calls,
+      payment,
+      nonceKey
+    }));
+  }
 
   const signature = await signSignatureRequest(client, signatureRequest);
 
