@@ -44,16 +44,18 @@ export function delegateAddress<
 
   const walletType = client._internal.wallet.type;
 
-  const delegateAddresses =
+  let walletVersions =
     client._internal.networkCapabilities[client.chain.id].contracts.delegation[walletType];
 
-  if (!delegateAddresses || delegateAddresses.length === 0) {
+  if (!walletVersions || walletVersions.length === 0) {
     throw new Error(`Wallet type ${walletType} not supported on ${client.chain.name}`);
   }
 
-  const latestDelegateVersion = delegateAddresses.sort((a, b) =>
-    b.version.localeCompare(a.version)
-  )[0];
+  walletVersions = walletVersions.sort((a, b) => b.version.localeCompare(a.version));
 
-  return latestDelegateVersion.address;
+  const versionToUse =
+    walletVersions.find(({ version }) => version === client._internal.wallet.version) ||
+    walletVersions[0];
+
+  return versionToUse.address;
 }
