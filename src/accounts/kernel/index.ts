@@ -144,6 +144,7 @@ export async function kernel<
   } = parameters;
 
   const eip7702 = _eip7702 ?? true;
+  const erc4337 = true;
   const useMetaFactory = _useMetaFactory ?? true;
 
   const entryPoint = _entryPoint ?? {
@@ -264,6 +265,7 @@ export async function kernel<
       abi,
       owner,
       eip7702,
+      erc4337,
       scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
     },
     entryPoint,

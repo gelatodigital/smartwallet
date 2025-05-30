@@ -41,6 +41,7 @@ export async function gelato<eip7702 extends boolean = true>(
   const { client, owner, eip7702: _eip7702, authorization: _authorization } = parameters;
 
   const eip7702 = _eip7702 ?? true;
+  const erc4337 = false;
 
   if (!eip7702) {
     throw new Error("EIP-7702 must be enabled. No support for non-EIP-7702 accounts.");
@@ -82,6 +83,7 @@ export async function gelato<eip7702 extends boolean = true>(
       abi,
       owner,
       eip7702,
+      erc4337,
       scw: { type: "gelato", encoding: "erc7821", version: "0.0" } as const
     },
     entryPoint,
