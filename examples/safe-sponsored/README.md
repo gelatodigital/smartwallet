@@ -1,4 +1,4 @@
-# Custom Sponsored Payment Example
+# Safe Sponsored Payment Example
 
 ## Prerequisites
 

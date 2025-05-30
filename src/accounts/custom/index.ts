@@ -52,13 +52,13 @@ export type CustomSmartAccountParameters<
     encoding: GelatoSmartAccountSCWEncoding;
   };
 } & (eip7702 extends true
-  ? { factory?: undefined }
+  ? { factory?: undefined } | { getFactoryArgs?: undefined}
   : {
       factory: {
         address: Address;
         data: Hex;
       };
-    });
+    }| { getFactoryArgs: () => Promise<ReturnType<typeof toSmartAccount>["getFactoryArgs"]> });
 
 export type CustomSmartAccountReturnType = Prettify<SmartAccount<CustomSmartAccountImplementation>>;
 
@@ -80,7 +80,6 @@ export async function custom<
     authorization,
     eip7702,
     entryPoint: _entryPoint,
-    factory,
     scw
   } = parameters;
 
@@ -161,8 +160,15 @@ export async function custom<
         return { factory: "0x7702", factoryData: "0x" };
       }
 
-      if (factory) {
-        return { factory: factory.address, factoryData: factory.data };
+      if ("getFactoryArgs" in parameters && typeof parameters.getFactoryArgs === 'function') {
+        return parameters.getFactoryArgs();
+      }
+
+      if ("factory" in parameters && parameters.factory && 'address' in parameters.factory && 'data' in parameters.factory) {
+        return {
+          factory: parameters.factory.address,
+          factoryData: parameters.factory.data
+        };
       }
 
       throw new Error("Factory args are not set");
