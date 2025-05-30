@@ -1,7 +1,7 @@
 import type { Chain, Transport } from "viem";
 
-import type { GelatoWalletClient } from "./index.js";
 import type { GelatoSmartAccount } from "../accounts/index.js";
+import type { GelatoWalletClient } from "./index.js";
 
 export async function switchChain<
   transport extends Transport = Transport,

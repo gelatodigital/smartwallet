@@ -1,12 +1,12 @@
 import type { Chain, Hash, PublicActions, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { statusApiPollingInterval } from "../../constants/index.js";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
 import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../status/ws.js";
 import { type ErrorCallback, onError } from "./internal/onError.js";
-import type { GelatoSmartAccount } from "../../accounts/index.js";
 
 type SuccessCallback = (data: TransactionStatusResponse) => void;
 type Callback = SuccessCallback | ErrorCallback;

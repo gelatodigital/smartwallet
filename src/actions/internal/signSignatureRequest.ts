@@ -1,8 +1,8 @@
 import type { Chain, Hex, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { type SignatureRequest, SignatureRequestType } from "../../relay/rpc/index.js";
 import type { GelatoWalletClient } from "../index.js";
-import type { GelatoSmartAccount } from "../../accounts/index.js";
 
 export async function signSignatureRequest<
   transport extends Transport = Transport,

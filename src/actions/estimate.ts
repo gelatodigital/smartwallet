@@ -1,11 +1,11 @@
 import type { Call, Chain, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Payment } from "../payment/index.js";
 import type { Quote } from "../relay/rpc/interfaces/index.js";
 import { walletPrepareCalls } from "../relay/rpc/prepareCalls.js";
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
-import type { GelatoSmartAccount } from "../accounts/index.js";
 
 /**
  *

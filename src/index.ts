@@ -2,9 +2,9 @@ import type { Chain, PublicActions, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
+import type { GelatoSmartAccount } from "./accounts/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
-import type { GelatoSmartAccount } from "./accounts/index.js";
 
 export type GelatoSmartWalletClient<
   transport extends Transport,
@@ -21,7 +21,7 @@ export const createGelatoSmartWalletClient = <
   account extends GelatoSmartAccount
 >(
   client: WalletClient<transport, chain, account>,
-  params?: { apiKey?: string; }
+  params?: { apiKey?: string }
 ) => {
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),

@@ -1,8 +1,8 @@
 import type { Chain, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../../accounts/index.js";
 import type { GelatoWalletClient } from "../../../actions/index.js";
 import { walletGetCapabilities } from "../getCapabilities.js";
-import type { GelatoSmartAccount } from "../../../accounts/index.js";
 
 export async function initializeNetworkCapabilities<
   transport extends Transport = Transport,

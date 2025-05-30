@@ -1,6 +1,7 @@
 import type { Chain, SignedAuthorizationList, Transport } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { api } from "../constants/index.js";
 import { track } from "./status/index.js";
@@ -9,7 +10,6 @@ import type {
   GelatoTaskWaitEvent,
   TransactionStatusResponse
 } from "./status/index.js";
-import type { GelatoSmartAccount } from "../accounts/index.js";
 
 interface BaseCallRequest {
   chainId: number;
