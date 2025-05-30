@@ -57,7 +57,9 @@ const publicClient = createPublicClient({
     preparedCalls
   });
   const end = performance.now();
-  console.log(`Took ${(end - start).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`);
+  console.log(
+    `Took ${(end - start).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`
+  );
 
   // Listen for events
   response.on("submitted", (status: GelatoTaskStatus) => {
