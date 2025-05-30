@@ -27,7 +27,7 @@ const publicClient = createPublicClient({
   const account = await safe({
     client: publicClient,
     owners: [owner],
-    version: "1.4.1",
+    version: "1.4.1"
   });
 
   console.log("Account address:", account.address);

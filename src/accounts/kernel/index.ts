@@ -53,8 +53,12 @@ export type KernelSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
   eip7702 extends boolean = boolean
-> = SmartAccountImplementation<entryPointAbi, entryPointVersion, GelatoSmartAccountExtension, eip7702>;
-
+> = SmartAccountImplementation<
+  entryPointAbi,
+  entryPointVersion,
+  GelatoSmartAccountExtension,
+  eip7702
+>;
 
 export type KernelSmartAccountParameters<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
@@ -67,7 +71,11 @@ export type KernelSmartAccountParameters<
   address?: Address;
   index?: bigint;
   useMetaFactory?: boolean;
-  authorization?: KernelSmartAccountImplementation<entryPointAbi, entryPointVersion, eip7702>["authorization"];
+  authorization?: KernelSmartAccountImplementation<
+    entryPointAbi,
+    entryPointVersion,
+    eip7702
+  >["authorization"];
   entryPoint?: {
     abi: Abi;
     address: Address;

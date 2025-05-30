@@ -29,7 +29,7 @@ import {
   toBytes,
   toHex,
   zeroAddress
-} from "viem"
+} from "viem";
 import {
   type SmartAccount,
   type SmartAccountImplementation,
@@ -38,45 +38,45 @@ import {
   entryPoint07Abi,
   entryPoint07Address,
   toSmartAccount
-} from "viem/account-abstraction"
-import { getChainId, readContract } from "viem/actions"
-import { getAction } from "viem/utils"
-import { type EthereumProvider, toOwner } from "./actions/toOwner.js"
-import { signUserOperation } from "./actions/signUserOperation.js"
+} from "viem/account-abstraction";
+import { getChainId, readContract } from "viem/actions";
+import { getAction } from "viem/utils";
+import { signUserOperation } from "./actions/signUserOperation.js";
+import { type EthereumProvider, toOwner } from "./actions/toOwner.js";
 import {
+  SAFE_VERSION_TO_ADDRESSES_MAP,
+  type SafeVersion,
   createProxyWithNonceAbi,
   enableModulesAbi,
   initSafe7579Abi,
   multiSendAbi,
   preValidationSetupAbi,
-  SAFE_VERSION_TO_ADDRESSES_MAP,
-  type SafeVersion,
   setupAbi
-} from "./constants.js"
+} from "./constants.js";
 
 const adjustVInSignature = (
   signingMethod: "eth_sign" | "eth_signTypedData",
   signature: string
 ): Hex => {
-  const ETHEREUM_V_VALUES = [0, 1, 27, 28]
-  const MIN_VALID_V_VALUE_FOR_SAFE_ECDSA = 27
-  let signatureV = Number.parseInt(signature.slice(-2), 16)
+  const ETHEREUM_V_VALUES = [0, 1, 27, 28];
+  const MIN_VALID_V_VALUE_FOR_SAFE_ECDSA = 27;
+  let signatureV = Number.parseInt(signature.slice(-2), 16);
   if (!ETHEREUM_V_VALUES.includes(signatureV)) {
-      throw new Error("Invalid signature")
+    throw new Error("Invalid signature");
   }
   if (signingMethod === "eth_sign") {
-      if (signatureV < MIN_VALID_V_VALUE_FOR_SAFE_ECDSA) {
-          signatureV += MIN_VALID_V_VALUE_FOR_SAFE_ECDSA
-      }
-      signatureV += 4
+    if (signatureV < MIN_VALID_V_VALUE_FOR_SAFE_ECDSA) {
+      signatureV += MIN_VALID_V_VALUE_FOR_SAFE_ECDSA;
+    }
+    signatureV += 4;
   }
   if (signingMethod === "eth_signTypedData") {
-      if (signatureV < MIN_VALID_V_VALUE_FOR_SAFE_ECDSA) {
-          signatureV += MIN_VALID_V_VALUE_FOR_SAFE_ECDSA
-      }
+    if (signatureV < MIN_VALID_V_VALUE_FOR_SAFE_ECDSA) {
+      signatureV += MIN_VALID_V_VALUE_FOR_SAFE_ECDSA;
+    }
   }
-  return (signature.slice(0, -2) + signatureV.toString(16)) as Hex
-}
+  return (signature.slice(0, -2) + signatureV.toString(16)) as Hex;
+};
 
 const generateSafeMessageMessage = <
   const TTypedData extends TypedData | { [key: string]: unknown },
@@ -84,59 +84,49 @@ const generateSafeMessageMessage = <
 >(
   message: SignableMessage | TypedDataDefinition<TTypedData, TPrimaryType>
 ): Hex => {
-  const signableMessage = message as SignableMessage
+  const signableMessage = message as SignableMessage;
 
   if (typeof signableMessage === "string" || signableMessage.raw) {
-      return hashMessage(signableMessage)
+    return hashMessage(signableMessage);
   }
 
-  return hashTypedData(
-      message as TypedDataDefinition<TTypedData, TPrimaryType>
-  )
-}
+  return hashTypedData(message as TypedDataDefinition<TTypedData, TPrimaryType>);
+};
 
 const encodeInternalTransaction = (tx: {
-  to: Address
-  data: Address
-  value: bigint
-  operation: 0 | 1
+  to: Address;
+  data: Address;
+  value: bigint;
+  operation: 0 | 1;
 }): string => {
   const encoded = encodePacked(
-      // uint8 = 1 byte for operation
-      // address = 20 bytes for to address
-      // uint256 = 32 bytes for value
-      // uint256 = 32 bytes for data length
-      // bytes = dynamic length for data
-      ["uint8", "address", "uint256", "uint256", "bytes"],
-      [
-          tx.operation,
-          tx.to,
-          tx.value,
-          BigInt(tx.data.slice(2).length / 2),
-          tx.data
-      ]
-  )
-  return encoded.slice(2)
-}
+    // uint8 = 1 byte for operation
+    // address = 20 bytes for to address
+    // uint256 = 32 bytes for value
+    // uint256 = 32 bytes for data length
+    // bytes = dynamic length for data
+    ["uint8", "address", "uint256", "uint256", "bytes"],
+    [tx.operation, tx.to, tx.value, BigInt(tx.data.slice(2).length / 2), tx.data]
+  );
+  return encoded.slice(2);
+};
 
 const encodeMultiSend = (
   txs: {
-      to: Address
-      data: Address
-      value: bigint
-      operation: 0 | 1
+    to: Address;
+    data: Address;
+    value: bigint;
+    operation: 0 | 1;
   }[]
 ): `0x${string}` => {
-  const data: `0x${string}` = `0x${txs
-      .map((tx) => encodeInternalTransaction(tx))
-      .join("")}`
+  const data: `0x${string}` = `0x${txs.map((tx) => encodeInternalTransaction(tx)).join("")}`;
 
   return encodeFunctionData({
-      abi: multiSendAbi,
-      functionName: "multiSend",
-      args: [data]
-  })
-}
+    abi: multiSendAbi,
+    functionName: "multiSend",
+    args: [data]
+  });
+};
 
 const get7579LaunchPadInitData = ({
   safe4337ModuleAddress,
@@ -151,55 +141,53 @@ const get7579LaunchPadInitData = ({
   threshold,
   attestersThreshold
 }: {
-  safe4337ModuleAddress: Address
-  safeSingletonAddress: Address
-  erc7579LaunchpadAddress: Address
-  owners: Address[]
+  safe4337ModuleAddress: Address;
+  safeSingletonAddress: Address;
+  erc7579LaunchpadAddress: Address;
+  owners: Address[];
   executors: {
-      address: Address
-      context: Address
-  }[]
-  validators: { address: Address; context: Address }[]
-  fallbacks: { address: Address; context: Address }[]
-  hooks: { address: Address; context: Address }[]
-  attesters: Address[]
-  threshold: bigint
-  attestersThreshold: number
+    address: Address;
+    context: Address;
+  }[];
+  validators: { address: Address; context: Address }[];
+  fallbacks: { address: Address; context: Address }[];
+  hooks: { address: Address; context: Address }[];
+  attesters: Address[];
+  threshold: bigint;
+  attestersThreshold: number;
 }) => {
   const initData = {
-      singleton: safeSingletonAddress,
-      owners: owners,
-      threshold: threshold,
-      setupTo: erc7579LaunchpadAddress,
-      setupData: encodeFunctionData({
-          abi: initSafe7579Abi,
-          functionName: "initSafe7579",
-          args: [
-              safe4337ModuleAddress, // SAFE_7579_ADDRESS,
-              executors.map((executor) => ({
-                  module: executor.address,
-                  initData: executor.context
-              })),
-              fallbacks.map((fallback) => ({
-                  module: fallback.address,
-                  initData: fallback.context
-              })),
-              hooks.map((hook) => ({
-                  module: hook.address,
-                  initData: hook.context
-              })),
-              attesters.sort((left, right) =>
-                  left.toLowerCase().localeCompare(right.toLowerCase())
-              ),
-              attestersThreshold
-          ]
-      }),
-      safe7579: safe4337ModuleAddress,
-      validators: validators
-  }
+    singleton: safeSingletonAddress,
+    owners: owners,
+    threshold: threshold,
+    setupTo: erc7579LaunchpadAddress,
+    setupData: encodeFunctionData({
+      abi: initSafe7579Abi,
+      functionName: "initSafe7579",
+      args: [
+        safe4337ModuleAddress, // SAFE_7579_ADDRESS,
+        executors.map((executor) => ({
+          module: executor.address,
+          initData: executor.context
+        })),
+        fallbacks.map((fallback) => ({
+          module: fallback.address,
+          initData: fallback.context
+        })),
+        hooks.map((hook) => ({
+          module: hook.address,
+          initData: hook.context
+        })),
+        attesters.sort((left, right) => left.toLowerCase().localeCompare(right.toLowerCase())),
+        attestersThreshold
+      ]
+    }),
+    safe7579: safe4337ModuleAddress,
+    validators: validators
+  };
 
-  return initData
-}
+  return initData;
+};
 
 const getInitializerCode = async ({
   owners,
@@ -221,174 +209,163 @@ const getInitializerCode = async ({
   payment = BigInt(0),
   paymentReceiver = zeroAddress
 }: {
-  owners: Address[]
-  threshold: bigint
-  safeSingletonAddress: Address
-  safeModuleSetupAddress: Address
-  safe4337ModuleAddress: Address
-  multiSendAddress: Address
-  erc7579LaunchpadAddress?: Address
+  owners: Address[];
+  threshold: bigint;
+  safeSingletonAddress: Address;
+  safeModuleSetupAddress: Address;
+  safe4337ModuleAddress: Address;
+  multiSendAddress: Address;
+  erc7579LaunchpadAddress?: Address;
   setupTransactions?: {
-      to: Address
-      data: Address
-      value: bigint
-  }[]
-  safeModules?: Address[]
-  validators?: { address: Address; context: Address }[]
+    to: Address;
+    data: Address;
+    value: bigint;
+  }[];
+  safeModules?: Address[];
+  validators?: { address: Address; context: Address }[];
   executors?: {
-      address: Address
-      context: Address
-  }[]
-  fallbacks?: { address: Address; context: Address }[]
-  hooks?: { address: Address; context: Address }[]
-  attesters?: Address[]
-  attestersThreshold?: number
-  paymentToken?: Address
-  payment?: bigint
-  paymentReceiver?: Address
+    address: Address;
+    context: Address;
+  }[];
+  fallbacks?: { address: Address; context: Address }[];
+  hooks?: { address: Address; context: Address }[];
+  attesters?: Address[];
+  attestersThreshold?: number;
+  paymentToken?: Address;
+  payment?: bigint;
+  paymentReceiver?: Address;
 }) => {
   if (erc7579LaunchpadAddress) {
-      const initData = get7579LaunchPadInitData({
-          safe4337ModuleAddress,
-          safeSingletonAddress,
-          erc7579LaunchpadAddress,
-          owners,
-          validators,
-          executors,
-          fallbacks,
-          threshold,
-          hooks,
-          attesters,
-          attestersThreshold
-      })
+    const initData = get7579LaunchPadInitData({
+      safe4337ModuleAddress,
+      safeSingletonAddress,
+      erc7579LaunchpadAddress,
+      owners,
+      validators,
+      executors,
+      fallbacks,
+      threshold,
+      hooks,
+      attesters,
+      attestersThreshold
+    });
 
-      const initHash = keccak256(
-          encodeAbiParameters(
-              [
-                  {
-                      internalType: "address",
-                      name: "singleton",
-                      type: "address"
-                  },
-                  {
-                      internalType: "address[]",
-                      name: "owners",
-                      type: "address[]"
-                  },
-                  {
-                      internalType: "uint256",
-                      name: "threshold",
-                      type: "uint256"
-                  },
-                  {
-                      internalType: "address",
-                      name: "setupTo",
-                      type: "address"
-                  },
-                  {
-                      internalType: "bytes",
-                      name: "setupData",
-                      type: "bytes"
-                  },
-                  {
-                      internalType: "contract ISafe7579",
-                      name: "safe7579",
-                      type: "address"
-                  },
-                  {
-                      internalType: "struct ModuleInit[]",
-                      name: "validators",
-                      type: "tuple[]",
-                      components: [
-                          {
-                              internalType: "address",
-                              name: "module",
-                              type: "address"
-                          },
-                          {
-                              internalType: "bytes",
-                              name: "initData",
-                              type: "bytes"
-                          }
-                      ]
-                  }
-              ],
-              [
-                  initData.singleton,
-                  initData.owners,
-                  initData.threshold,
-                  initData.setupTo,
-                  initData.setupData,
-                  initData.safe7579,
-                  initData.validators.map((validator) => ({
-                      module: validator.address,
-                      initData: validator.context
-                  }))
-              ]
-          )
+    const initHash = keccak256(
+      encodeAbiParameters(
+        [
+          {
+            internalType: "address",
+            name: "singleton",
+            type: "address"
+          },
+          {
+            internalType: "address[]",
+            name: "owners",
+            type: "address[]"
+          },
+          {
+            internalType: "uint256",
+            name: "threshold",
+            type: "uint256"
+          },
+          {
+            internalType: "address",
+            name: "setupTo",
+            type: "address"
+          },
+          {
+            internalType: "bytes",
+            name: "setupData",
+            type: "bytes"
+          },
+          {
+            internalType: "contract ISafe7579",
+            name: "safe7579",
+            type: "address"
+          },
+          {
+            internalType: "struct ModuleInit[]",
+            name: "validators",
+            type: "tuple[]",
+            components: [
+              {
+                internalType: "address",
+                name: "module",
+                type: "address"
+              },
+              {
+                internalType: "bytes",
+                name: "initData",
+                type: "bytes"
+              }
+            ]
+          }
+        ],
+        [
+          initData.singleton,
+          initData.owners,
+          initData.threshold,
+          initData.setupTo,
+          initData.setupData,
+          initData.safe7579,
+          initData.validators.map((validator) => ({
+            module: validator.address,
+            initData: validator.context
+          }))
+        ]
       )
+    );
 
-      return encodeFunctionData({
-          abi: preValidationSetupAbi,
-          functionName: "preValidationSetup",
-          args: [initHash, zeroAddress, "0x"]
-      })
+    return encodeFunctionData({
+      abi: preValidationSetupAbi,
+      functionName: "preValidationSetup",
+      args: [initHash, zeroAddress, "0x"]
+    });
   }
 
   const multiSendCallData = encodeMultiSend([
-      {
-          to: safeModuleSetupAddress,
-          data: encodeFunctionData({
-              abi: enableModulesAbi,
-              functionName: "enableModules",
-              args: [[safe4337ModuleAddress, ...safeModules]]
-          }),
-          value: BigInt(0),
-          operation: 1
-      },
-      ...setupTransactions.map((tx) => ({ ...tx, operation: 0 as 0 | 1 }))
-  ])
+    {
+      to: safeModuleSetupAddress,
+      data: encodeFunctionData({
+        abi: enableModulesAbi,
+        functionName: "enableModules",
+        args: [[safe4337ModuleAddress, ...safeModules]]
+      }),
+      value: BigInt(0),
+      operation: 1
+    },
+    ...setupTransactions.map((tx) => ({ ...tx, operation: 0 as 0 | 1 }))
+  ]);
 
   return encodeFunctionData({
-      abi: setupAbi,
-      functionName: "setup",
-      args: [
-          owners,
-          threshold,
-          multiSendAddress,
-          multiSendCallData,
-          safe4337ModuleAddress,
-          paymentToken,
-          payment,
-          paymentReceiver
-      ]
-  })
-}
+    abi: setupAbi,
+    functionName: "setup",
+    args: [
+      owners,
+      threshold,
+      multiSendAddress,
+      multiSendCallData,
+      safe4337ModuleAddress,
+      paymentToken,
+      payment,
+      paymentReceiver
+    ]
+  });
+};
 
 export function getPaymasterAndData(unpackedUserOperation: UserOperation) {
   return unpackedUserOperation.paymaster
-      ? concat([
-            unpackedUserOperation.paymaster,
-            pad(
-                toHex(
-                    unpackedUserOperation.paymasterVerificationGasLimit ||
-                        BigInt(0)
-                ),
-                {
-                    size: 16
-                }
-            ),
-            pad(
-                toHex(
-                    unpackedUserOperation.paymasterPostOpGasLimit || BigInt(0)
-                ),
-                {
-                    size: 16
-                }
-            ),
-            unpackedUserOperation.paymasterData || ("0x" as Hex)
-        ])
-      : "0x"
+    ? concat([
+        unpackedUserOperation.paymaster,
+        pad(toHex(unpackedUserOperation.paymasterVerificationGasLimit || BigInt(0)), {
+          size: 16
+        }),
+        pad(toHex(unpackedUserOperation.paymasterPostOpGasLimit || BigInt(0)), {
+          size: 16
+        }),
+        unpackedUserOperation.paymasterData || ("0x" as Hex)
+      ])
+    : "0x";
 }
 
 const getAccountInitCode = async ({
@@ -412,206 +389,187 @@ const getAccountInitCode = async ({
   attesters = [],
   attestersThreshold = 0
 }: {
-  owners: Address[]
-  threshold: bigint
-  safeModuleSetupAddress: Address
-  safe4337ModuleAddress: Address
-  safeSingletonAddress: Address
-  multiSendAddress: Address
-  erc7579LaunchpadAddress?: Address
-  saltNonce?: bigint
+  owners: Address[];
+  threshold: bigint;
+  safeModuleSetupAddress: Address;
+  safe4337ModuleAddress: Address;
+  safeSingletonAddress: Address;
+  multiSendAddress: Address;
+  erc7579LaunchpadAddress?: Address;
+  saltNonce?: bigint;
   setupTransactions?: {
-      to: Address
-      data: Address
-      value: bigint
-  }[]
-  safeModules?: Address[]
-  validators?: { address: Address; context: Address }[]
+    to: Address;
+    data: Address;
+    value: bigint;
+  }[];
+  safeModules?: Address[];
+  validators?: { address: Address; context: Address }[];
   executors?: {
-      address: Address
-      context: Address
-  }[]
-  fallbacks?: { address: Address; context: Address }[]
-  hooks?: { address: Address; context: Address }[]
-  attesters?: Address[]
-  attestersThreshold?: number
-  paymentToken?: Address
-  payment?: bigint
-  paymentReceiver?: Address
+    address: Address;
+    context: Address;
+  }[];
+  fallbacks?: { address: Address; context: Address }[];
+  hooks?: { address: Address; context: Address }[];
+  attesters?: Address[];
+  attestersThreshold?: number;
+  paymentToken?: Address;
+  payment?: bigint;
+  paymentReceiver?: Address;
 }): Promise<Hex> => {
   const initializer = await getInitializerCode({
-      owners,
-      threshold,
-      safeModuleSetupAddress,
-      safe4337ModuleAddress,
-      multiSendAddress,
-      setupTransactions,
-      safeSingletonAddress,
-      safeModules,
-      erc7579LaunchpadAddress,
-      validators,
-      executors,
-      fallbacks,
-      hooks,
-      attesters,
-      attestersThreshold,
-      paymentToken,
-      payment,
-      paymentReceiver
-  })
+    owners,
+    threshold,
+    safeModuleSetupAddress,
+    safe4337ModuleAddress,
+    multiSendAddress,
+    setupTransactions,
+    safeSingletonAddress,
+    safeModules,
+    erc7579LaunchpadAddress,
+    validators,
+    executors,
+    fallbacks,
+    hooks,
+    attesters,
+    attestersThreshold,
+    paymentToken,
+    payment,
+    paymentReceiver
+  });
 
   const initCodeCallData = encodeFunctionData({
-      abi: createProxyWithNonceAbi,
-      functionName: "createProxyWithNonce",
-      args: [
-          erc7579LaunchpadAddress ?? safeSingletonAddress,
-          initializer,
-          saltNonce
-      ]
-  })
+    abi: createProxyWithNonceAbi,
+    functionName: "createProxyWithNonce",
+    args: [erc7579LaunchpadAddress ?? safeSingletonAddress, initializer, saltNonce]
+  });
 
-  return initCodeCallData
-}
+  return initCodeCallData;
+};
 
 export const getDefaultAddresses = (
   safeVersion: SafeVersion,
   entryPointVersion: "0.6" | "0.7",
   {
-      addModuleLibAddress: _addModuleLibAddress,
-      safeModuleSetupAddress: _safeModuleSetupAddress,
-      safe4337ModuleAddress: _safe4337ModuleAddress,
-      safeProxyFactoryAddress: _safeProxyFactoryAddress,
-      safeSingletonAddress: _safeSingletonAddress,
-      multiSendAddress: _multiSendAddress,
-      multiSendCallOnlyAddress: _multiSendCallOnlyAddress
+    addModuleLibAddress: _addModuleLibAddress,
+    safeModuleSetupAddress: _safeModuleSetupAddress,
+    safe4337ModuleAddress: _safe4337ModuleAddress,
+    safeProxyFactoryAddress: _safeProxyFactoryAddress,
+    safeSingletonAddress: _safeSingletonAddress,
+    multiSendAddress: _multiSendAddress,
+    multiSendCallOnlyAddress: _multiSendCallOnlyAddress
   }: {
-      addModuleLibAddress?: Address
-      safeModuleSetupAddress?: Address
-      safe4337ModuleAddress?: Address
-      safeProxyFactoryAddress?: Address
-      safeSingletonAddress?: Address
-      multiSendAddress?: Address
-      multiSendCallOnlyAddress?: Address
+    addModuleLibAddress?: Address;
+    safeModuleSetupAddress?: Address;
+    safe4337ModuleAddress?: Address;
+    safeProxyFactoryAddress?: Address;
+    safeSingletonAddress?: Address;
+    multiSendAddress?: Address;
+    multiSendCallOnlyAddress?: Address;
   }
 ) => {
   const safeModuleSetupAddress =
-      _safeModuleSetupAddress ??
-      _addModuleLibAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .SAFE_MODULE_SETUP_ADDRESS
+    _safeModuleSetupAddress ??
+    _addModuleLibAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].SAFE_MODULE_SETUP_ADDRESS;
   const safe4337ModuleAddress =
-      _safe4337ModuleAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .SAFE_4337_MODULE_ADDRESS
+    _safe4337ModuleAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].SAFE_4337_MODULE_ADDRESS;
   const safeProxyFactoryAddress =
-      _safeProxyFactoryAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .SAFE_PROXY_FACTORY_ADDRESS
+    _safeProxyFactoryAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].SAFE_PROXY_FACTORY_ADDRESS;
   const safeSingletonAddress =
-      _safeSingletonAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .SAFE_SINGLETON_ADDRESS
+    _safeSingletonAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].SAFE_SINGLETON_ADDRESS;
   const multiSendAddress =
-      _multiSendAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .MULTI_SEND_ADDRESS
+    _multiSendAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].MULTI_SEND_ADDRESS;
 
   const multiSendCallOnlyAddress =
-      _multiSendCallOnlyAddress ??
-      SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion]
-          .MULTI_SEND_CALL_ONLY_ADDRESS
+    _multiSendCallOnlyAddress ??
+    SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].MULTI_SEND_CALL_ONLY_ADDRESS;
 
   return {
-      safeModuleSetupAddress,
-      safe4337ModuleAddress,
-      safeProxyFactoryAddress,
-      safeSingletonAddress,
-      multiSendAddress,
-      multiSendCallOnlyAddress
-  }
-}
+    safeModuleSetupAddress,
+    safe4337ModuleAddress,
+    safeProxyFactoryAddress,
+    safeSingletonAddress,
+    multiSendAddress,
+    multiSendCallOnlyAddress
+  };
+};
 
-type GetErc7579Params<TErc7579 extends Address | undefined> =
-  TErc7579 extends undefined
-      ? {
-            safeModuleSetupAddress?: Address
-            multiSendAddress?: Address
-            multiSendCallOnlyAddress?: Address
-            // @deprecated This field is deprecated. It is recommended to make any setup transactions in the userOperation's calldata.
-            setupTransactions?: {
-                to: Address
-                data: Address
-                value: bigint
-            }[]
-            safeModules?: Address[]
-        }
-      : {
-            validators?: { address: Address; context: Address }[]
-            executors?: {
-                address: Address
-                context: Address
-            }[]
-            fallbacks?: { address: Address; context: Address }[]
-            hooks?: { address: Address; context: Address }[]
-            attesters?: Address[]
-            attestersThreshold?: number
-        }
+type GetErc7579Params<TErc7579 extends Address | undefined> = TErc7579 extends undefined
+  ? {
+      safeModuleSetupAddress?: Address;
+      multiSendAddress?: Address;
+      multiSendCallOnlyAddress?: Address;
+      // @deprecated This field is deprecated. It is recommended to make any setup transactions in the userOperation's calldata.
+      setupTransactions?: {
+        to: Address;
+        data: Address;
+        value: bigint;
+      }[];
+      safeModules?: Address[];
+    }
+  : {
+      validators?: { address: Address; context: Address }[];
+      executors?: {
+        address: Address;
+        context: Address;
+      }[];
+      fallbacks?: { address: Address; context: Address }[];
+      hooks?: { address: Address; context: Address }[];
+      attesters?: Address[];
+      attestersThreshold?: number;
+    };
 
 export type SafeSmartAccountParameters<
   entryPointVersion extends "0.6" | "0.7",
   TErc7579 extends Address | undefined
 > = {
-  client: Client<
-      Transport,
-      Chain | undefined,
-      JsonRpcAccount | LocalAccount | undefined
-  >
-  owners: (
-      | Account
-      | WalletClient<Transport, Chain | undefined, Account>
-      | EthereumProvider
-  )[]
-  threshold?: bigint
-  version: SafeVersion
+  client: Client<Transport, Chain | undefined, JsonRpcAccount | LocalAccount | undefined>;
+  owners: (Account | WalletClient<Transport, Chain | undefined, Account> | EthereumProvider)[];
+  threshold?: bigint;
+  version: SafeVersion;
   entryPoint?: {
-      address: Address
-      version: entryPointVersion
-  }
-  safe4337ModuleAddress?: Address
-  erc7579LaunchpadAddress?: TErc7579
-  safeProxyFactoryAddress?: Address
-  safeSingletonAddress?: Address
-  address?: Address
-  saltNonce?: bigint
-  validUntil?: number
-  validAfter?: number
-  nonceKey?: bigint
-  paymentToken?: Address
-  payment?: bigint
-  paymentReceiver?: Address
-} & GetErc7579Params<TErc7579>
+    address: Address;
+    version: entryPointVersion;
+  };
+  safe4337ModuleAddress?: Address;
+  erc7579LaunchpadAddress?: TErc7579;
+  safeProxyFactoryAddress?: Address;
+  safeSingletonAddress?: Address;
+  address?: Address;
+  saltNonce?: bigint;
+  validUntil?: number;
+  validAfter?: number;
+  nonceKey?: bigint;
+  paymentToken?: Address;
+  payment?: bigint;
+  paymentReceiver?: Address;
+} & GetErc7579Params<TErc7579>;
 
 function isErc7579Args<entryPointVersion extends "0.6" | "0.7" = "0.7">(
   args: SafeSmartAccountParameters<entryPointVersion, Address | undefined>
 ): args is SafeSmartAccountParameters<entryPointVersion, Address> {
-  return args.erc7579LaunchpadAddress !== undefined
+  return args.erc7579LaunchpadAddress !== undefined;
 }
 
 const proxyCreationCodeAbi = [
   {
-      inputs: [],
-      name: "proxyCreationCode",
-      outputs: [
-          {
-              internalType: "bytes",
-              name: "",
-              type: "bytes"
-          }
-      ],
-      stateMutability: "pure",
-      type: "function"
+    inputs: [],
+    name: "proxyCreationCode",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes"
+      }
+    ],
+    stateMutability: "pure",
+    type: "function"
   }
-] as const
+] as const;
 
 const getAccountAddress = async ({
   client,
@@ -636,51 +594,266 @@ const getAccountAddress = async ({
   attesters = [],
   attestersThreshold = 0
 }: {
-  client: Client
-  owners: Address[]
-  threshold: bigint
-  safeModuleSetupAddress: Address
-  safe4337ModuleAddress: Address
-  safeProxyFactoryAddress: Address
-  safeSingletonAddress: Address
-  multiSendAddress: Address
+  client: Client;
+  owners: Address[];
+  threshold: bigint;
+  safeModuleSetupAddress: Address;
+  safe4337ModuleAddress: Address;
+  safeProxyFactoryAddress: Address;
+  safeSingletonAddress: Address;
+  multiSendAddress: Address;
   setupTransactions: {
-      to: Address
-      data: Address
-      value: bigint
-  }[]
-  paymentToken?: Address
-  payment?: bigint
-  paymentReceiver?: Address
-  safeModules?: Address[]
-  saltNonce?: bigint
-  erc7579LaunchpadAddress?: Address
-  validators?: { address: Address; context: Address }[]
+    to: Address;
+    data: Address;
+    value: bigint;
+  }[];
+  paymentToken?: Address;
+  payment?: bigint;
+  paymentReceiver?: Address;
+  safeModules?: Address[];
+  saltNonce?: bigint;
+  erc7579LaunchpadAddress?: Address;
+  validators?: { address: Address; context: Address }[];
   executors?: {
-      address: Address
-      context: Address
-  }[]
-  fallbacks?: { address: Address; context: Address }[]
-  hooks?: { address: Address; context: Address }[]
-  attesters?: Address[]
-  attestersThreshold?: number
+    address: Address;
+    context: Address;
+  }[];
+  fallbacks?: { address: Address; context: Address }[];
+  hooks?: { address: Address; context: Address }[];
+  attesters?: Address[];
+  attestersThreshold?: number;
 }): Promise<Address> => {
   const proxyCreationCode = await readContract(client, {
-      abi: proxyCreationCodeAbi,
-      address: safeProxyFactoryAddress,
-      functionName: "proxyCreationCode"
-  })
+    abi: proxyCreationCodeAbi,
+    address: safeProxyFactoryAddress,
+    functionName: "proxyCreationCode"
+  });
 
   const initializer = await getInitializerCode({
-      owners,
+    owners,
+    threshold,
+    safeModuleSetupAddress,
+    safe4337ModuleAddress,
+    multiSendAddress,
+    setupTransactions,
+    safeSingletonAddress,
+    safeModules,
+    erc7579LaunchpadAddress,
+    validators,
+    executors,
+    fallbacks,
+    hooks,
+    attesters,
+    attestersThreshold,
+    paymentToken,
+    payment,
+    paymentReceiver
+  });
+
+  const deploymentCode = encodePacked(
+    ["bytes", "uint256"],
+    [proxyCreationCode, hexToBigInt(erc7579LaunchpadAddress ?? safeSingletonAddress)]
+  );
+
+  const salt = keccak256(
+    encodePacked(
+      ["bytes32", "uint256"],
+      [keccak256(encodePacked(["bytes"], [initializer])), saltNonce]
+    )
+  );
+
+  return getContractAddress({
+    from: safeProxyFactoryAddress,
+    salt,
+    bytecode: deploymentCode,
+    opcode: "CREATE2"
+  });
+};
+
+export type SafeSmartAccountImplementation<entryPointVersion extends "0.6" | "0.7" = "0.7"> =
+  Assign<
+    SmartAccountImplementation<
+      entryPointVersion extends "0.6" ? typeof entryPoint06Abi : typeof entryPoint07Abi,
+      entryPointVersion
+    >,
+    { sign: NonNullable<SmartAccountImplementation["sign"]> }
+  >;
+
+export type SafeSmartAccountReturnType<entryPointVersion extends "0.6" | "0.7" = "0.7"> =
+  SmartAccount<SafeSmartAccountImplementation<entryPointVersion>>;
+
+export async function safe<
+  entryPointVersion extends "0.6" | "0.7",
+  TErc7579 extends Address | undefined
+>(
+  parameters: SafeSmartAccountParameters<entryPointVersion, TErc7579>
+): Promise<SafeSmartAccountReturnType<entryPointVersion>> {
+  const {
+    client,
+    owners: _owners,
+    address,
+    threshold = BigInt(_owners.length),
+    version,
+    safe4337ModuleAddress: _safe4337ModuleAddress,
+    safeProxyFactoryAddress: _safeProxyFactoryAddress,
+    safeSingletonAddress: _safeSingletonAddress,
+    erc7579LaunchpadAddress,
+    saltNonce = BigInt(0),
+    validUntil = 0,
+    validAfter = 0,
+    nonceKey,
+    paymentToken,
+    payment,
+    paymentReceiver
+  } = parameters;
+
+  const owners = await Promise.all(
+    _owners.map(async (owner) => {
+      if ("account" in owner) {
+        return owner.account;
+      }
+
+      if ("request" in owner) {
+        return toOwner({
+          owner: owner as EthereumProvider
+        });
+      }
+
+      return owner;
+    })
+  );
+
+  const localOwners = await Promise.all(
+    _owners
+      .filter((owner) => {
+        if ("type" in owner && owner.type === "local") {
+          return true;
+        }
+
+        if ("request" in owner) {
+          return true;
+        }
+
+        if ("account" in owner) {
+          // walletClient
+          return true;
+        }
+
+        return false;
+      })
+      .map((owner) =>
+        toOwner({
+          owner: owner as OneOf<
+            LocalAccount | EthereumProvider | WalletClient<Transport, Chain | undefined, Account>
+          >
+        })
+      )
+  );
+
+  const entryPoint = {
+    address: parameters.entryPoint?.address ?? entryPoint07Address,
+    abi: (parameters.entryPoint?.version ?? "0.7") === "0.6" ? entryPoint06Abi : entryPoint07Abi,
+    version: parameters.entryPoint?.version ?? "0.7"
+  } as const;
+
+  let _safeModuleSetupAddress: Address | undefined = undefined;
+  let _multiSendAddress: Address | undefined = undefined;
+  let safeModules: Address[] | undefined = undefined;
+  let setupTransactions: {
+    to: Address;
+    data: Hex;
+    value: bigint;
+  }[] = [];
+  let validators: { address: Address; context: Address }[] = [];
+  let executors: { address: Address; context: Address }[] = [];
+  let fallbacks: { address: Address; context: Address }[] = [];
+  let hooks: { address: Address; context: Address }[] = [];
+  let attesters: Address[] = [];
+  let attestersThreshold = 0;
+
+  if (!isErc7579Args(parameters)) {
+    _safeModuleSetupAddress = parameters.safeModuleSetupAddress;
+    _multiSendAddress = parameters.multiSendAddress;
+    safeModules = parameters.safeModules;
+    setupTransactions = parameters.setupTransactions ?? [];
+  }
+
+  if (isErc7579Args(parameters)) {
+    validators = parameters.validators ?? [];
+    executors = parameters.executors ?? [];
+    fallbacks = parameters.fallbacks ?? [];
+    hooks = parameters.hooks ?? [];
+    attesters = parameters.attesters ?? [];
+    attestersThreshold = parameters.attestersThreshold ?? 0;
+  }
+
+  const {
+    safeModuleSetupAddress,
+    safe4337ModuleAddress,
+    safeProxyFactoryAddress,
+    safeSingletonAddress,
+    multiSendAddress
+  } = getDefaultAddresses(version, entryPoint.version, {
+    safeModuleSetupAddress: _safeModuleSetupAddress,
+    safe4337ModuleAddress: _safe4337ModuleAddress,
+    safeProxyFactoryAddress: _safeProxyFactoryAddress,
+    safeSingletonAddress: _safeSingletonAddress,
+    multiSendAddress: _multiSendAddress
+  });
+
+  let accountAddress: Address | undefined = address;
+
+  let chainId: number;
+
+  const getMemoizedChainId = async () => {
+    if (chainId) return chainId;
+    chainId = client.chain
+      ? client.chain.id
+      : await getAction(client, getChainId, "getChainId")({});
+    return chainId;
+  };
+
+  const getFactoryArgs = async () => {
+    return {
+      factory: safeProxyFactoryAddress,
+      factoryData: await getAccountInitCode({
+        owners: owners.map((owner) => owner.address),
+        threshold,
+        safeModuleSetupAddress,
+        safe4337ModuleAddress,
+        safeSingletonAddress,
+        multiSendAddress,
+        erc7579LaunchpadAddress,
+        saltNonce,
+        setupTransactions,
+        safeModules,
+        validators,
+        executors,
+        fallbacks,
+        hooks,
+        attesters,
+        attestersThreshold,
+        paymentToken,
+        payment,
+        paymentReceiver
+      })
+    };
+  };
+
+  if (!accountAddress) {
+    accountAddress = await getAccountAddress({
+      client,
+      owners: owners.map((owner) => owner.address),
       threshold,
       safeModuleSetupAddress,
       safe4337ModuleAddress,
-      multiSendAddress,
-      setupTransactions,
+      safeProxyFactoryAddress,
       safeSingletonAddress,
-      safeModules,
+      multiSendAddress,
       erc7579LaunchpadAddress,
+      saltNonce,
+      setupTransactions,
+      safeModules,
       validators,
       executors,
       fallbacks,
@@ -690,231 +863,7 @@ const getAccountAddress = async ({
       paymentToken,
       payment,
       paymentReceiver
-  })
-
-  const deploymentCode = encodePacked(
-      ["bytes", "uint256"],
-      [
-          proxyCreationCode,
-          hexToBigInt(erc7579LaunchpadAddress ?? safeSingletonAddress)
-      ]
-  )
-
-  const salt = keccak256(
-      encodePacked(
-          ["bytes32", "uint256"],
-          [keccak256(encodePacked(["bytes"], [initializer])), saltNonce]
-      )
-  )
-
-  return getContractAddress({
-      from: safeProxyFactoryAddress,
-      salt,
-      bytecode: deploymentCode,
-      opcode: "CREATE2"
-  })
-}
-
-export type SafeSmartAccountImplementation<
-  entryPointVersion extends "0.6" | "0.7" = "0.7"
-> = Assign<
-  SmartAccountImplementation<
-      entryPointVersion extends "0.6"
-          ? typeof entryPoint06Abi
-          : typeof entryPoint07Abi,
-      entryPointVersion
-  >,
-  { sign: NonNullable<SmartAccountImplementation["sign"]> }
->
-
-export type SafeSmartAccountReturnType<
-  entryPointVersion extends "0.6" | "0.7" = "0.7"
-> = SmartAccount<SafeSmartAccountImplementation<entryPointVersion>>
-
-export async function safe<
-  entryPointVersion extends "0.6" | "0.7",
-  TErc7579 extends Address | undefined
->(
-  parameters: SafeSmartAccountParameters<entryPointVersion, TErc7579>
-): Promise<SafeSmartAccountReturnType<entryPointVersion>> {
-  const {
-      client,
-      owners: _owners,
-      address,
-      threshold = BigInt(_owners.length),
-      version,
-      safe4337ModuleAddress: _safe4337ModuleAddress,
-      safeProxyFactoryAddress: _safeProxyFactoryAddress,
-      safeSingletonAddress: _safeSingletonAddress,
-      erc7579LaunchpadAddress,
-      saltNonce = BigInt(0),
-      validUntil = 0,
-      validAfter = 0,
-      nonceKey,
-      paymentToken,
-      payment,
-      paymentReceiver,
-  } = parameters
-
-  const owners = await Promise.all(
-      _owners.map(async (owner) => {
-          if ("account" in owner) {
-              return owner.account
-          }
-
-          if ("request" in owner) {
-              return toOwner({
-                  owner: owner as EthereumProvider
-              })
-          }
-
-          return owner
-      })
-  )
-
-  const localOwners = await Promise.all(
-      _owners
-          .filter((owner) => {
-              if ("type" in owner && owner.type === "local") {
-                  return true
-              }
-
-              if ("request" in owner) {
-                  return true
-              }
-
-              if ("account" in owner) {
-                  // walletClient
-                  return true
-              }
-
-              return false
-          })
-          .map((owner) =>
-              toOwner({
-                  owner: owner as OneOf<
-                      | LocalAccount
-                      | EthereumProvider
-                      | WalletClient<Transport, Chain | undefined, Account>
-                  >
-              })
-          )
-  )
-
-  const entryPoint = {
-    address: parameters.entryPoint?.address ?? entryPoint07Address,
-    abi: (parameters.entryPoint?.version ?? "0.7") === "0.6" ? entryPoint06Abi : entryPoint07Abi,
-    version: parameters.entryPoint?.version ?? "0.7"
-  } as const;
-
-  let _safeModuleSetupAddress: Address | undefined = undefined
-  let _multiSendAddress: Address | undefined = undefined
-  let safeModules: Address[] | undefined = undefined
-  let setupTransactions: {
-      to: Address
-      data: Hex
-      value: bigint
-  }[] = []
-  let validators: { address: Address; context: Address }[] = []
-  let executors: { address: Address; context: Address }[] = []
-  let fallbacks: { address: Address; context: Address }[] = []
-  let hooks: { address: Address; context: Address }[] = []
-  let attesters: Address[] = []
-  let attestersThreshold = 0
-
-  if (!isErc7579Args(parameters)) {
-      _safeModuleSetupAddress = parameters.safeModuleSetupAddress
-      _multiSendAddress = parameters.multiSendAddress
-      safeModules = parameters.safeModules
-      setupTransactions = parameters.setupTransactions ?? []
-  }
-
-  if (isErc7579Args(parameters)) {
-      validators = parameters.validators ?? []
-      executors = parameters.executors ?? []
-      fallbacks = parameters.fallbacks ?? []
-      hooks = parameters.hooks ?? []
-      attesters = parameters.attesters ?? []
-      attestersThreshold = parameters.attestersThreshold ?? 0
-  }
-
-  const {
-      safeModuleSetupAddress,
-      safe4337ModuleAddress,
-      safeProxyFactoryAddress,
-      safeSingletonAddress,
-      multiSendAddress,
-  } = getDefaultAddresses(version, entryPoint.version, {
-      safeModuleSetupAddress: _safeModuleSetupAddress,
-      safe4337ModuleAddress: _safe4337ModuleAddress,
-      safeProxyFactoryAddress: _safeProxyFactoryAddress,
-      safeSingletonAddress: _safeSingletonAddress,
-      multiSendAddress: _multiSendAddress,
-  })
-
-  let accountAddress: Address | undefined = address
-
-  let chainId: number
-
-  const getMemoizedChainId = async () => {
-      if (chainId) return chainId
-      chainId = client.chain
-          ? client.chain.id
-          : await getAction(client, getChainId, "getChainId")({})
-      return chainId
-  }
-
-  const getFactoryArgs = async () => {
-      return {
-          factory: safeProxyFactoryAddress,
-          factoryData: await getAccountInitCode({
-              owners: owners.map((owner) => owner.address),
-              threshold,
-              safeModuleSetupAddress,
-              safe4337ModuleAddress,
-              safeSingletonAddress,
-              multiSendAddress,
-              erc7579LaunchpadAddress,
-              saltNonce,
-              setupTransactions,
-              safeModules,
-              validators,
-              executors,
-              fallbacks,
-              hooks,
-              attesters,
-              attestersThreshold,
-              paymentToken,
-              payment,
-              paymentReceiver
-          })
-      }
-  }
-
-  if (!accountAddress) {
-      accountAddress = await getAccountAddress({
-          client,
-          owners: owners.map((owner) => owner.address),
-          threshold,
-          safeModuleSetupAddress,
-          safe4337ModuleAddress,
-          safeProxyFactoryAddress,
-          safeSingletonAddress,
-          multiSendAddress,
-          erc7579LaunchpadAddress,
-          saltNonce,
-          setupTransactions,
-          safeModules,
-          validators,
-          executors,
-          fallbacks,
-          hooks,
-          attesters,
-          attestersThreshold,
-          paymentToken,
-          payment,
-          paymentReceiver
-      })
+    });
   }
 
   return toSmartAccount({
@@ -923,7 +872,7 @@ export async function safe<
     getFactoryArgs,
     extend: {
       eip7702: false,
-      scw: { type: "safe", encoding: "erc7579" } as const,
+      scw: { type: "safe", encoding: "erc7579" } as const
     },
     async getAddress() {
       if (accountAddress) return accountAddress;
@@ -1000,9 +949,7 @@ export async function safe<
 
       const signatureBytes = concat(signatures.map((sig) => sig.data));
 
-      return erc7579LaunchpadAddress
-        ? concat([zeroAddress, signatureBytes])
-        : signatureBytes;
+      return erc7579LaunchpadAddress ? concat([zeroAddress, signatureBytes]) : signatureBytes;
     },
     async signTypedData(typedData) {
       if (localOwners.length !== owners.length) {
@@ -1037,9 +984,7 @@ export async function safe<
 
       const signatureBytes = concat(signatures.map((sig) => sig.data));
 
-      return erc7579LaunchpadAddress
-        ? concat([zeroAddress, signatureBytes])
-        : signatureBytes;
+      return erc7579LaunchpadAddress ? concat([zeroAddress, signatureBytes]) : signatureBytes;
     },
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
@@ -1057,9 +1002,7 @@ export async function safe<
           entryPoint,
           owners: localOwners,
           account: owner as OneOf<
-            | EthereumProvider
-            | WalletClient<Transport, Chain | undefined, Account>
-            | LocalAccount
+            EthereumProvider | WalletClient<Transport, Chain | undefined, Account> | LocalAccount
           >,
           chainId: await getMemoizedChainId(),
           signatures,
