@@ -42,12 +42,13 @@ export const walletPrepareCalls = async <
             address: factory,
             data: factoryData
           })),
-    entryPoint: client.account.entryPoint
-      ? {
-          version: client.account.entryPoint.version,
-          address: client.account.entryPoint.address
-        }
-      : undefined,
+    entryPoint:
+      client.account.entryPoint && client.account.erc4337
+        ? {
+            version: client.account.entryPoint.version,
+            address: client.account.entryPoint.address
+          }
+        : undefined,
     nonceKey: serializeNonceKey(params.nonceKey)
   };
 

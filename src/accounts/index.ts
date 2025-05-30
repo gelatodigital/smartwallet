@@ -18,6 +18,7 @@ export type GelatoSmartAccountSCW = {
 export type GelatoSmartAccountExtension = {
   scw: GelatoSmartAccountSCW;
   eip7702: boolean;
+  erc4337: boolean;
   owner?: PrivateKeyAccount;
   abi?: Abi;
 };

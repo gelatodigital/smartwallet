@@ -495,6 +495,9 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
     paymentReceiver
   } = parameters;
 
+  const erc4337 = true;
+  const eip7702 = false;
+
   const owners = await Promise.all(
     _owners.map(async (owner) => {
       if ("account" in owner) {
@@ -625,7 +628,8 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
     entryPoint,
     getFactoryArgs,
     extend: {
-      eip7702: false,
+      eip7702,
+      erc4337,
       scw: { type: "safe", encoding: "safe" } as const
     },
     async getAddress() {
