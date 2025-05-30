@@ -7,6 +7,7 @@ import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
+import type { GelatoSmartAccount } from "../accounts/index.js";
 
 /**
  *
@@ -17,7 +18,7 @@ import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 export async function execute<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends SmartAccount = SmartAccount
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
