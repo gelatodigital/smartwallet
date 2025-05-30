@@ -28,7 +28,7 @@ export function addDelegationOverride<
   override: StateOverride = []
 ): StateOverride {
   if (!client._internal.delegation) {
-    throw new Error("Delegation needs to be set before adding override");
+    throw new Error("Internal error: addDelegationOverride: Delegation has not been set up");
   }
 
   if (!client._internal.authorized) {

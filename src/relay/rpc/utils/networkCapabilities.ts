@@ -1,16 +1,13 @@
 import type { Account, Chain, Transport } from "viem";
-import type { GelatoWalletClient } from "../../../actions";
-import { walletGetCapabilities } from "../getCapabilities";
+import type { GelatoWalletClient } from "../../../actions/index.js";
+import { walletGetCapabilities } from "../getCapabilities.js";
 
 export async function initializeNetworkCapabilities<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>) {
-  if (
-    !client._internal.networkCapabilities ||
-    !client._internal.networkCapabilities[client.chain.id]
-  ) {
+  if (!client._internal.networkCapabilities?.[client.chain.id]) {
     const networkCapabilities = await walletGetCapabilities(client);
     client._internal.networkCapabilities = networkCapabilities;
   }
@@ -25,9 +22,9 @@ export function feeCollector<
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (
     !client._internal.networkCapabilities ||
-    !client._internal.networkCapabilities[client.chain.id]
+    !client._internal.networkCapabilities?.[client.chain.id]
   ) {
-    throw new Error("Network capabilities not initialized");
+    throw new Error("Internal error: feeCollector: Network capabilities not initialized");
   }
 
   return client._internal.networkCapabilities[client.chain.id].feeCollector;
@@ -40,9 +37,9 @@ export function delegateAddress<
 >(client: GelatoWalletClient<transport, chain, account>) {
   if (
     !client._internal.networkCapabilities ||
-    !client._internal.networkCapabilities[client.chain.id]
+    !client._internal.networkCapabilities?.[client.chain.id]
   ) {
-    throw new Error("Network capabilities not initialized");
+    throw new Error("Internal error: delegateAddress: Network capabilities not initialized");
   }
 
   const walletType = client._internal.wallet.type;

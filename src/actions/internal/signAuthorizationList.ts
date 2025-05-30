@@ -7,7 +7,7 @@ export async function signAuthorizationList<
   account extends Account = Account
 >(client: GelatoWalletClient<transport, chain, account>, mock = false) {
   if (!client._internal.delegation) {
-    throw new Error("Delegation needs to be set before signing authorization list");
+    throw new Error("Internal error: signAuthorizationList: Delegation has not been set up");
   }
 
   if (mock) {

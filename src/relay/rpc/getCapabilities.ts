@@ -32,7 +32,7 @@ export const walletGetCapabilities = async <
   const data = await raw.json();
 
   if (data.error || data.message)
-    throw new Error(data.error?.message || data.message || "walletPrepareCalls failed");
+    throw new Error(data.error?.message || data.message || "walletGetCapabilities failed");
 
   const capabilities = data.result as WalletGetCapabilitiesResponse;
 
