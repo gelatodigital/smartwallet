@@ -52,25 +52,23 @@ const publicClient = createPublicClient({
   });
 
   console.log("Sending transaction...");
-
   const start = performance.now();
   const response = await swc.send({
     preparedCalls
   });
   const end = performance.now();
-  console.log(`Time to send: ${(end - start).toFixed(2)}ms`);
-  console.log(`Your Gelato id is: ${response.id}`);
+  console.log(`Took ${(end - start).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`);
 
   // Listen for events
   response.on("submitted", (status: GelatoTaskStatus) => {
     const end = performance.now();
     console.log(`Transaction submitted: ${status.transactionHash}`);
-    console.log(`Time from sending to submission: ${(end - start).toFixed(2)}ms`);
+    console.log(`Time from sending to onchain submission: ${(end - start).toFixed(2)}ms`);
   });
-  response.on("success", (status: GelatoTaskStatus) => {
+  response.on("success", async (status: GelatoTaskStatus) => {
     const end = performance.now();
     console.log(`Transaction successful: ${status.transactionHash}`);
-    console.log(`Time from sending to success: ${(end - start).toFixed(2)}ms`);
+    console.log(`Time from sending to onchain success: ${(end - start).toFixed(2)}ms`);
     process.exit(0);
   });
   response.on("error", (error: Error) => {
