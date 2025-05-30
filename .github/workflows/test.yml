@@ -17,6 +17,9 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      VITE_GELATO_API_KEY_STAGING: ${{ secrets.VITE_GELATO_API_KEY_STAGING }}
+      VITE_PRIVATE_KEY: ${{ secrets.VITE_PRIVATE_KEY }}
 
     steps:
       - name: Checkout Repo
