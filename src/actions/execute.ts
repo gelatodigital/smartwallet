@@ -1,6 +1,7 @@
 import type { Call, Chain, Transport } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
@@ -8,7 +9,6 @@ import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js
 import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
-import type { GelatoSmartAccount } from "../accounts/index.js";
 
 /**
  *

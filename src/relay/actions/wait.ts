@@ -3,6 +3,7 @@ import type { Chain, Hash, PublicActions, Transport } from "viem";
 import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { statusApiPollingInterval } from "../../constants/index.js";
 import {
   ExecutionCancelledError,
@@ -14,7 +15,6 @@ import {
 } from "../status/types.js";
 import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../status/ws.js";
-import type { GelatoSmartAccount } from "../../accounts/index.js";
 
 type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
 

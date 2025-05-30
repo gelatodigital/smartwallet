@@ -4,9 +4,9 @@ import type { GelatoResponse } from "../index.js";
 import type { GelatoTaskWaitEvent } from "./types.js";
 import type { GelatoTaskEvent } from "./types.js";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { on } from "../actions/on.js";
 import { wait } from "../actions/wait.js";
-import type { GelatoSmartAccount } from "../../accounts/index.js";
 export { getTaskStatus } from "./http.js";
 export {
   TaskState,
