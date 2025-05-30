@@ -1,5 +1,5 @@
 import type { Account, Address, Chain, Transport } from "viem";
-import type { GelatoWalletClient } from "../actions";
+import type { GelatoWalletClient } from "../actions/index.js";
 
 export enum WalletType {
   Gelato = "gelato",
