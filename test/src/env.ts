@@ -1,3 +1,5 @@
+import type { Hex } from "viem";
+
 export function getEnv(key: string, defaultValue?: string): string {
   const value = process.env[key];
   if (value === undefined) {
@@ -11,4 +13,8 @@ export function getEnv(key: string, defaultValue?: string): string {
 
 export function getApiKeyStaging(): string {
   return getEnv("VITE_GELATO_API_KEY_STAGING");
+}
+
+export function getPrivateKey(): Hex {
+  return getEnv("VITE_PRIVATE_KEY") as Hex;
 }
