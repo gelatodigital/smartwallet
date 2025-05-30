@@ -872,7 +872,7 @@ export async function safe<
     getFactoryArgs,
     extend: {
       eip7702: false,
-      scw: { type: "safe", encoding: "erc7579" } as const
+      scw: { type: "safe", encoding: "safe" } as const
     },
     async getAddress() {
       if (accountAddress) return accountAddress;
