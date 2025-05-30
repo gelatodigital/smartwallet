@@ -14,7 +14,6 @@
     "changeset:publish": "pnpm build && changeset publish",
     "changeset:version": "changeset version && pnpm format",
     "postinstall": "simple-git-hooks",
-    "pretest": "git submodule update --init --recursive && cd contracts && forge build",
     "test": "vitest -c ./test/vitest.config.ts"
   },
   "devDependencies": {
