@@ -1,11 +1,10 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
-import { WalletType } from "../../wallet/index.js";
 import type {
   Capabilities,
-  KernelCapabilities,
   SmartWalletCapabilities,
   WalletPrepareCallsParams,
   WalletPrepareCallsResponse
@@ -15,7 +14,7 @@ import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   params: WalletPrepareCallsParams
@@ -24,24 +23,34 @@ export const walletPrepareCalls = async <
 
   const calls = serializeCalls(params.calls);
 
-  let capabilities: Capabilities;
+  const isDeployed = await client.account.isDeployed();
 
-  if (client._internal.wallet.type === WalletType.Gelato) {
-    capabilities = <SmartWalletCapabilities>{
-      wallet: client._internal.wallet,
-      payment,
-      authorization: client._internal.authorization,
-      nonceKey: serializeNonceKey(params.nonceKey)
-    };
-  } else {
-    capabilities = <KernelCapabilities>{
-      wallet: client._internal.wallet,
-      payment,
-      authorization: client._internal.authorization,
-      factory: client._internal.factory,
-      entryPoint: client._internal.entryPoint
-    };
-  }
+  const capabilities: Capabilities = <SmartWalletCapabilities>{
+    wallet: client.account.scw,
+    payment,
+    authorization: client.account.authorization
+      ? {
+          address: client.account.authorization.address,
+          authorized: isDeployed
+        }
+      : undefined,
+    // Only define factory if the account is not deployed and is non 7702
+    factory:
+      isDeployed || client.account.authorization
+        ? undefined
+        : await client.account.getFactoryArgs().then(({ factory, factoryData }) => ({
+            address: factory,
+            data: factoryData
+          })),
+    entryPoint:
+      client.account.entryPoint && client.account.erc4337
+        ? {
+            version: client.account.entryPoint.version,
+            address: client.account.entryPoint.address
+          }
+        : undefined,
+    nonceKey: serializeNonceKey(params.nonceKey)
+  };
 
   const raw = await fetch(`${api()}/smartwallet`, {
     method: "POST",

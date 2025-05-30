@@ -4,7 +4,8 @@ import {
   createGelatoSmartWalletClient,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { http, type Hex, createWalletClient } from "viem";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
+import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -15,16 +16,31 @@ if (!sponsorApiKey) {
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
-const account = privateKeyToAccount(privateKey);
+const owner = privateKeyToAccount(privateKey);
 
-const client = createWalletClient({
-  account,
+const publicClient = createPublicClient({
   chain: baseSepolia,
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
-  .execute({
+(async () => {
+  const account = await gelato({
+    owner,
+    client: publicClient
+  });
+
+  console.log("Account address:", account.address);
+
+  const client = createWalletClient({
+    account,
+    chain: baseSepolia,
+    transport: http()
+  });
+
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+
+  console.log("Preparing transaction...");
+  const preparedCalls = await swc.prepare({
     payment: sponsored(sponsorApiKey),
     calls: [
       {
@@ -33,21 +49,34 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
         value: 0n
       }
     ]
-  })
-  .then((response) => {
-    console.log(`Your Gelato id is: ${response.id}`);
-    console.log("Waiting for transaction to be confirmed...");
-
-    // Listen for events
-    response.on("submitted", (status: GelatoTaskStatus) => {
-      console.log(`Transaction submitted: ${status.transactionHash}`);
-    });
-    response.on("success", (status: GelatoTaskStatus) => {
-      console.log(`Transaction successful: ${status.transactionHash}`);
-      process.exit(0);
-    });
-    response.on("error", (error: Error) => {
-      console.error(`Transaction failed: ${error.message}`);
-      process.exit(1);
-    });
   });
+
+  console.log("Sending transaction...");
+  const start = performance.now();
+  const response = await swc.send({
+    preparedCalls
+  });
+  const end = performance.now();
+  console.log(
+    `Took ${(end - start).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`
+  );
+
+  // Listen for events
+  response.on("submitted", (status: GelatoTaskStatus) => {
+    const end = performance.now();
+    console.log(`Transaction submitted: ${status.transactionHash}`);
+    console.log(`Time from sending to onchain submission: ${(end - start).toFixed(2)}ms`);
+  });
+  response.on("success", async (status: GelatoTaskStatus) => {
+    const end = performance.now();
+    console.log(`Transaction successful: ${status.transactionHash}`);
+    console.log(`Time from sending to onchain success: ${(end - start).toFixed(2)}ms`);
+    process.exit(0);
+  });
+  response.on("error", (error: Error) => {
+    const end = performance.now();
+    console.error(`Transaction failed: ${error.message}`);
+    console.log(`Time from sending to error: ${(end - start).toFixed(2)}ms`);
+    process.exit(1);
+  });
+})();

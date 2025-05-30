@@ -2,20 +2,20 @@ import "dotenv/config";
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  native,
-  toGelatoSmartAccount
+  sponsored
 } from "@gelatonetwork/smartwallet";
+import { safe } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const privateKey = process.env.PRIVATE_KEY as Hex;
-const apiKey = process.env.GELATO_API_KEY;
+const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
-if (!privateKey) {
-  throw new Error("PRIVATE_KEY is not set");
+if (!sponsorApiKey) {
+  throw new Error("SPONSOR_API_KEY is not set");
 }
 
+const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
 const owner = privateKeyToAccount(privateKey);
 
 const publicClient = createPublicClient({
@@ -24,19 +24,23 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toGelatoSmartAccount({
-    owner,
-    client: publicClient
+  const account = await safe({
+    client: publicClient,
+    owners: [owner],
+    version: "1.4.1"
   });
+
+  console.log("Account address:", account.address);
+
   const client = createWalletClient({
     account,
     chain: baseSepolia,
     transport: http()
   });
 
-  createGelatoSmartWalletClient(client, { apiKey })
+  createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
     .execute({
-      payment: native(),
+      payment: sponsored(sponsorApiKey),
       calls: [
         {
           to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",

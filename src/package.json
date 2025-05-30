@@ -6,6 +6,18 @@
   "main": "./_dist/index.js",
   "types": "./_dist/index.d.ts",
   "typings": "./_dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./_dist/index.d.ts",
+      "import": "./_dist/index.js",
+      "default": "./_dist/index.js"
+    },
+    "./accounts": {
+      "types": "./_dist/accounts/index.d.ts",
+      "import": "./_dist/accounts/index.js",
+      "default": "./_dist/accounts/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc --project ./tsconfig.build.json"
   },
