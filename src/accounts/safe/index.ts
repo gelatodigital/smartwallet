@@ -5,6 +5,7 @@ import {
   type Address,
   type Assign,
   BaseError,
+  type Abi,
   type Chain,
   type Client,
   type Hex,
@@ -33,7 +34,6 @@ import {
   type SmartAccount,
   type SmartAccountImplementation,
   type UserOperation,
-  entryPoint06Abi,
   entryPoint07Abi,
   entryPoint07Address,
   toSmartAccount
@@ -46,9 +46,11 @@ import { type EthereumProvider, toOwner } from "./actions/toOwner.js";
 import {
   SAFE_VERSION_TO_ADDRESSES_MAP,
   type SafeVersion,
+  type SupportedEntryPointVersions,
   createProxyWithNonceAbi,
   enableModulesAbi,
   multiSendAbi,
+  proxyCreationCodeAbi,
   setupAbi
 } from "./constants.js";
 
@@ -285,7 +287,7 @@ const getAccountInitCode = async ({
 
 export const getDefaultAddresses = (
   safeVersion: SafeVersion,
-  entryPointVersion: "0.6" | "0.7",
+  entryPointVersion: "0.7",
   {
     addModuleLibAddress: _addModuleLibAddress,
     safeModuleSetupAddress: _safeModuleSetupAddress,
@@ -335,12 +337,13 @@ export const getDefaultAddresses = (
   };
 };
 
-export type SafeSmartAccountParameters<entryPointVersion extends "0.6" | "0.7"> = {
+export type SafeSmartAccountParameters<entryPointVersion extends "0.7"> = {
   client: Client<Transport, Chain | undefined, JsonRpcAccount | LocalAccount | undefined>;
   owners: (Account | WalletClient<Transport, Chain | undefined, Account> | EthereumProvider)[];
   threshold?: bigint;
   version: SafeVersion;
   entryPoint?: {
+    abi: Abi;
     address: Address;
     version: entryPointVersion;
   };
@@ -360,22 +363,6 @@ export type SafeSmartAccountParameters<entryPointVersion extends "0.6" | "0.7"> 
   multiSendCallOnlyAddress?: Address;
   safeModules?: Address[];
 };
-
-const proxyCreationCodeAbi = [
-  {
-    inputs: [],
-    name: "proxyCreationCode",
-    outputs: [
-      {
-        internalType: "bytes",
-        name: "",
-        type: "bytes"
-      }
-    ],
-    stateMutability: "pure",
-    type: "function"
-  }
-] as const;
 
 const getAccountAddress = async ({
   client,
@@ -473,20 +460,20 @@ const getAccountAddress = async ({
   });
 };
 
-export type SafeSmartAccountImplementation<entryPointVersion extends "0.6" | "0.7" = "0.7"> =
+export type SafeSmartAccountImplementation<entryPointVersion extends SupportedEntryPointVersions> =
   Assign<
     SmartAccountImplementation<
-      entryPointVersion extends "0.6" ? typeof entryPoint06Abi : typeof entryPoint07Abi,
+      typeof entryPoint07Abi,
       entryPointVersion,
       GelatoSmartAccountExtension
     >,
     { sign: NonNullable<SmartAccountImplementation["sign"]> }
   >;
 
-export type SafeSmartAccountReturnType<entryPointVersion extends "0.6" | "0.7" = "0.7"> =
+export type SafeSmartAccountReturnType<entryPointVersion extends SupportedEntryPointVersions> =
   SmartAccount<SafeSmartAccountImplementation<entryPointVersion>>;
 
-export async function safe<entryPointVersion extends "0.6" | "0.7">(
+export async function safe<entryPointVersion extends SupportedEntryPointVersions>(
   parameters: SafeSmartAccountParameters<entryPointVersion>
 ): Promise<SafeSmartAccountReturnType<entryPointVersion>> {
   const {
@@ -495,6 +482,7 @@ export async function safe<entryPointVersion extends "0.6" | "0.7">(
     address,
     threshold = BigInt(_owners.length),
     version,
+    entryPoint: _entryPoint,
     safe4337ModuleAddress: _safe4337ModuleAddress,
     safeProxyFactoryAddress: _safeProxyFactoryAddress,
     safeSingletonAddress: _safeSingletonAddress,
@@ -550,11 +538,13 @@ export async function safe<entryPointVersion extends "0.6" | "0.7">(
       )
   );
 
-  const entryPoint = {
-    address: parameters.entryPoint?.address ?? entryPoint07Address,
-    abi: (parameters.entryPoint?.version ?? "0.7") === "0.6" ? entryPoint06Abi : entryPoint07Abi,
-    version: parameters.entryPoint?.version ?? "0.7"
-  } as const;
+  const entryPoint =
+    _entryPoint ??
+    ({
+      address: entryPoint07Address,
+      abi: entryPoint07Abi,
+      version: "0.7"
+    } as const);
 
   const _safeModuleSetupAddress = parameters.safeModuleSetupAddress;
   const _multiSendAddress = parameters.multiSendAddress;
@@ -654,7 +644,7 @@ export async function safe<entryPointVersion extends "0.6" | "0.7">(
         address: entryPoint.address,
         functionName: "getNonce",
         args: [await this.getAddress(), nonceKey ?? parameters?.key ?? 0n]
-      });
+      }) as unknown as bigint;
     },
     async getStubSignature() {
       return encodePacked(

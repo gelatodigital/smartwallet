@@ -18,9 +18,9 @@ import {
 } from "viem";
 import type { UserOperation } from "viem/account-abstraction";
 import {
-  EIP712_SAFE_OPERATION_TYPE_V06,
   EIP712_SAFE_OPERATION_TYPE_V07,
-  type SafeVersion
+  type SafeVersion,
+  type SupportedEntryPointVersions
 } from "../constants.js";
 import { getDefaultAddresses, getPaymasterAndData } from "../index.js";
 import { type EthereumProvider, toOwner } from "./toOwner.js";
@@ -30,7 +30,7 @@ export async function signUserOperation(
     version: SafeVersion;
     entryPoint: {
       address: Address;
-      version: "0.6" | "0.7";
+      version: SupportedEntryPointVersions;
     };
     owners: Account[];
     account: OneOf<
@@ -129,10 +129,7 @@ export async function signUserOperation(
             chainId,
             verifyingContract: safe4337ModuleAddress
           },
-          types:
-            entryPoint.version === "0.6"
-              ? EIP712_SAFE_OPERATION_TYPE_V06
-              : EIP712_SAFE_OPERATION_TYPE_V07,
+          types: EIP712_SAFE_OPERATION_TYPE_V07,
           primaryType: "SafeOp",
           message: message
         })
