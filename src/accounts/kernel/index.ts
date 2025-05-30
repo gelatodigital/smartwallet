@@ -1,4 +1,4 @@
-import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type { Abi, Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
 import {
   BaseError,
   concatHex,
@@ -18,6 +18,7 @@ import {
   zeroAddress
 } from "viem";
 import {
+  type EntryPointVersion,
   type SmartAccount,
   type SmartAccountImplementation,
   entryPoint07Abi,
@@ -48,22 +49,30 @@ import {
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
 
-export type KernelSmartAccountImplementation<eip7702 extends boolean = boolean> =
-  SmartAccountImplementation<
-    typeof entryPoint07Abi,
-    "0.7",
-    { abi: typeof abi } & GelatoSmartAccountExtension,
-    eip7702
-  >;
+export type KernelSmartAccountImplementation<
+  entryPointAbi extends Abi | readonly unknown[] = Abi,
+  entryPointVersion extends EntryPointVersion = EntryPointVersion,
+  eip7702 extends boolean = boolean
+> = SmartAccountImplementation<entryPointAbi, entryPointVersion, GelatoSmartAccountExtension, eip7702>;
 
-export type KernelSmartAccountParameters<eip7702 extends boolean = boolean> = {
-  client: KernelSmartAccountImplementation["client"];
+
+export type KernelSmartAccountParameters<
+  entryPointAbi extends Abi | readonly unknown[] = Abi,
+  entryPointVersion extends EntryPointVersion = EntryPointVersion,
+  eip7702 extends boolean = boolean
+> = {
+  client: KernelSmartAccountImplementation<entryPointAbi, entryPointVersion, eip7702>["client"];
   owner: PrivateKeyAccount;
   eip7702?: eip7702;
   address?: Address;
   index?: bigint;
   useMetaFactory?: boolean;
-  authorization?: KernelSmartAccountImplementation["authorization"];
+  authorization?: KernelSmartAccountImplementation<entryPointAbi, entryPointVersion, eip7702>["authorization"];
+  entryPoint?: {
+    abi: Abi;
+    address: Address;
+    version: EntryPointVersion;
+  };
 };
 
 export type KernelSmartAccountReturnType = Prettify<SmartAccount<KernelSmartAccountImplementation>>;
@@ -108,8 +117,12 @@ const getAccountInitCode = async ({
   });
 };
 
-export async function kernel<eip7702 extends boolean = boolean>(
-  parameters: KernelSmartAccountParameters<eip7702>
+export async function kernel<
+  entryPointAbi extends Abi | readonly unknown[] = Abi,
+  entryPointVersion extends EntryPointVersion = EntryPointVersion,
+  eip7702 extends boolean = boolean
+>(
+  parameters: KernelSmartAccountParameters<entryPointAbi, entryPointVersion, eip7702>
 ): Promise<KernelSmartAccountReturnType> {
   const {
     client,
@@ -118,17 +131,18 @@ export async function kernel<eip7702 extends boolean = boolean>(
     index = 0n,
     address,
     eip7702: _eip7702,
-    authorization: _authorization
+    authorization: _authorization,
+    entryPoint: _entryPoint
   } = parameters;
 
   const eip7702 = _eip7702 ?? true;
   const useMetaFactory = _useMetaFactory ?? true;
 
-  const entryPoint = {
+  const entryPoint = _entryPoint ?? {
     abi: entryPoint07Abi,
     address: entryPoint07Address,
-    version: "0.7"
-  } as const;
+    version: "0.7" as const
+  };
 
   const isDelegated = false; // When 7702+4337 is used
   let chainId: number;
@@ -322,11 +336,11 @@ export async function kernel<eip7702 extends boolean = boolean>(
 
     async getNonce(_parameters?: { key?: bigint }): Promise<bigint> {
       return readContract(client, {
-        abi: entryPoint07Abi,
-        address: entryPoint07Address,
+        abi: entryPoint.abi,
+        address: entryPoint.address,
         functionName: "getNonce",
         args: [accountAddress, KERNEL_V3_3_ECDSA_VALIDATOR_KEY]
-      });
+      }) as unknown as bigint;
     },
 
     async getAddress() {
