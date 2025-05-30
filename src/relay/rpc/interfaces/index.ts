@@ -2,7 +2,7 @@ import type { Address, Call, Hex, SignedAuthorizationList, TypedDataDefinition }
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { Payment } from "../../../payment/index.js";
-import type { Delegation, Gelato, Kernel } from "../../../wallet/index.js";
+import type { Wallet } from "../../../wallet/index.js";
 
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
@@ -21,59 +21,63 @@ type EthSignSignatureRequest = {
 
 export type SignatureRequest = TypedDataSignatureRequest | EthSignSignatureRequest;
 
-export enum ContextType {
-  SmartWallet = "smartwallet",
-  EntryPoint = "entrypoint"
-}
-
 export interface Quote {
   fee: { estimatedFee: string; decimals: number; conversionRate: number };
   gas: bigint;
   l1Gas: bigint;
 }
 
-export interface WalletPrepareCallsParams {
-  calls: Call[];
-  payment: Payment;
-  nonceKey?: bigint;
+export interface GatewaySingnature {
+  quote: Quote;
+  timestamp: number;
+  signature: Hex;
 }
 
-export interface SmartWalletContext extends Omit<Gelato, "eip7702"> {
+export interface Authorization {
+  address: Address;
+  authorized: boolean;
+}
+
+export interface Factory {
+  address: Address;
+  data: Hex;
+}
+
+export interface EntryPoint {
+  version: "0.7" | "0.8";
+  address: Address;
+}
+
+export interface BaseCapabilities {
+  wallet: Wallet;
   payment: Payment;
-  delegation: Delegation;
+  authorization?: Authorization;
+}
+
+export interface SmartWalletCapabilities extends BaseCapabilities {
+  nonceKey?: string;
+  authorization: Authorization;
+}
+
+export interface KernelCapabilities extends BaseCapabilities {
+  factory?: Factory;
+  entryPoint?: EntryPoint;
+}
+
+export type Capabilities = SmartWalletCapabilities | KernelCapabilities;
+
+export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySingnature> {
+  calls: Call[];
   nonceKey: string;
-  calls: Call[];
   quote: Quote;
-  timestamp?: number;
-  signature?: Hex;
 }
 
-export interface KernelContext extends Omit<Kernel, "eip7702"> {
-  payment: Payment;
+export interface KernelContext extends KernelCapabilities, Partial<GatewaySingnature> {
   userOp: UserOperation;
-  calls: Call[];
   quote: Quote;
-  timestamp?: number;
-  signature?: Hex;
 }
 
 export type Context = SmartWalletContext | KernelContext;
-
-export interface WalletPrepareCallsResponse {
-  chainId: number;
-  context: Context;
-  signatureRequest: SignatureRequest;
-}
-
-export interface WalletSendPreparedCallsParams {
-  context: Context;
-  signature: Hex;
-  authorizationList?: SignedAuthorizationList;
-}
-
-export interface WalletSendPreparedCallsResponse {
-  id: string;
-}
 
 export interface SingleNetworkCapabilities {
   feeCollector: Address;
@@ -90,6 +94,28 @@ export interface SingleNetworkCapabilities {
 }
 export interface NetworkCapabilities {
   [chainId: number]: SingleNetworkCapabilities;
+}
+
+export interface WalletPrepareCallsParams {
+  calls: Call[];
+  payment: Payment;
+  nonceKey?: bigint;
+}
+
+export interface WalletPrepareCallsResponse {
+  chainId: number;
+  context: Context;
+  signatureRequest: SignatureRequest;
+}
+
+export interface WalletSendPreparedCallsParams {
+  context: Context;
+  signature: Hex;
+  authorizationList?: SignedAuthorizationList;
+}
+
+export interface WalletSendPreparedCallsResponse {
+  id: string;
 }
 
 export interface WalletGetCapabilitiesResponse {

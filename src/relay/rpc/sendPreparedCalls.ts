@@ -45,7 +45,7 @@ export const walletSendPreparedCalls = async <
   const data = await response.json();
 
   if (data.error || data.message) {
-    throw new Error(data.error?.message || data.message || "walletSendCalls failed");
+    throw new Error(data.error?.message || data.message || "walletSendPreparedCalls failed");
   }
 
   const { id } = data.result as WalletSendPreparedCallsResponse;
