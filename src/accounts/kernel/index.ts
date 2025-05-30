@@ -36,6 +36,7 @@ import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 import { delegationAbi as abi } from "../../abis/delegation.js";
 import { getSenderAddress } from "../actions/getSenderAddress.js";
+import type { GelatoSmartAccountExtension } from "../index.js";
 import {
   KERNEL_V3_3_ECDSA_VALIDATOR_KEY,
   KERNEL_V3_3_FACTORY_ADDRESS,
@@ -46,13 +47,12 @@ import {
   delegationAddress,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
-import type { GelatoSmartAccountExtension } from "../index.js";
 
 export type KernelSmartAccountImplementation<eip7702 extends boolean = boolean> =
   SmartAccountImplementation<
     typeof entryPoint07Abi,
     "0.7",
-    { abi: typeof abi; } & GelatoSmartAccountExtension,
+    { abi: typeof abi } & GelatoSmartAccountExtension,
     eip7702
   >;
 
@@ -238,7 +238,12 @@ export async function kernel<eip7702 extends boolean = boolean>(
     getFactoryArgs,
     abi,
     client,
-    extend: { abi, owner, eip7702, scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const },
+    extend: {
+      abi,
+      owner,
+      eip7702,
+      scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
+    },
     entryPoint,
     async signAuthorization() {
       if (!authorization) {
