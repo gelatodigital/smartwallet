@@ -171,6 +171,12 @@ export async function kernel<
   };
 
   const { authorization } = await (async () => {
+    if (!eip7702) {
+      return {
+        authorization: undefined
+      };
+    }
+
     if (_authorization) {
       return {
         authorization: _authorization
