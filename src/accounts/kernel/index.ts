@@ -153,7 +153,6 @@ export async function kernel<
     version: "0.7" as const
   };
 
-  const isDelegated = false; // When 7702+4337 is used
   let chainId: number;
 
   const getMemoizedChainId = async () => {
@@ -372,10 +371,6 @@ export async function kernel<
     },
 
     async signMessage({ message }) {
-      if (isDelegated) {
-        return await owner.signMessage({ message });
-      }
-
       const wrapped = await wrappedMessage(hashMessage(message));
 
       const signature = await owner.signMessage({
@@ -392,15 +387,6 @@ export async function kernel<
         primaryType,
         message
       } = parameters as TypedDataDefinition<TypedData, string>;
-
-      if (isDelegated) {
-        return await owner.signTypedData({
-          domain,
-          message,
-          primaryType,
-          types: _types
-        });
-      }
 
       const types = {
         EIP712Domain: getTypesForEIP712Domain({
