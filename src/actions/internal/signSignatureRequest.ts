@@ -1,4 +1,4 @@
-import type { Chain, Hex, Transport } from "viem";
+import type { Chain, Transport } from "viem";
 
 import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { type SignatureRequest, SignatureRequestType } from "../../relay/rpc/index.js";
@@ -9,21 +9,14 @@ export async function signSignatureRequest<
   chain extends Chain = Chain,
   account extends GelatoSmartAccount = GelatoSmartAccount
 >(client: GelatoWalletClient<transport, chain, account>, signatureRequest: SignatureRequest) {
-  let signature: Hex;
+  if (signatureRequest.type === SignatureRequestType.TypedData)
+    return client.account.signTypedData(signatureRequest.data);
 
-  if (signatureRequest.type === SignatureRequestType.TypedData) {
-    signature = await client.signTypedData({
-      account: client.account,
-      ...signatureRequest.data
-    });
-  } else if (signatureRequest.type === SignatureRequestType.EthSign) {
-    signature = await client.signMessage({
-      account: client.account,
-      message: { raw: signatureRequest.data }
-    });
-  } else {
-    throw new Error("Unsupported signature request type");
-  }
+  if (signatureRequest.type === SignatureRequestType.EthSign)
+    return client.account.signMessage({ message: { raw: signatureRequest.data } });
 
-  return signature;
+  if (signatureRequest.type === SignatureRequestType.UserOperation)
+    return client.account.signUserOperation(signatureRequest.data);
+
+  throw new Error("Unsupported signature request type");
 }
