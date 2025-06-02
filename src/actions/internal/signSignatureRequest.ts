@@ -9,7 +9,11 @@ export async function signSignatureRequest<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends GelatoSmartAccount = GelatoSmartAccount
->(client: GelatoWalletClient<transport, chain, account>, signatureRequest: SignatureRequest, userOp?: UserOperation) {
+>(
+  client: GelatoWalletClient<transport, chain, account>,
+  signatureRequest: SignatureRequest,
+  userOp?: UserOperation
+) {
   let signature: Hex;
 
   if (signatureRequest.type === SignatureRequestType.TypedData) {

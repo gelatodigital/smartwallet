@@ -27,7 +27,7 @@ const publicClient = createPublicClient({
   const account = await kernel({
     owner,
     client: publicClient,
-    eip7702: true
+    eip7702: false
   });
 
   console.log("Account address:", account.address);
