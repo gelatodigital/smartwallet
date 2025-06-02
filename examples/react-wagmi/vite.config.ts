@@ -8,26 +8,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@gelatonetwork/smartwallet": path.resolve(__dirname, "../../src/index.ts"),
-      "@gelatonetwork/smartwallet-react-dynamic": path.resolve(
+      "@gelatonetwork/smartwallet-react-wagmi": path.resolve(
         __dirname,
-        "../../plugins/react/dynamic/src/index.ts"
-      ),
-      "@gelatonetwork/smartwallet-react-privy": path.resolve(
-        __dirname,
-        "../../plugins/react/privy/src/index.ts"
-      ),
-      "@gelatonetwork/smartwallet-react-sdk": path.resolve(
-        __dirname,
-        "../../plugins/react/sdk/src/index.ts"
+        "../../plugins/react/wagmi/src/index.ts"
       )
     }
   },
   optimizeDeps: {
-    include: [
-      "@gelatonetwork/smartwallet",
-      "@gelatonetwork/smartwallet-react-dynamic",
-      "@gelatonetwork/smartwallet-react-privy",
-      "@gelatonetwork/smartwallet-react-sdk"
-    ]
+    include: ["@gelatonetwork/smartwallet"]
   }
 });

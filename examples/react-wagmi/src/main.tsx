@@ -11,12 +11,14 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
+const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+
 // biome-ignore lint/style/noNonNullAssertion: simple example
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <GelatoSmartWalletProvider>
+        <GelatoSmartWalletProvider params={sponsorApiKey}>
           <App />
         </GelatoSmartWalletProvider>
       </QueryClientProvider>
