@@ -6,7 +6,8 @@ import type { Wallet } from "../../../wallet/index.js";
 
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
-  EthSign = "eth_sign"
+  EthSign = "eth_sign",
+  UserOperation = "eth_signUserOperation"
 }
 
 type TypedDataSignatureRequest = {
@@ -19,7 +20,15 @@ type EthSignSignatureRequest = {
   data: Hex;
 };
 
-export type SignatureRequest = TypedDataSignatureRequest | EthSignSignatureRequest;
+type UserOperationSignatureRequest = {
+  type: SignatureRequestType.UserOperation;
+  data: UserOperation;
+};
+
+export type SignatureRequest =
+  | TypedDataSignatureRequest
+  | EthSignSignatureRequest
+  | UserOperationSignatureRequest;
 
 export interface Quote {
   fee: { estimatedFee: string; decimals: number; conversionRate: number };

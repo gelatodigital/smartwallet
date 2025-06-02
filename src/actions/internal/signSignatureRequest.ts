@@ -21,7 +21,12 @@ export async function signSignatureRequest<
       account: client.account,
       ...signatureRequest.data
     });
-  } else if (signatureRequest.type === SignatureRequestType.EthSign && userOp) {
+  } else if (signatureRequest.type === SignatureRequestType.UserOperation) {
+    if (!userOp) {
+      throw new Error(
+        "Internal error: UserOperation is required for UserOperation signature request"
+      );
+    }
     signature = await client.account.signUserOperation(userOp);
   } else if (signatureRequest.type === SignatureRequestType.EthSign) {
     signature = await client.signMessage({
