@@ -66,7 +66,6 @@ const WalletInfoComponent = () => {
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
-  const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
   const executeTransaction = async () => {
     if (!client) return;
@@ -75,7 +74,7 @@ const WalletInfoComponent = () => {
     try {
       const payment =
         paymentType === "sponsored"
-          ? sponsored(sponsorApiKey)
+          ? sponsored()
           : paymentType === "erc20"
             ? erc20(erc20TokenAddress)
             : native();
