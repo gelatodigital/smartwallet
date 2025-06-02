@@ -21,7 +21,7 @@ export async function prepare<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
 ): Promise<WalletPrepareCallsResponse> {
-  const { payment, calls, nonceKey } = structuredClone(parameters);
+  const { payment, calls, nonceKey } = parameters;
 
   await initializeNetworkCapabilities(client);
 
