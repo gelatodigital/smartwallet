@@ -1,0 +1,40 @@
+{
+  "name": "@gelatonetwork/smartwallet-react-wagmi",
+  "version": "0.0.1",
+  "author": "Gelato",
+  "type": "module",
+  "description": "Wagmi provider for the Gelato Smartwallet",
+  "main": "./_dist/index.js",
+  "types": "./_dist/index.d.ts",
+  "typings": "./_dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.build.json"
+  },
+  "peerDependencies": {
+    "@gelatonetwork/smartwallet": "workspace:*",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "typescript": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    },
+    "wagmi": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@gelatonetwork/smartwallet": "workspace:*",
+    "@gelatonetwork/smartwallet-react-types": "workspace:*",
+    "@tanstack/react-query": "catalog:",
+    "react": "catalog:",
+    "viem": "catalog:",
+    "wagmi": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}
