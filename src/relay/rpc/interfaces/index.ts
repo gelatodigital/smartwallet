@@ -27,7 +27,7 @@ export interface Quote {
   l1Gas: bigint;
 }
 
-export interface GatewaySingnature {
+export interface GatewaySignature {
   quote: Quote;
   timestamp: number;
   signature: Hex;
@@ -66,13 +66,13 @@ export interface KernelCapabilities extends BaseCapabilities {
 
 export type Capabilities = SmartWalletCapabilities | KernelCapabilities;
 
-export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySingnature> {
+export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySignature> {
   calls: Call[];
   nonceKey: string;
   quote: Quote;
 }
 
-export interface KernelContext extends KernelCapabilities, Partial<GatewaySingnature> {
+export interface KernelContext extends KernelCapabilities, Partial<GatewaySignature> {
   userOp: UserOperation;
   quote: Quote;
 }

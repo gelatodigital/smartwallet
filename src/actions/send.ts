@@ -25,9 +25,10 @@ export async function send<
     preparedCalls: { context, signatureRequest }
   } = structuredClone(parameters);
 
-  const signature = parameters.signature ?? (await signSignatureRequest(client, signatureRequest));
+  const userOp = "userOp" in context ? context.userOp : undefined;
+  const signature = parameters.signature ?? (await signSignatureRequest(client, signatureRequest, userOp));
 
-  const authorizationList = client.account.authorization
+  const authorizationList = client.account.authorization && client.account.eip7702
     ? // smart account must implement "signAuthorization"
       [
         await client.signAuthorization({
