@@ -15,6 +15,7 @@
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "typescript": "catalog:",
     "viem": "catalog:",
+    "@wagmi/core": "catalog:",
     "wagmi": "catalog:"
   },
   "peerDependenciesMeta": {
