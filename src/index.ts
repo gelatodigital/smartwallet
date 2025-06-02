@@ -8,6 +8,13 @@ import type { EntryPoint, Factory } from "./relay/rpc/interfaces/index.js";
 import { isOpStack } from "./utils/opstack.js";
 import { type Wallet, gelato } from "./wallet/index.js";
 
+export type GelatoSmartWalletParams = {
+  apiKey?: string;
+  wallet?: Wallet;
+  entryPoint?: EntryPoint;
+  factory?: Factory;
+};
+
 export type GelatoSmartWalletClient<
   transport extends Transport,
   chain extends Chain,
@@ -23,7 +30,7 @@ export const createGelatoSmartWalletClient = <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  params?: { apiKey?: string; wallet?: Wallet; entryPoint?: EntryPoint; factory?: Factory }
+  params?: GelatoSmartWalletParams
 ) => {
   const baseClient = Object.assign(
     client.extend(publicActions).extend(publicActionsL2()),
