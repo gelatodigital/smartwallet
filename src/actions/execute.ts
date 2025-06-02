@@ -36,9 +36,10 @@ export async function execute<
   let signatureRequest: SignatureRequest;
 
   if (isEIP7702(client)) {
+    const authorized = await verifyAuthorization(client);
+
     const [authResult, walletPrepareCallsResult] = await Promise.all([
       (async () => {
-        const authorized = await verifyAuthorization(client);
         const authorizationList = authorized ? undefined : await signAuthorizationList(client);
         return { authorizationList };
       })(),
