@@ -26,17 +26,19 @@ export async function send<
   } = structuredClone(parameters);
 
   const userOp = "userOp" in context ? context.userOp : undefined;
-  const signature = parameters.signature ?? (await signSignatureRequest(client, signatureRequest, userOp));
+  const signature =
+    parameters.signature ?? (await signSignatureRequest(client, signatureRequest, userOp));
 
-  const authorizationList = client.account.authorization && client.account.eip7702
-    ? // smart account must implement "signAuthorization"
-      [
-        await client.signAuthorization({
-          account: client.account.authorization.account,
-          contractAddress: client.account.authorization.address
-        })
-      ]
-    : undefined;
+  const authorizationList =
+    client.account.authorization && client.account.eip7702
+      ? // smart account must implement "signAuthorization"
+        [
+          await client.signAuthorization({
+            account: client.account.authorization.account,
+            contractAddress: client.account.authorization.address
+          })
+        ]
+      : undefined;
 
   return await walletSendPreparedCalls(client, {
     context,
