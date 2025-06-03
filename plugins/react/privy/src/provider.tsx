@@ -13,14 +13,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   type Account,
   type Chain,
-  type JsonRpcAccount,
-  type Transport,
-  createWalletClient,
-  custom,
   type Client,
-  createPublicClient,
+  type JsonRpcAccount,
+  type LocalAccount,
+  type Transport,
   type WalletClient,
-  type LocalAccount
+  createPublicClient,
+  createWalletClient,
+  custom
 } from "viem";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";

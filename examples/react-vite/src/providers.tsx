@@ -1,9 +1,9 @@
 import {
   type GelatoTaskStatus,
+  accounts,
   erc20,
   native,
-  sponsored,
-  accounts
+  sponsored
 } from "@gelatonetwork/smartwallet";
 import {
   GelatoSmartWalletConnectButton,
@@ -13,8 +13,8 @@ import {
   wagmi
 } from "@gelatonetwork/smartwallet-react-sdk";
 import { useEffect, useState } from "react";
-import { http, useAccount } from "wagmi";
 import { baseSepolia, sepolia } from "viem/chains";
+import { http, useAccount } from "wagmi";
 
 // Chain configuration interface
 interface ChainConfig {
