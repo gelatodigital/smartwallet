@@ -1,5 +1,5 @@
 import type { GelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
-import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
+import type { GelatoSmartAccount, GelatoSmartAccountSCW } from "@gelatonetwork/smartwallet/accounts";
 import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
 import type {
@@ -31,10 +31,7 @@ export interface ProviderProps {
   children: ReactNode;
   settings: {
     apiKey?: string;
-    toGelatoSmartAccount: (
-      client: Client<Transport, Chain | undefined, JsonRpcAccount | LocalAccount | undefined>,
-      owner: Account | WalletClient<Transport, Chain | undefined, Account>
-    ) => Promise<GelatoSmartAccount>;
+    scw: GelatoSmartAccountSCW;
     waas: {
       type: ProviderType;
       appId: string;

@@ -24,7 +24,7 @@ export const createGelatoSmartWalletClient = async <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  params?: { apiKey?: string; scw?: GelatoSmartAccountSCW & Partial<CustomSmartAccountParameters> }
+  params?: { apiKey?: string; scw?: GelatoSmartAccountSCW & Partial<Omit<CustomSmartAccountParameters, "scw">> }
 ): Promise<GelatoSmartWalletClient<transport, chain, GelatoSmartAccount>> => {
   const publicClient = client.extend(publicActions).extend(publicActionsL2());
   const account = await transformIntoGelatoSmartAccount(

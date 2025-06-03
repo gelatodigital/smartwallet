@@ -3,7 +3,10 @@ import {
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
+import type {
+  GelatoSmartAccount,
+  GelatoSmartAccountSCW
+} from "@gelatonetwork/smartwallet/accounts";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
 import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,12 +16,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   type Account,
   type Chain,
-  type Client,
-  type JsonRpcAccount,
-  type LocalAccount,
+  type Hex,
   type Transport,
-  type WalletClient,
-  createPublicClient,
   createWalletClient,
   custom
 } from "viem";
@@ -46,13 +45,10 @@ type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
-  toGelatoSmartAccount: (
-    client: Client<Transport, Chain | undefined, JsonRpcAccount | LocalAccount | undefined>,
-    owner: Account | WalletClient<Transport, Chain | undefined, Account>
-  ) => Promise<GelatoSmartAccount>;
+  scw: GelatoSmartAccountSCW;
   wagmi: { config?: WagmiConfig };
   apiKey?: string;
-}> = ({ children, wagmi, apiKey, toGelatoSmartAccount }) => {
+}> = ({ children, wagmi, apiKey, scw }) => {
   const { ready, authenticated, logout } = usePrivy();
   const { wallets, ready: walletsReady } = useWallets();
   const { signAuthorization } = useSignAuthorization();
@@ -107,16 +103,8 @@ const GelatoSmartWalletPrivyInternal: FC<{
         }
 
         const provider = await primaryWallet.getEthereumProvider();
-        const publicClient = createPublicClient({
-          chain,
-          transport: custom(provider)
-        });
-        const account = await toGelatoSmartAccount(
-          publicClient,
-          primaryWallet as unknown as JsonRpcAccount
-        );
         const client = createWalletClient({
-          account,
+          account: primaryWallet.address as Hex,
           chain,
           transport: custom(provider)
         });
@@ -138,11 +126,10 @@ const GelatoSmartWalletPrivyInternal: FC<{
           return signedAuthorization;
         };
 
-        const walletClientGelato = await createGelatoSmartWalletClient<
-          Transport,
-          Chain,
-          GelatoSmartAccount
-        >(client, { apiKey });
+        const walletClientGelato = await createGelatoSmartWalletClient<Transport, Chain, Account>(
+          client,
+          { apiKey, scw }
+        );
         setSmartWalletClient(walletClientGelato);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
@@ -150,15 +137,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [
-    ready,
-    wallets,
-    walletsReady,
-    authenticated,
-    signAuthorization,
-    apiKey,
-    toGelatoSmartAccount
-  ]);
+  }, [ready, wallets, walletsReady, authenticated, signAuthorization, apiKey, scw]);
 
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider
@@ -195,7 +174,7 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
       <GelatoSmartWalletPrivyInternal
         wagmi={{ config: wagmiConfig }}
         apiKey={settings.apiKey}
-        toGelatoSmartAccount={settings.toGelatoSmartAccount}
+        scw={settings.scw}
       >
         {wagmiConfig ? (
           <QueryClientProvider client={queryClient}>

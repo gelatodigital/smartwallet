@@ -10,7 +10,11 @@ export { custom } from "./custom/index.js";
 export type GelatoSmartAccountSCWEncoding = "erc7821" | "safe";
 export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "safe" | "custom";
 export type GelatoSmartAccountSCW = {
-  type: GelatoSmartAccountSCWType;
+  type: Exclude<GelatoSmartAccountSCWType, "custom">;
+  encoding?: GelatoSmartAccountSCWEncoding;
+  version?: string;
+} | {
+  type: "custom";
   encoding: GelatoSmartAccountSCWEncoding;
   version?: string;
 };
