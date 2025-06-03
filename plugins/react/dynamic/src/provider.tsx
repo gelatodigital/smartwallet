@@ -137,7 +137,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
           transport: custom(dynamicWalletClient.transport)
         });
 
-        const smartWalletClient = createGelatoSmartWalletClient<
+        const smartWalletClient = await createGelatoSmartWalletClient<
           Transport,
           Chain,
           GelatoSmartAccount

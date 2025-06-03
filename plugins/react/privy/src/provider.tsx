@@ -138,7 +138,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
           return signedAuthorization;
         };
 
-        const walletClientGelato = createGelatoSmartWalletClient<
+        const walletClientGelato = await createGelatoSmartWalletClient<
           Transport,
           Chain,
           GelatoSmartAccount
