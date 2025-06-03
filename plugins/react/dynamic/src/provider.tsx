@@ -12,15 +12,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
-  createWalletClient,
   type Account,
   type Chain,
-  type JsonRpcAccount,
-  type Transport,
-  custom,
   type Client,
+  type JsonRpcAccount,
   type LocalAccount,
-  type WalletClient
+  type Transport,
+  type WalletClient,
+  createWalletClient,
+  custom
 } from "viem";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
