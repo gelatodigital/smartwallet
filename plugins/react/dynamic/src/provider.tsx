@@ -4,15 +4,24 @@ import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import {
   type GelatoSmartWalletClient,
-  type Wallet,
-  createGelatoSmartWalletClient,
-  gelato
+  createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
+import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Account, Chain, Transport } from "viem";
+import {
+  type Account,
+  type Chain,
+  type Client,
+  type JsonRpcAccount,
+  type LocalAccount,
+  type Transport,
+  type WalletClient,
+  createWalletClient,
+  custom
+} from "viem";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
@@ -41,14 +50,17 @@ const GelatoSmartWalletDynamicInternal: FC<{
   defaultChain: Chain;
   wagmi: { config?: WagmiConfig };
   apiKey?: string;
-  wallet?: Wallet;
-}> = ({ children, defaultChain, wagmi, apiKey, wallet }) => {
+  toGelatoSmartAccount: (
+    client: Client<Transport, Chain | undefined, JsonRpcAccount | LocalAccount | undefined>,
+    owner: Account | WalletClient<Transport, Chain | undefined, Account>
+  ) => Promise<GelatoSmartAccount>;
+}> = ({ children, defaultChain, wagmi, apiKey, toGelatoSmartAccount }) => {
   const [chainId, setChainId] = useState<number>(defaultChain.id);
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
     Transport,
     Chain,
-    Account
+    GelatoSmartAccount
   > | null>(null);
 
   const logoutHandler = async () => {
@@ -82,32 +94,55 @@ const GelatoSmartWalletDynamicInternal: FC<{
           await primaryWallet.switchNetwork(chainId);
         }
 
-        const client = await primaryWallet.getWalletClient();
+        const dynamicWalletClient = await primaryWallet.getWalletClient();
+        const account = await toGelatoSmartAccount(
+          dynamicWalletClient as unknown as Client<
+            Transport,
+            Chain | undefined,
+            JsonRpcAccount | LocalAccount | undefined
+          >,
+          dynamicWalletClient.account as unknown as JsonRpcAccount
+        );
 
-        client.account.signAuthorization = async (parameters) => {
-          const { chainId, nonce } = parameters;
-          const contractAddress = parameters.contractAddress ?? parameters.address;
+        if ("signAuthorization" in account) {
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          account.signAuthorization = async (parameters: any) => {
+            const { chainId, nonce } = parameters;
 
-          const signedAuthorization = await connector.signAuthorization({
-            address: contractAddress,
-            chainId,
-            nonce
-          });
+            if (!account.authorization) {
+              throw new Error("Authorization is required.");
+            }
 
-          return {
-            address: contractAddress,
-            chainId,
-            nonce,
-            r: signedAuthorization.r,
-            s: signedAuthorization.s,
-            v: signedAuthorization.v,
-            yParity: signedAuthorization.yParity
+            const signedAuthorization = await connector.signAuthorization({
+              ...account.authorization,
+              account: account.authorization.account,
+              chainId
+            });
+
+            return {
+              address: account.authorization.address,
+              chainId,
+              nonce,
+              r: signedAuthorization.r,
+              s: signedAuthorization.s,
+              v: signedAuthorization.v,
+              yParity: signedAuthorization.yParity
+            };
           };
-        };
+        }
 
-        const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(client, {
-          apiKey,
-          wallet: wallet || gelato()
+        const client = createWalletClient({
+          account,
+          chain: defaultChain,
+          transport: custom(dynamicWalletClient.transport)
+        });
+
+        const smartWalletClient = createGelatoSmartWalletClient<
+          Transport,
+          Chain,
+          GelatoSmartAccount
+        >(client, {
+          apiKey
         });
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
@@ -116,13 +151,13 @@ const GelatoSmartWalletDynamicInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [primaryWallet, chainId, apiKey, wallet]);
+  }, [primaryWallet, chainId, apiKey, toGelatoSmartAccount, defaultChain]);
 
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
       value={{
         gelato: {
-          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
+          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>
         },
         wagmi: {
           config: wagmi.config
@@ -156,7 +191,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
           config: wagmiConfig
         }}
         apiKey={settings.apiKey}
-        wallet={settings.wallet}
+        toGelatoSmartAccount={settings.toGelatoSmartAccount}
       >
         {wagmiConfig ? (
           <WagmiProvider config={wagmiConfig}>

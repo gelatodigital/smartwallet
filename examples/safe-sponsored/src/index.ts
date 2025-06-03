@@ -4,10 +4,10 @@ import {
   createGelatoSmartWalletClient,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { kernel } from "@gelatonetwork/smartwallet/accounts";
+import { safe } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { baseSepolia, sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
@@ -24,10 +24,10 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await kernel({
-    owner,
+  const account = await safe({
     client: publicClient,
-    eip7702: false
+    owners: [owner],
+    version: "1.4.1"
   });
 
   console.log("Account address:", account.address);

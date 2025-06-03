@@ -1,0 +1,18 @@
+{
+  "name": "safe-sponsored-payment",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@gelatonetwork/smartwallet": "workspace:*",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "dotenv": "16.5.0",
+    "tsx": "4.19.4",
+    "typescript": "catalog:"
+  }
+}

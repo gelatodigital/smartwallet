@@ -4,10 +4,11 @@ import {
   createGelatoSmartWalletClient,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { kernel } from "@gelatonetwork/smartwallet/accounts";
+import { custom } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
+import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { baseSepolia, sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
@@ -24,10 +25,24 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await kernel({
+  // Defining an EIP7702 account using as delegation address "0x11923b4c785d87bb34da4d4e34e9feea09179289"
+  // Using ERC4337 and entry point v0.8
+  const account = await custom<typeof entryPoint08Abi, "0.8", true>({
     owner,
     client: publicClient,
-    eip7702: false
+    authorization: {
+      account: owner,
+      address: "0x11923b4c785d87bb34da4d4e34e9feea09179289"
+    },
+    entryPoint: {
+      abi: entryPoint08Abi,
+      address: entryPoint08Address,
+      version: "0.8"
+    },
+    scw: {
+      encoding: "erc7821"
+    },
+    eip7702: true
   });
 
   console.log("Account address:", account.address);
