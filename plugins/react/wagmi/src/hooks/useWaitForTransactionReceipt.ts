@@ -17,6 +17,7 @@ import {
   useQuery
 } from "wagmi/query";
 
+import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
 import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 import type { ConfigParameter } from "./useSendTransaction.js";
 
@@ -31,7 +32,7 @@ export function waitForTransactionReceiptQueryKey<
 >(
   options: Omit<WaitForTransactionReceiptOptions<config, chainId>, "hash" | "onReplaced"> & {
     id?: string;
-    client?: GelatoSmartWalletClient<Transport, Chain, Account>;
+    client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
   } = {}
 ) {
   return ["waitForTransactionReceipt", options] as const;
@@ -58,7 +59,7 @@ function waitForTransactionReceiptQueryOptions<
   config: config,
   options: Omit<WaitForTransactionReceiptOptions<config, chainId>, "hash" | "onReplaced"> & {
     id?: string;
-    client?: GelatoSmartWalletClient<Transport, Chain, Account>;
+    client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
   }
 ) {
   return {

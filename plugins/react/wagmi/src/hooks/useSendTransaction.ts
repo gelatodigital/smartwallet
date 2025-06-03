@@ -1,4 +1,5 @@
 import { type GelatoSmartWalletClient, type Payment, native } from "@gelatonetwork/smartwallet";
+import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
 import { type MutateOptions, type MutationOptions, useMutation } from "@tanstack/react-query";
 import { sendTransaction } from "@wagmi/core";
 import type {
@@ -21,7 +22,7 @@ import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 const sendTransactionMutationOptions = <config extends Config>(
   config: config,
   parameters: {
-    client?: GelatoSmartWalletClient<Transport, Chain, Account>;
+    client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
     payment?: Payment;
   } = {}
 ) => {

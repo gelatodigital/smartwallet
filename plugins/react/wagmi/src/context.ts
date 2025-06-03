@@ -6,11 +6,12 @@ import {
   type GelatoSmartWalletParams,
   createGelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
-import type { Account, Chain, Transport } from "viem";
+import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
+import type { Chain, Transport } from "viem";
 import { useWalletClient } from "wagmi";
 
 export const GelatoSmartWalletContext = createContext<{
-  client?: GelatoSmartWalletClient<Transport, Chain, Account>;
+  client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
 }>({
   client: undefined
 });
@@ -27,16 +28,20 @@ export const GelatoSmartWalletProvider = (
   const { data: walletClient, isLoading } = useWalletClient();
 
   const [gelatoClient, setGelatoClient] = useState<
-    GelatoSmartWalletClient<Transport, Chain, Account> | undefined
+    GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount> | undefined
   >(undefined);
 
   useEffect(() => {
-    if (!isLoading && walletClient) {
-      const _gelato = createGelatoSmartWalletClient(walletClient, params);
-      setGelatoClient(_gelato);
-    } else if (!isLoading && !walletClient) {
-      setGelatoClient(undefined);
-    }
+    const fetchGelatoClient = async () => {
+      if (!isLoading && walletClient) {
+        const _gelato = await createGelatoSmartWalletClient(walletClient, params);
+        setGelatoClient(_gelato);
+      } else if (!isLoading && !walletClient) {
+        setGelatoClient(undefined);
+      }
+    };
+
+    fetchGelatoClient();
   }, [walletClient, isLoading, params]);
 
   const props = { value: { client: gelatoClient } };
