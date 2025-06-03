@@ -26,20 +26,20 @@ export const GelatoSmartWalletProvider = (
 
   const { data: walletClient, isLoading } = useWalletClient();
 
-  const [currentWalletClient, setCurrentWalletClient] = useState<
+  const [gelatoClient, setGelatoClient] = useState<
     GelatoSmartWalletClient<Transport, Chain, Account> | undefined
   >(undefined);
 
   useEffect(() => {
     if (!isLoading && walletClient) {
-      const gelatoClient = createGelatoSmartWalletClient(walletClient, params);
-      setCurrentWalletClient(gelatoClient);
+      const _gelato = createGelatoSmartWalletClient(walletClient, params);
+      setGelatoClient(_gelato);
     } else if (!isLoading && !walletClient) {
-      setCurrentWalletClient(undefined);
+      setGelatoClient(undefined);
     }
   }, [walletClient, isLoading, params]);
 
-  const props = { value: { client: currentWalletClient } };
+  const props = { value: { client: gelatoClient } };
 
   return createElement(GelatoSmartWalletContext.Provider, props, children);
 };

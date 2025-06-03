@@ -15,6 +15,7 @@ import type {
   UseMutationParameters,
   UseMutationReturnType
 } from "wagmi/query";
+
 import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 
 const sendTransactionMutationOptions = <config extends Config>(
