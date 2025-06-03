@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 
 const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
-// biome-ignore lint/style/noNonNullAssertion: simple example
+// biome-ignore lint/style/noNonNullAssertion: example
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WagmiProvider config={config}>
