@@ -1,82 +1,16 @@
-import type { Account, Address, Call, Chain, Hex, Transport } from "viem";
+import type { Account, Call, Chain, Transport } from "viem";
 
-import { encodeExecuteData } from "viem/experimental/erc7821";
-import { encodeHandleOpsCall } from "../erc4337/encodeHandleOpsCall.js";
-import { estimateUserOpFees } from "../erc4337/estimateUserOpFees.js";
-import { estimateUserOpGas } from "../erc4337/estimateUserOpGas.js";
-import { getPartialUserOp } from "../erc4337/getPartialUserOp.js";
-import { signUserOp } from "../erc4337/signUserOp.js";
-import { type Payment, isSponsored } from "../payment/index.js";
+import type { SignAuthorizationReturnType } from "viem/accounts";
+import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
+import { walletPrepareCalls, walletSendPreparedCalls } from "../relay/rpc/index.js";
+import type { Context, SignatureRequest } from "../relay/rpc/interfaces/index.js";
+import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
+import { isEIP7702 } from "../wallet/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { estimateFees } from "./internal/estimateFees.js";
-import { getOpData } from "./internal/getOpData.js";
-import { resolvePaymentCall } from "./internal/resolvePaymentCall.js";
-import { sendTransaction } from "./internal/sendTransaction.js";
 import { signAuthorizationList } from "./internal/signAuthorizationList.js";
+import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 import { verifyAuthorization } from "./internal/verifyAuthorization.js";
-
-async function erc4337<
-  transport extends Transport = Transport,
-  chain extends Chain = Chain,
-  account extends Account = Account
->(
-  client: GelatoWalletClient<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[]; callsWithMockPayment: Call[] }
-): Promise<{ to: Address; data: Hex }> {
-  const { payment, calls, callsWithMockPayment } = parameters;
-
-  const partialUserOp = await getPartialUserOp(client, callsWithMockPayment);
-  const estimateGas = await estimateUserOpGas(client, partialUserOp);
-
-  const userOp = {
-    ...partialUserOp,
-    ...estimateGas
-  };
-
-  if (!isSponsored(payment)) {
-    const { estimatedFee } = await estimateUserOpFees(client, userOp, payment);
-
-    const transfer = await resolvePaymentCall(client, payment, estimatedFee);
-    userOp.callData = encodeExecuteData({ calls: [...calls, transfer] });
-  }
-
-  userOp.signature = await signUserOp(client, userOp);
-
-  return encodeHandleOpsCall(userOp);
-}
-
-async function nonErc4337<
-  transport extends Transport = Transport,
-  chain extends Chain = Chain,
-  account extends Account = Account
->(
-  client: GelatoWalletClient<transport, chain, account>,
-  parameters: {
-    payment: Payment;
-    calls: Call[];
-    callsWithMockPayment: Call[];
-    nonceKey?: bigint;
-  }
-): Promise<{ to: Address; data: Hex }> {
-  const { payment, calls, callsWithMockPayment, nonceKey } = parameters;
-
-  if (!isSponsored(payment)) {
-    const { estimatedFee } = await estimateFees(client, callsWithMockPayment, payment);
-    const transfer = await resolvePaymentCall(client, payment, estimatedFee);
-    calls.push(transfer);
-  }
-
-  const opData = await getOpData(client, calls, nonceKey || 0n);
-
-  return {
-    to: client.account.address,
-    data: encodeExecuteData({
-      calls,
-      opData
-    })
-  };
-}
 
 /**
  *
@@ -94,25 +28,44 @@ export async function execute<
 ): Promise<GelatoResponse> {
   const { payment, calls, nonceKey } = structuredClone(parameters);
 
-  const authorized = await verifyAuthorization(client);
-  const authorizationList = authorized ? undefined : await signAuthorizationList(client);
+  await initializeNetworkCapabilities(client);
 
-  let callsWithMockPayment = calls;
-  // if the payment is not sponsored, we need to add a payment call to the calls array
-  if (!isSponsored(payment)) {
-    callsWithMockPayment = [...calls, await resolvePaymentCall(client, payment, 1n, false)];
+  let authorizationList: SignAuthorizationReturnType[] | undefined;
+
+  let context: Context;
+  let signatureRequest: SignatureRequest;
+
+  if (isEIP7702(client)) {
+    const authorized = await verifyAuthorization(client);
+
+    const [authResult, walletPrepareCallsResult] = await Promise.all([
+      (async () => {
+        const authorizationList = authorized ? undefined : await signAuthorizationList(client);
+        return { authorizationList };
+      })(),
+
+      walletPrepareCalls(client, {
+        calls,
+        payment,
+        nonceKey
+      })
+    ]);
+
+    authorizationList = authResult.authorizationList;
+    ({ context, signatureRequest } = walletPrepareCallsResult);
+  } else {
+    ({ context, signatureRequest } = await walletPrepareCalls(client, {
+      calls,
+      payment,
+      nonceKey
+    }));
   }
 
-  const { to, data } = client._internal.erc4337
-    ? await erc4337(client, { payment, calls, callsWithMockPayment })
-    : await nonErc4337(client, {
-        payment,
-        calls,
-        callsWithMockPayment,
-        nonceKey
-      });
+  const signature = await signSignatureRequest(client, signatureRequest);
 
-  const result = await sendTransaction(client, to, data, payment, authorizationList);
-
-  return result;
+  return await walletSendPreparedCalls(client, {
+    context,
+    signature,
+    authorizationList
+  });
 }

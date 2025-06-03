@@ -12,8 +12,8 @@ import {
 } from "viem/account-abstraction";
 import { erc4337SimulationsAbi, erc4337SimulationsBytecode } from "../abis/erc4337.js";
 import type { GelatoWalletClient } from "../actions/index.js";
-import { delegationCode, feeCollector } from "../constants/index.js";
 import type { Payment } from "../payment/index.js";
+import { feeCollector } from "../relay/rpc/utils/networkCapabilities.js";
 import {
   addAuthorizationGas,
   addDelegationOverride,
@@ -38,7 +38,7 @@ export async function estimateUserOpFees<
   const data = encodeFunctionData({
     abi: erc4337SimulationsAbi,
     functionName: "simulateHandleOps",
-    args: [[toPackedUserOperation(userOp)], feeCollector(client.chain.id)]
+    args: [[toPackedUserOperation(userOp)], feeCollector(client)]
   });
 
   let estimatedGas = await client.estimateGas({

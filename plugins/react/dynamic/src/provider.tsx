@@ -4,13 +4,14 @@ import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import {
   type GelatoSmartWalletClient,
-  createGelatoSmartWalletClient
+  type Wallet,
+  createGelatoSmartWalletClient,
+  gelato
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
-import type { Wallet } from "@gelatonetwork/smartwallet/constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
 import type { FC, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { Account, Chain, Transport } from "viem";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
@@ -106,7 +107,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
 
         const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(client, {
           apiKey,
-          wallet
+          wallet: wallet || gelato()
         });
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
