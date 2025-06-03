@@ -1,4 +1,4 @@
-import type { Abi, Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type { Abi, Account, Address, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
 import type {
   EntryPointVersion,
   SmartAccount,
@@ -10,8 +10,13 @@ import {
   getUserOperationHash,
   toSmartAccount
 } from "viem/account-abstraction";
-import type { PrivateKeyAccount } from "viem/accounts";
-import { getChainId, getCode, signAuthorization as signAuthorizationFromViem } from "viem/actions";
+import {
+  getChainId,
+  getCode,
+  signAuthorization as signAuthorizationFromViem,
+  signMessage,
+  signTypedData
+} from "viem/actions";
 import { verifyAuthorization } from "viem/utils";
 import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension, GelatoSmartAccountSCWEncoding } from "../index.js";
@@ -35,7 +40,7 @@ export type CustomSmartAccountParameters<
     extend,
     eip7702
   >["client"];
-  owner: PrivateKeyAccount;
+  owner: Account;
   entryPoint?: {
     abi: Abi;
     address: Address;
@@ -174,18 +179,24 @@ export async function custom<
     },
     async signMessage(parameters) {
       const { message } = parameters;
-      return await owner.signMessage({ message });
+
+      return signMessage(client, {
+        account: owner,
+        message
+      });
     },
     async signTypedData(parameters) {
       const { domain, types, primaryType, message } = parameters as TypedDataDefinition<
         TypedData,
         string
       >;
-      return await owner.signTypedData({
+
+      return signTypedData(client, {
         domain,
         message,
         primaryType,
-        types
+        types,
+        account: owner
       });
     },
     async getStubSignature() {
@@ -205,10 +216,10 @@ export async function custom<
         chainId
       });
 
-      const signature = await owner.signMessage({
+      const signature = await signMessage(client, {
+        account: owner,
         message: { raw: hash }
       });
-
       return signature;
     }
   }) as unknown as CustomSmartAccountReturnType;
