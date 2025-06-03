@@ -1,27 +1,44 @@
+import { sponsored } from "@gelatonetwork/smartwallet";
 import {
   useSendTransaction,
   useWaitForTransactionReceipt
 } from "@gelatonetwork/smartwallet-react-wagmi";
+import { useState } from "react";
 import { useCallback } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
+
+const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
 
 function App() {
   const account = useAccount();
   const { connectors, connect, status, error } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const { sendTransactionAsync, data: taskId, isPending } = useSendTransaction();
+  const [txError, setTxError] = useState<string | undefined>(undefined);
+
+  const {
+    sendTransactionAsync,
+    data: taskId,
+    isPending
+  } = useSendTransaction({
+    payment: sponsored(sponsorApiKey)
+  });
 
   const { data: receipt } = useWaitForTransactionReceipt({
     id: taskId
   });
 
   const sendTransactionCallback = useCallback(async () => {
-    console.log("Sending transaction...");
-    await sendTransactionAsync({
-      to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-      data: "0x1234"
-    });
+    setTxError(undefined);
+    try {
+      await sendTransactionAsync({
+        to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        data: "0x1234"
+      });
+      // biome-ignore lint/suspicious/noExplicitAny: example any error
+    } catch (error: any) {
+      setTxError(error.message ?? "Unknown error");
+    }
   }, [sendTransactionAsync]);
 
   return (
@@ -56,6 +73,8 @@ function App() {
             <button onClick={sendTransactionCallback} type="button">
               Send Transaction
             </button>
+
+            {txError && <p>Error occured: {txError}</p>}
           </div>
         )}
       </div>
