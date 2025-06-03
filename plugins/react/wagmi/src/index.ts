@@ -9,4 +9,10 @@ export {
   type UseSendTransactionReturnType
 } from "./hooks/useSendTransaction.js";
 
+export {
+  useWaitForTransactionReceipt,
+  type UseWaitForTransactionReceiptParameters,
+  type UseWaitForTransactionReceiptReturnType
+} from "./hooks/useWaitForTransactionReceipt.js";
+
 export { useGelatoSmartWalletClient } from "./hooks/useGelatoSmartWalletClient.js";

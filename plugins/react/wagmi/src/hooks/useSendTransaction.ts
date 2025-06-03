@@ -29,7 +29,6 @@ const sendTransactionMutationOptions = <config extends Config>(
       if (parameters.client) {
         const client = parameters.client;
 
-        console.log("Sending execute", { ...variables });
         const result = await client.execute({
           payment: native(),
           calls: [
@@ -39,7 +38,6 @@ const sendTransactionMutationOptions = <config extends Config>(
             }
           ]
         });
-        console.log("Got back a result", result.id);
 
         return result.id;
       }
