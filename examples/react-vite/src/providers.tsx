@@ -265,7 +265,6 @@ export default function Providers() {
         scw: {
           type: "gelato"
         },
-        // wallet: "kernel"
         waas: dynamic(waasAppId),
         wagmi: wagmi({
           chains: [sepolia, baseSepolia],
