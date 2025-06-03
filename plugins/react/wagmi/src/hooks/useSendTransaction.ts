@@ -1,4 +1,4 @@
-import { type GelatoSmartWalletClient, native } from "@gelatonetwork/smartwallet";
+import { type GelatoSmartWalletClient, type Payment, native } from "@gelatonetwork/smartwallet";
 import { type MutateOptions, type MutationOptions, useMutation } from "@tanstack/react-query";
 import { sendTransaction } from "@wagmi/core";
 import type {
@@ -17,11 +17,11 @@ import type {
 } from "wagmi/query";
 import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 
-// TODO think about different payment types passing!
 const sendTransactionMutationOptions = <config extends Config>(
   config: config,
   parameters: {
     client?: GelatoSmartWalletClient<Transport, Chain, Account>;
+    payment?: Payment;
   } = {}
 ) => {
   return {
@@ -30,7 +30,7 @@ const sendTransactionMutationOptions = <config extends Config>(
         const client = parameters.client;
 
         const result = await client.execute({
-          payment: native(),
+          payment: parameters.payment ?? native(),
           calls: [
             {
               // biome-ignore lint/suspicious/noExplicitAny: variables will include to & data/value
@@ -95,6 +95,7 @@ export type UseSendTransactionParameters<
   context = unknown
 > = Prettify<
   ConfigParameter<config> & {
+    payment?: Payment;
     mutation?:
       | UseMutationParameters<
           SendTransactionData,

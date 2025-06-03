@@ -53,7 +53,7 @@ export const createGelatoSmartWalletClient = <
   >;
 };
 
-export { erc20, native, sponsored } from "./payment/index.js";
+export { erc20, native, sponsored, Payment } from "./payment/index.js";
 export { track } from "./relay/status/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
 export { Wallet, gelato, kernel, safe } from "./wallet/index.js";
