@@ -13,7 +13,7 @@
     "@gelatonetwork/smartwallet": "workspace:*",
     "@gelatonetwork/smartwallet-react-wagmi": "workspace:*",
     "@wagmi/core": "catalog:",
-    "@tanstack/react-query": "5.45.1",
+    "@tanstack/react-query": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "viem": "catalog:",

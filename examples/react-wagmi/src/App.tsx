@@ -1,4 +1,7 @@
-import { useSendTransaction } from "@gelatonetwork/smartwallet-react-wagmi";
+import {
+  useSendTransaction,
+  useWaitForTransactionReceipt
+} from "@gelatonetwork/smartwallet-react-wagmi";
 import { useCallback } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
@@ -7,14 +10,11 @@ function App() {
   const { connectors, connect, status, error } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const { sendTransactionAsync, data: transactionReference, isPending } = useSendTransaction();
+  const { sendTransactionAsync, data: taskId, isPending } = useSendTransaction();
 
-  /*
-  const { data: receipt, isPending: isReceiptPending } =
-    useWaitForTransactionReceipt({
-      id: transactionReference,
-    });
-  */
+  const { data: receipt } = useWaitForTransactionReceipt({
+    id: taskId
+  });
 
   const sendTransactionCallback = useCallback(async () => {
     console.log("Sending transaction...");
@@ -44,7 +44,14 @@ function App() {
             </button>
             <h2>Send test transaction</h2>
             {isPending && <div>Sending transaction...</div>}
-            {transactionReference && <div>Awaiting confirmation: {transactionReference}</div>}
+
+            {taskId && !receipt && <div>Awaiting confirmation for Task ID: {taskId}</div>}
+
+            {receipt && (
+              <div>
+                Receipt: {receipt.status} - Tx Hash: {receipt.transactionHash}
+              </div>
+            )}
 
             <button onClick={sendTransactionCallback} type="button">
               Send Transaction
