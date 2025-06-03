@@ -1,55 +1,37 @@
 # @gelatonetwork/smartwallet-react-wagmi
 
-A React package that provides integration with Privy WaaS (Wallet-as-a-Service) for Gelato Smart Wallet.
+Quickly utilize Gelato SmartWallet with Wagmi applications, without any complexity.
 
 ## Features
 
-- Privy WaaS integration for Gelato smart wallet management
-- Connect button component for easy wallet connection
-- Integration with wagmi for Web3 functionality
+- Drop-in quick utilization
+- Integration with wagmi
 
 ## Installation
-
 ```bash
-pnpm add @gelatonetwork/smartwallet-react-privy
+pnpm add @gelatonetwork/smartwallet-react-wagmi
 ```
 
 ## Usage
 
+Replace `useSendTransaction` and `useWaitForTransactionReceipt` from Wagmi with Gelato SmartWallet's to quickly
+integrate Gelato SmartWallet with your Wagmi ready application inside `GelatoSmartWalletProvider` context wrapped with
+`WagmiProvider`.
+
 ### Provider Setup
 
 ```tsx
-import { GelatoSmartWalletPrivyContextProvider } from '@gelatonetwork/smartwallet-react-privy';
+import { GelatoSmartWalletProvider } from '@gelatonetwork/smartwallet-react-wagmi';
 
 function App() {
   return (
-    <GelatoSmartWalletPrivyContextProvider
-      settings={{
-        waas: {
-          appId: 'your-privy-app-id'
-        },
-        defaultChain: yourDefaultChain,
-        wagmi: {
-          config: yourWagmiConfig
-        }
-      }}
-    >
-      <YourApp />
-    </GelatoSmartWalletPrivyContextProvider>
-  );
-}
-```
-
-### Using the Connect Button
-
-```tsx
-import { GelatoSmartWalletPrivyConnectButton } from '@gelatonetwork/smartwallet-react-privy';
-
-function ConnectWallet() {
-  return (
-    <GelatoSmartWalletPrivyConnectButton>
-      Connect Wallet
-    </GelatoSmartWalletPrivyConnectButton>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <GelatoSmartWalletProvider params={sponsorApiKey}>
+          <YourApp />
+        </GelatoSmartWalletProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 ```
@@ -57,11 +39,34 @@ function ConnectWallet() {
 ### Accessing Wallet Context
 
 ```tsx
-import { useGelatoSmartWalletPrivyContext } from '@gelatonetwork/smartwallet-react-privy';
+import { sponsored } from "@gelatonetwork/smartwallet";
+import {
+  useSendTransaction,
+  useWaitForTransactionReceipt
+} from "@gelatonetwork/smartwallet-react-wagmi";
 
 function YourComponent() {
-  const { wagmi, logout, switchNetwork } = useGelatoSmartWalletPrivyContext();
+  const {
+    sendTransaction,
+    data: taskId,
+    isPending
+  } = useSendTransaction({
+    payment: sponsored(sponsorApiKey)
+  });
 
-  // Use the context values as needed
+  const { data: receipt } = useWaitForTransactionReceipt({
+    id: taskId
+  });
+
+  const sendTransactionCallback = useCallback(async () => {
+    setTxError(undefined);
+    sendTransaction({
+        to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+        data: "0x1234"
+      });
+  }, [sendTransaction]);
+
+  // use context as your needs
 }
 ```
+
