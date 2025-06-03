@@ -3,11 +3,11 @@ import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
   native,
-  toGelatoSmartAccount
 } from "@gelatonetwork/smartwallet";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
 const apiKey = process.env.GELATO_API_KEY;
@@ -24,10 +24,11 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toGelatoSmartAccount({
+  const account = await gelato({
     owner,
     client: publicClient
   });
+
   const client = createWalletClient({
     account,
     chain: baseSepolia,
