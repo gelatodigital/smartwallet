@@ -19,14 +19,14 @@ import type { GelatoSmartAccountExtension, GelatoSmartAccountSCWEncoding } from 
 export type CustomSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
-  extend extends object = object,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 > = SmartAccountImplementation<entryPointAbi, entryPointVersion, extend, eip7702>;
 
 export type CustomSmartAccountParameters<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
-  extend extends object = object,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 > = {
   client: CustomSmartAccountImplementation<
@@ -67,14 +67,10 @@ export type CustomSmartAccountReturnType = Prettify<SmartAccount<CustomSmartAcco
 export async function custom<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 >(
-  parameters: CustomSmartAccountParameters<
-    entryPointAbi,
-    entryPointVersion,
-    GelatoSmartAccountExtension,
-    eip7702
-  >
+  parameters: CustomSmartAccountParameters<entryPointAbi, entryPointVersion, extend, eip7702>
 ): Promise<CustomSmartAccountReturnType> {
   const { client, owner, authorization, eip7702, entryPoint: _entryPoint, scw } = parameters;
 
@@ -107,7 +103,7 @@ export async function custom<
       owner,
       eip7702,
       erc4337,
-      scw: { owner, eip7702, type: "custom", encoding: scw.encoding } as const,
+      scw: { type: "custom", encoding: scw.encoding, version: "unknown" } as const,
       async signAuthorization() {
         if (!eip7702) {
           throw new Error("EIP-7702 must be enabled. No support for non-EIP-7702 accounts.");
@@ -215,5 +211,5 @@ export async function custom<
 
       return signature;
     }
-  });
+  }) as unknown as CustomSmartAccountReturnType;
 }
