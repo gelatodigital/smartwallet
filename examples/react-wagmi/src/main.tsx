@@ -1,3 +1,4 @@
+import { safe } from "@gelatonetwork/smartwallet";
 import { GelatoSmartWalletProvider } from "@gelatonetwork/smartwallet-react-wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
@@ -18,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <GelatoSmartWalletProvider params={sponsorApiKey}>
+        <GelatoSmartWalletProvider params={{ apiKey: sponsorApiKey, wallet: safe() }}>
           <App />
         </GelatoSmartWalletProvider>
       </QueryClientProvider>
