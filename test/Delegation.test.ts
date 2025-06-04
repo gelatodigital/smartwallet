@@ -1,14 +1,20 @@
 import { erc20Abi } from "viem";
-import { describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { delegationCode } from "../src/constants/index.js";
 import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
-import { walletClient } from "./src/account.js";
+import { deployerAccount, walletClient } from "./src/account.js";
 import { getApiKeyStaging } from "./src/env.js";
 import { constants } from "./src/index.js";
 
 const delegationAddress = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
 
 describe("Initial Delegation Test", () => {
+  beforeAll(async () => {
+    console.log("Test Account:", deployerAccount.address);
+    console.log("Test Chain:", walletClient.chain.name);
+    console.log("ERC20 Address:", constants.erc20Address());
+  });
+
   test("Delegate with native payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
