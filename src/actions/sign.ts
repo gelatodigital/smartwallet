@@ -25,8 +25,9 @@ export async function sign<
   const userOp = "userOp" in context ? context.userOp : undefined;
   const signature = await signSignatureRequest(client, signatureRequest, userOp);
 
+  const isDeployed = await client.account.isDeployed();
   const authorizationList =
-    client.account.authorization && client.account.eip7702
+    client.account.authorization && client.account.eip7702 && !isDeployed
       ? // smart account must implement "signAuthorization"
         [
           await client.signAuthorization({
