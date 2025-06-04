@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.build.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "noEmit": false,
+    "outDir": "./_dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "./_dist/tsconfig.tsbuildinfo"
+  },
+  "exclude": [
+    "node_modules",
+    "_dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.test.tsx",
+    "**/*.spec.tsx"
+  ]
+}

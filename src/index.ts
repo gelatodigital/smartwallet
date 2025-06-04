@@ -9,6 +9,11 @@ import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import { transformIntoGelatoSmartAccount } from "./utils/index.js";
 
+export type GelatoSmartWalletParams = {
+  apiKey?: string;
+  scw?: GelatoSmartAccountSCW & Partial<Omit<CustomSmartAccountParameters, "scw">>;
+};
+
 export type GelatoSmartWalletClient<
   transport extends Transport,
   chain extends Chain,
@@ -24,10 +29,7 @@ export const createGelatoSmartWalletClient = async <
   account extends Account
 >(
   client: WalletClient<transport, chain, account>,
-  params?: {
-    apiKey?: string;
-    scw?: GelatoSmartAccountSCW & Partial<Omit<CustomSmartAccountParameters, "scw">>;
-  }
+  params?: GelatoSmartWalletParams
 ): Promise<GelatoSmartWalletClient<transport, chain, GelatoSmartAccount>> => {
   const publicClient = client.extend(publicActions).extend(publicActionsL2());
   const account = await transformIntoGelatoSmartAccount(
@@ -50,7 +52,7 @@ export const createGelatoSmartWalletClient = async <
   >;
 };
 
-export { erc20, native, sponsored } from "./payment/index.js";
+export { erc20, native, sponsored, Payment } from "./payment/index.js";
 export { track } from "./relay/status/index.js";
 export * as accounts from "./accounts/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
