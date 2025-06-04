@@ -40,8 +40,8 @@ import {
   getChainId,
   getCode,
   readContract,
-  signAuthorization as signAuthorizationFromViem,
-  signMessage
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage
 } from "viem/actions";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
@@ -307,7 +307,7 @@ export async function kernel<
           );
         }
 
-        const auth = await signAuthorizationFromViem(client, {
+        const auth = await viem_signAuthorization(client, {
           ...authorization,
           chainId: await getMemoizedChainId()
         });
@@ -386,7 +386,7 @@ export async function kernel<
     async signMessage({ message }) {
       const wrapped = await wrappedMessage(hashMessage(message));
 
-      const signature = await signMessage(client, {
+      const signature = await viem_signMessage(client, {
         account: owner,
         message: { raw: wrapped }
       });
@@ -420,7 +420,7 @@ export async function kernel<
 
       const wrapped = await wrappedMessage(typedHash);
 
-      const signature = await signMessage(client, {
+      const signature = await viem_signMessage(client, {
         account: owner,
         message: { raw: wrapped }
       });
@@ -442,7 +442,7 @@ export async function kernel<
         chainId
       });
 
-      const signature = await signMessage(client, {
+      const signature = await viem_signMessage(client, {
         account: owner,
         message: { raw: hash }
       });
