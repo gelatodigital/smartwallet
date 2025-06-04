@@ -9,10 +9,24 @@ import {
   gelato
 } from "@gelatonetwork/smartwallet";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
+import type {
+  GelatoSmartAccount,
+  GelatoSmartAccountSCW
+} from "@gelatonetwork/smartwallet/accounts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Account, Chain, Transport } from "viem";
+import {
+  type Account,
+  type Chain,
+  type Client,
+  type JsonRpcAccount,
+  type LocalAccount,
+  type Transport,
+  type WalletClient,
+  createWalletClient,
+  custom
+} from "viem";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
@@ -41,14 +55,14 @@ const GelatoSmartWalletDynamicInternal: FC<{
   defaultChain: Chain;
   wagmi: { config?: WagmiConfig };
   apiKey?: string;
-  wallet?: Wallet;
-}> = ({ children, defaultChain, wagmi, apiKey, wallet }) => {
+  scw: GelatoSmartAccountSCW;
+}> = ({ children, defaultChain, wagmi, apiKey, scw }) => {
   const [chainId, setChainId] = useState<number>(defaultChain.id);
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const [smartWalletClient, setSmartWalletClient] = useState<GelatoSmartWalletClient<
     Transport,
     Chain,
-    Account
+    GelatoSmartAccount
   > | null>(null);
 
   const logoutHandler = async () => {
@@ -105,9 +119,9 @@ const GelatoSmartWalletDynamicInternal: FC<{
           };
         };
 
-        const smartWalletClient = createGelatoSmartWalletClient<Transport, Chain, Account>(client, {
+        const smartWalletClient = await createGelatoSmartWalletClient(client, {
           apiKey,
-          wallet: wallet || gelato()
+          scw
         });
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
@@ -116,13 +130,13 @@ const GelatoSmartWalletDynamicInternal: FC<{
     };
 
     fetchWalletClient();
-  }, [primaryWallet, chainId, apiKey, wallet]);
+  }, [primaryWallet, chainId, apiKey, scw]);
 
   return (
     <GelatoSmartWalletDynamicProviderContext.Provider
       value={{
         gelato: {
-          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, Account>
+          client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>
         },
         wagmi: {
           config: wagmi.config
@@ -156,7 +170,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
           config: wagmiConfig
         }}
         apiKey={settings.apiKey}
-        wallet={settings.wallet}
+        scw={settings.scw}
       >
         {wagmiConfig ? (
           <WagmiProvider config={wagmiConfig}>

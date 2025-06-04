@@ -1,5 +1,6 @@
-import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
+import type { Chain, Hash, PublicActions, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../../accounts/index.js";
 import { statusApiPollingInterval, statusApiPollingMaxRetries } from "../../../constants/index.js";
 import { ExecutionTimeoutError } from "../../status/types.js";
 import { waitHttp } from "./waitHttp.js";
@@ -7,7 +8,7 @@ import { waitHttp } from "./waitHttp.js";
 export const waitPolling = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   taskId: string,
   parameters: {

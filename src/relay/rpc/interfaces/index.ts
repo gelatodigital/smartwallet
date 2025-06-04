@@ -6,7 +6,8 @@ import type { Wallet } from "../../../wallet/index.js";
 
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
-  EthSign = "eth_sign"
+  EthSign = "eth_sign",
+  UserOperation = "eth_signUserOperation"
 }
 
 type TypedDataSignatureRequest = {
@@ -19,7 +20,15 @@ type EthSignSignatureRequest = {
   data: Hex;
 };
 
-export type SignatureRequest = TypedDataSignatureRequest | EthSignSignatureRequest;
+type UserOperationSignatureRequest = {
+  type: SignatureRequestType.UserOperation;
+  data: UserOperation;
+};
+
+export type SignatureRequest =
+  | TypedDataSignatureRequest
+  | EthSignSignatureRequest
+  | UserOperationSignatureRequest;
 
 export interface Quote {
   fee: { estimatedFee: string; decimals: number; conversionRate: number };
@@ -27,7 +36,7 @@ export interface Quote {
   l1Gas: bigint;
 }
 
-export interface GatewaySingnature {
+export interface GatewaySignature {
   quote: Quote;
   timestamp: number;
   signature: Hex;
@@ -66,13 +75,13 @@ export interface KernelCapabilities extends BaseCapabilities {
 
 export type Capabilities = SmartWalletCapabilities | KernelCapabilities;
 
-export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySingnature> {
+export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySignature> {
   calls: Call[];
   nonceKey: string;
   quote: Quote;
 }
 
-export interface KernelContext extends KernelCapabilities, Partial<GatewaySingnature> {
+export interface KernelContext extends KernelCapabilities, Partial<GatewaySignature> {
   userOp: UserOperation;
   quote: Quote;
 }

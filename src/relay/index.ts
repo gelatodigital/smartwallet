@@ -1,5 +1,6 @@
-import type { Account, Chain, SignedAuthorizationList, Transport } from "viem";
+import type { Chain, SignedAuthorizationList, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { GelatoWalletClient } from "../actions/index.js";
 import { api } from "../constants/index.js";
 import { track } from "./status/index.js";
@@ -42,7 +43,7 @@ const callGelatoApi = async <
   T extends object,
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   endpoint: string,
   request: T,
@@ -73,7 +74,7 @@ const callGelatoApi = async <
 export const sponsoredCall = <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   request: SponsoredCallRequest,
   client: GelatoWalletClient<transport, chain, account>
@@ -82,7 +83,7 @@ export const sponsoredCall = <
 export const smartWalletCall = <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   request: SmartWalletCallRequest,
   client: GelatoWalletClient<transport, chain, account>
