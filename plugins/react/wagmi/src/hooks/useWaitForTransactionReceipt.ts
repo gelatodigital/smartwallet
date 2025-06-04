@@ -59,12 +59,11 @@ function waitForTransactionReceiptQueryOptions<
   config: config,
   options: Omit<WaitForTransactionReceiptOptions<config, chainId>, "hash" | "onReplaced"> & {
     id?: string;
-    client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
   }
 ) {
   return {
     async queryFn({ queryKey }) {
-      const { scopeKey: _, id, client, ...parameters } = queryKey[1];
+      const { scopeKey: _, id, ...parameters } = queryKey[1];
       let txHash: string;
       if (!id) throw new Error("id is required");
 
@@ -72,6 +71,7 @@ function waitForTransactionReceiptQueryOptions<
         throw new Error("task id is required");
       }
 
+      const { client } = useGelatoSmartWalletClient();
       if (client) {
         txHash = await track(id, client).wait();
       } else {
@@ -130,14 +130,12 @@ export function useWaitForTransactionReceipt<
   const { query = {} } = parameters;
   const config = useConfig(parameters);
   const chainId = useChainId({ config });
-  const { client } = useGelatoSmartWalletClient();
 
   const enabled = Boolean(parameters.id && (query.enabled ?? true));
 
   const options = waitForTransactionReceiptQueryOptions(config, {
     ...parameters,
-    chainId: parameters.chainId ?? chainId,
-    client
+    chainId: parameters.chainId ?? chainId
   });
 
   return useQuery({
