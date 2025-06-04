@@ -2,12 +2,12 @@ import "dotenv/config";
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  native,
+  native
 } from "@gelatonetwork/smartwallet";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { gelato } from "@gelatonetwork/smartwallet/accounts";
 
 const privateKey = process.env.PRIVATE_KEY as Hex;
 const apiKey = process.env.GELATO_API_KEY;
