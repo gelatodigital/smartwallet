@@ -1,4 +1,13 @@
-import type { Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type {
+  Account,
+  Address,
+  Call,
+  Hex,
+  Prettify,
+  PrivateKeyAccount,
+  TypedData,
+  TypedDataDefinition
+} from "viem";
 import { BaseError, decodeAbiParameters, decodeFunctionData, isAddressEqual } from "viem";
 import type { SmartAccount, SmartAccountImplementation } from "viem/account-abstraction";
 import {
@@ -7,12 +16,13 @@ import {
   getUserOperationHash,
   toSmartAccount
 } from "viem/account-abstraction";
-import type { PrivateKeyAccount } from "viem/accounts";
 import {
   getChainId,
   getCode,
   readContract,
-  signAuthorization as signAuthorizationFromViem
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage,
+  signTypedData as viem_signTypedData
 } from "viem/actions";
 import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
@@ -28,7 +38,7 @@ export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> 
 
 export type GelatoSmartAccountParameters<eip7702 extends boolean = true> = {
   client: GelatoSmartAccountImplementation<eip7702>["client"];
-  owner: PrivateKeyAccount;
+  owner: Account;
   authorization?: GelatoSmartAccountImplementation<eip7702>["authorization"];
   eip7702?: eip7702;
 };
@@ -76,6 +86,22 @@ export async function gelato<eip7702 extends boolean = true>(
     };
   })();
 
+  const isDeployed = async () => {
+    if (deployed) {
+      return true;
+    }
+
+    const code = await getCode(client, { address: owner.address });
+
+    deployed = Boolean(
+      code?.length &&
+        code.length > 0 &&
+        lowercase(code) === lowercase(delegationCode(authorization.address))
+    );
+
+    return deployed;
+  };
+
   return toSmartAccount({
     abi,
     client,
@@ -87,18 +113,21 @@ export async function gelato<eip7702 extends boolean = true>(
       scw: { type: "gelato", encoding: "erc7821", version: "0.0" } as const
     },
     entryPoint,
-    authorization,
+    authorization: authorization as {
+      account: PrivateKeyAccount;
+      address: Address;
+    },
     async signAuthorization() {
-      const isDeployed = await this.isDeployed();
+      const _isDeployed = await isDeployed();
 
-      if (!isDeployed) {
+      if (!_isDeployed) {
         if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
           );
         }
 
-        const auth = await signAuthorizationFromViem(client, {
+        const auth = await viem_signAuthorization(client, {
           ...authorization,
           chainId: await getMemoizedChainId()
         });
@@ -154,14 +183,12 @@ export async function gelato<eip7702 extends boolean = true>(
     },
 
     async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
-      const isDeployed = await this.isDeployed();
-
       return readContract(client, {
         abi,
         address: owner.address,
         functionName: "getNonce",
         args: [parameters?.key],
-        stateOverride: isDeployed
+        stateOverride: (await isDeployed())
           ? undefined
           : [
               {
@@ -171,23 +198,7 @@ export async function gelato<eip7702 extends boolean = true>(
             ]
       });
     },
-
-    async isDeployed() {
-      if (deployed) {
-        return true;
-      }
-
-      const code = await getCode(client, { address: owner.address });
-
-      deployed = Boolean(
-        code?.length &&
-          code.length > 0 &&
-          lowercase(code) === lowercase(delegationCode(this.authorization.address))
-      );
-
-      return deployed;
-    },
-
+    isDeployed,
     async getAddress() {
       return owner.address;
     },
@@ -198,7 +209,11 @@ export async function gelato<eip7702 extends boolean = true>(
 
     async signMessage(parameters) {
       const { message } = parameters;
-      return await owner.signMessage({ message });
+
+      return viem_signMessage(client, {
+        account: owner,
+        message
+      });
     },
 
     async signTypedData(parameters) {
@@ -206,11 +221,13 @@ export async function gelato<eip7702 extends boolean = true>(
         TypedData,
         string
       >;
-      return await owner.signTypedData({
+
+      return viem_signTypedData(client, {
         domain,
         message,
         primaryType,
-        types
+        types,
+        account: owner
       });
     },
 
@@ -232,13 +249,14 @@ export async function gelato<eip7702 extends boolean = true>(
         chainId
       });
 
-      const signature = await owner.signMessage({
+      const signature = await viem_signMessage(client, {
+        account: owner,
         message: { raw: hash }
       });
 
       return signature;
     }
-  });
+  }) as unknown as GelatoSmartAccountReturnType;
 }
 
 /// Constants

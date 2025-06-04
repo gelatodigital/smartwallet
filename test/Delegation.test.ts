@@ -1,15 +1,24 @@
 import { erc20Abi } from "viem";
-import { describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { delegationCode } from "../src/constants/index.js";
 import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
-import { delegateAddress } from "../src/relay/rpc/utils/networkCapabilities.js";
-import { walletClient } from "./src/account.js";
+import { deployerAccount, walletClient } from "./src/account.js";
 import { getApiKeyStaging } from "./src/env.js";
 import { constants } from "./src/index.js";
 
+const delegationAddress = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
+
 describe("Initial Delegation Test", () => {
+  beforeAll(async () => {
+    console.log("Test Account:", deployerAccount.address);
+    console.log("Test Chain:", walletClient.chain.name);
+    console.log("ERC20 Address:", constants.erc20Address());
+  });
+
   test("Delegate with native payment", async () => {
-    const gelatoClient = createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -19,9 +28,6 @@ describe("Initial Delegation Test", () => {
       payment: native(),
       calls: constants.testCalls
     });
-
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const delegationAddress = delegateAddress(gelatoClient as any);
 
     const receipt = await response.wait();
     console.log(receipt);
@@ -39,7 +45,9 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Delegate with ERC20 payment", async () => {
-    const gelatoClient = createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -56,9 +64,6 @@ describe("Initial Delegation Test", () => {
       payment: erc20(constants.erc20Address()),
       calls: constants.testCalls
     });
-
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const delegationAddress = delegateAddress(gelatoClient as any);
 
     const receipt = await response.wait();
     console.log(receipt);
@@ -85,7 +90,9 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Delegate with sponsor payment", async () => {
-    const gelatoClient = createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const sponsorKey = getApiKeyStaging();
 
@@ -104,9 +111,6 @@ describe("Initial Delegation Test", () => {
       payment: sponsored(sponsorKey),
       calls: constants.testCalls
     });
-
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const delegationAddress = delegateAddress(gelatoClient as any);
 
     const receipt = await response.wait();
     console.log(receipt);

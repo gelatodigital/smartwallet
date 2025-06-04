@@ -1,9 +1,6 @@
 import "dotenv/config";
-import {
-  createGelatoSmartWalletClient,
-  sponsored,
-  toGelatoSmartAccount
-} from "@gelatonetwork/smartwallet";
+import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient, formatEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
@@ -23,7 +20,7 @@ const publicClient = createPublicClient({
 });
 
 (async () => {
-  const account = await toGelatoSmartAccount({
+  const account = await gelato({
     owner,
     client: publicClient
   });
@@ -34,20 +31,20 @@ const publicClient = createPublicClient({
     transport: http()
   });
 
-  createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
-    .estimate({
-      payment: sponsored(sponsorApiKey),
-      calls: [
-        {
-          to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
-          data: "0xd09de08a",
-          value: 0n
-        }
-      ]
-    })
-    .then(async ({ estimatedFee, estimatedGas }) => {
-      console.log(`Estimated fee: ${formatEther(estimatedFee)} ETH`);
-      console.log(`Estimated gas: ${estimatedGas} GAS`);
-      process.exit(0);
-    });
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+
+  const response = await swc.estimate({
+    payment: sponsored(sponsorApiKey),
+    calls: [
+      {
+        to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+        data: "0xd09de08a",
+        value: 0n
+      }
+    ]
+  });
+
+  console.log(`Estimated fee: ${formatEther(BigInt(response.fee.estimatedFee))} ETH`);
+  console.log(`Estimated gas: ${response.gas} GAS`);
+  process.exit(0);
 })();

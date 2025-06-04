@@ -1,10 +1,4 @@
-import {
-  type GelatoTaskStatus,
-  accounts,
-  erc20,
-  native,
-  sponsored
-} from "@gelatonetwork/smartwallet";
+import { type GelatoTaskStatus, erc20, native, sponsored } from "@gelatonetwork/smartwallet";
 import {
   GelatoSmartWalletConnectButton,
   GelatoSmartWalletContextProvider,
@@ -268,11 +262,9 @@ export default function Providers() {
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
         apiKey: sponsorApiKey,
-        toGelatoSmartAccount: async (client, account) => {
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          return accounts.gelato({ client: client, owner: account as any });
+        scw: {
+          type: "gelato"
         },
-        // wallet: "kernel"
         waas: dynamic(waasAppId),
         wagmi: wagmi({
           chains: [sepolia, baseSepolia],
