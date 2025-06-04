@@ -20,9 +20,9 @@ import {
   getChainId,
   getCode,
   readContract,
-  signAuthorization as signAuthorizationFromViem,
-  signMessage,
-  signTypedData
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage,
+  signTypedData as viem_signTypedData
 } from "viem/actions";
 import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
@@ -127,7 +127,7 @@ export async function gelato<eip7702 extends boolean = true>(
           );
         }
 
-        const auth = await signAuthorizationFromViem(client, {
+        const auth = await viem_signAuthorization(client, {
           ...authorization,
           chainId: await getMemoizedChainId()
         });
@@ -210,7 +210,7 @@ export async function gelato<eip7702 extends boolean = true>(
     async signMessage(parameters) {
       const { message } = parameters;
 
-      return signMessage(client, {
+      return viem_signMessage(client, {
         account: owner,
         message
       });
@@ -222,7 +222,7 @@ export async function gelato<eip7702 extends boolean = true>(
         string
       >;
 
-      return signTypedData(client, {
+      return viem_signTypedData(client, {
         domain,
         message,
         primaryType,
@@ -249,7 +249,7 @@ export async function gelato<eip7702 extends boolean = true>(
         chainId
       });
 
-      const signature = await signMessage(client, {
+      const signature = await viem_signMessage(client, {
         account: owner,
         message: { raw: hash }
       });

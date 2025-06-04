@@ -13,9 +13,9 @@ import {
 import {
   getChainId,
   getCode,
-  signAuthorization as signAuthorizationFromViem,
-  signMessage,
-  signTypedData
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage,
+  signTypedData as viem_signTypedData
 } from "viem/actions";
 import { verifyAuthorization } from "viem/utils";
 import { lowercase } from "../../utils/index.js";
@@ -125,7 +125,7 @@ export async function custom<
         );
 
         if (!deployed) {
-          const auth = await signAuthorizationFromViem(client, {
+          const auth = await viem_signAuthorization(client, {
             ...authorization,
             account: authorization.account,
             chainId: await getMemoizedChainId()
@@ -180,7 +180,7 @@ export async function custom<
     async signMessage(parameters) {
       const { message } = parameters;
 
-      return signMessage(client, {
+      return viem_signMessage(client, {
         account: owner,
         message
       });
@@ -191,7 +191,7 @@ export async function custom<
         string
       >;
 
-      return signTypedData(client, {
+      return viem_signTypedData(client, {
         domain,
         message,
         primaryType,
@@ -216,7 +216,7 @@ export async function custom<
         chainId
       });
 
-      const signature = await signMessage(client, {
+      const signature = await viem_signMessage(client, {
         account: owner,
         message: { raw: hash }
       });
