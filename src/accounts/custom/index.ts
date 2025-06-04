@@ -1,4 +1,4 @@
-import type { Abi, Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type { Abi, Account, Address, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
 import type {
   EntryPointVersion,
   SmartAccount,
@@ -10,8 +10,13 @@ import {
   getUserOperationHash,
   toSmartAccount
 } from "viem/account-abstraction";
-import type { PrivateKeyAccount } from "viem/accounts";
-import { getChainId, getCode, signAuthorization as signAuthorizationFromViem } from "viem/actions";
+import {
+  getChainId,
+  getCode,
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage,
+  signTypedData as viem_signTypedData
+} from "viem/actions";
 import { verifyAuthorization } from "viem/utils";
 import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension, GelatoSmartAccountSCWEncoding } from "../index.js";
@@ -19,14 +24,14 @@ import type { GelatoSmartAccountExtension, GelatoSmartAccountSCWEncoding } from 
 export type CustomSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
-  extend extends object = object,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 > = SmartAccountImplementation<entryPointAbi, entryPointVersion, extend, eip7702>;
 
 export type CustomSmartAccountParameters<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
-  extend extends object = object,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 > = {
   client: CustomSmartAccountImplementation<
@@ -35,7 +40,7 @@ export type CustomSmartAccountParameters<
     extend,
     eip7702
   >["client"];
-  owner: PrivateKeyAccount;
+  owner: Account;
   entryPoint?: {
     abi: Abi;
     address: Address;
@@ -67,14 +72,10 @@ export type CustomSmartAccountReturnType = Prettify<SmartAccount<CustomSmartAcco
 export async function custom<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
   entryPointVersion extends EntryPointVersion = EntryPointVersion,
+  extend extends GelatoSmartAccountExtension = GelatoSmartAccountExtension,
   eip7702 extends boolean = boolean
 >(
-  parameters: CustomSmartAccountParameters<
-    entryPointAbi,
-    entryPointVersion,
-    GelatoSmartAccountExtension,
-    eip7702
-  >
+  parameters: CustomSmartAccountParameters<entryPointAbi, entryPointVersion, extend, eip7702>
 ): Promise<CustomSmartAccountReturnType> {
   const { client, owner, authorization, eip7702, entryPoint: _entryPoint, scw } = parameters;
 
@@ -107,7 +108,7 @@ export async function custom<
       owner,
       eip7702,
       erc4337,
-      scw: { owner, eip7702, type: "custom", encoding: scw.encoding } as const,
+      scw: { type: "custom", encoding: scw.encoding, version: "unknown" } as const,
       async signAuthorization() {
         if (!eip7702) {
           throw new Error("EIP-7702 must be enabled. No support for non-EIP-7702 accounts.");
@@ -124,7 +125,7 @@ export async function custom<
         );
 
         if (!deployed) {
-          const auth = await signAuthorizationFromViem(client, {
+          const auth = await viem_signAuthorization(client, {
             ...authorization,
             account: authorization.account,
             chainId: await getMemoizedChainId()
@@ -178,18 +179,24 @@ export async function custom<
     },
     async signMessage(parameters) {
       const { message } = parameters;
-      return await owner.signMessage({ message });
+
+      return viem_signMessage(client, {
+        account: owner,
+        message
+      });
     },
     async signTypedData(parameters) {
       const { domain, types, primaryType, message } = parameters as TypedDataDefinition<
         TypedData,
         string
       >;
-      return await owner.signTypedData({
+
+      return viem_signTypedData(client, {
         domain,
         message,
         primaryType,
-        types
+        types,
+        account: owner
       });
     },
     async getStubSignature() {
@@ -209,11 +216,11 @@ export async function custom<
         chainId
       });
 
-      const signature = await owner.signMessage({
+      const signature = await viem_signMessage(client, {
+        account: owner,
         message: { raw: hash }
       });
-
       return signature;
     }
-  });
+  }) as unknown as CustomSmartAccountReturnType;
 }

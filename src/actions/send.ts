@@ -6,6 +6,7 @@ import { walletSendPreparedCalls } from "../relay/rpc/index.js";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
 import type { GelatoWalletClient } from "./index.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
+import { sign } from "./sign.js";
 
 /**
  *
@@ -21,22 +22,12 @@ export async function send<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }
 ): Promise<GelatoResponse> {
-  const {
-    preparedCalls: { context, signatureRequest }
-  } = structuredClone(parameters);
+  const { preparedCalls, signature: _signature } = parameters;
+  const { context } = preparedCalls;
 
-  const userOp = "userOp" in context ? context.userOp : undefined;
-  const signature = parameters.signature ?? (await signSignatureRequest(client, signatureRequest, userOp));
-
-  const authorizationList = client.account.authorization && client.account.eip7702
-    ? // smart account must implement "signAuthorization"
-      [
-        await client.signAuthorization({
-          account: client.account.authorization.account,
-          contractAddress: client.account.authorization.address
-        })
-      ]
-    : undefined;
+  const { signature, authorizationList } = _signature
+    ? { signature: _signature }
+    : await sign(client, preparedCalls);
 
   return await walletSendPreparedCalls(client, {
     context,

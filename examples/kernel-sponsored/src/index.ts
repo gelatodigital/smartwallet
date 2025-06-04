@@ -27,7 +27,7 @@ const publicClient = createPublicClient({
   const account = await kernel({
     owner,
     client: publicClient,
-    eip7702: true
+    eip7702: false
   });
 
   console.log("Account address:", account.address);
@@ -38,29 +38,29 @@ const publicClient = createPublicClient({
     transport: http()
   });
 
-  createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
-    .execute({
-      payment: sponsored(sponsorApiKey),
-      calls: [
-        {
-          to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
-          data: "0xd09de08a",
-          value: 0n
-        }
-      ]
-    })
-    .then((response) => {
-      console.log(`Your Gelato id is: ${response.id}`);
-      console.log("Waiting for transaction to be confirmed...");
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
 
-      // Listen for events
-      response.on("success", (status: GelatoTaskStatus) => {
-        console.log(`Transaction successful: ${status.transactionHash}`);
-        process.exit(0);
-      });
-      response.on("error", (error: Error) => {
-        console.error(`Transaction failed: ${error.message}`);
-        process.exit(1);
-      });
-    });
+  const response = await swc.execute({
+    payment: sponsored(sponsorApiKey),
+    calls: [
+      {
+        to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+        data: "0xd09de08a",
+        value: 0n
+      }
+    ]
+  });
+
+  console.log(`Your Gelato id is: ${response.id}`);
+  console.log("Waiting for transaction to be confirmed...");
+
+  // Listen for events
+  response.on("success", (status: GelatoTaskStatus) => {
+    console.log(`Transaction successful: ${status.transactionHash}`);
+    process.exit(0);
+  });
+  response.on("error", (error: Error) => {
+    console.error(`Transaction failed: ${error.message}`);
+    process.exit(1);
+  });
 })();

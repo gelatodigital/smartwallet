@@ -1,4 +1,14 @@
-import type { Abi, Address, Call, Hex, Prettify, TypedData, TypedDataDefinition } from "viem";
+import type {
+  Abi,
+  Account,
+  Address,
+  Call,
+  Hex,
+  Prettify,
+  PrivateKeyAccount,
+  TypedData,
+  TypedDataDefinition
+} from "viem";
 import {
   BaseError,
   concatHex,
@@ -26,12 +36,12 @@ import {
   getUserOperationHash,
   toSmartAccount
 } from "viem/account-abstraction";
-import type { PrivateKeyAccount } from "viem/accounts";
 import {
   getChainId,
   getCode,
   readContract,
-  signAuthorization as signAuthorizationFromViem
+  signAuthorization as viem_signAuthorization,
+  signMessage as viem_signMessage
 } from "viem/actions";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
@@ -66,7 +76,7 @@ export type KernelSmartAccountParameters<
   eip7702 extends boolean = boolean
 > = {
   client: KernelSmartAccountImplementation<entryPointAbi, entryPointVersion, eip7702>["client"];
-  owner: PrivateKeyAccount;
+  owner: Account;
   eip7702?: eip7702;
   address?: Address;
   index?: bigint;
@@ -153,7 +163,6 @@ export async function kernel<
     version: "0.7" as const
   };
 
-  const isDelegated = false; // When 7702+4337 is used
   let chainId: number;
 
   const getMemoizedChainId = async () => {
@@ -263,7 +272,10 @@ export async function kernel<
   })();
 
   return toSmartAccount({
-    authorization,
+    authorization: authorization as {
+      account: PrivateKeyAccount;
+      address: Address;
+    },
     getFactoryArgs,
     abi,
     client,
@@ -295,7 +307,7 @@ export async function kernel<
           );
         }
 
-        const auth = await signAuthorizationFromViem(client, {
+        const auth = await viem_signAuthorization(client, {
           ...authorization,
           chainId: await getMemoizedChainId()
         });
@@ -372,13 +384,10 @@ export async function kernel<
     },
 
     async signMessage({ message }) {
-      if (isDelegated) {
-        return await owner.signMessage({ message });
-      }
-
       const wrapped = await wrappedMessage(hashMessage(message));
 
-      const signature = await owner.signMessage({
+      const signature = await viem_signMessage(client, {
+        account: owner,
         message: { raw: wrapped }
       });
 
@@ -392,15 +401,6 @@ export async function kernel<
         primaryType,
         message
       } = parameters as TypedDataDefinition<TypedData, string>;
-
-      if (isDelegated) {
-        return await owner.signTypedData({
-          domain,
-          message,
-          primaryType,
-          types: _types
-        });
-      }
 
       const types = {
         EIP712Domain: getTypesForEIP712Domain({
@@ -420,7 +420,8 @@ export async function kernel<
 
       const wrapped = await wrappedMessage(typedHash);
 
-      const signature = await owner.signMessage({
+      const signature = await viem_signMessage(client, {
+        account: owner,
         message: { raw: wrapped }
       });
 
@@ -441,11 +442,12 @@ export async function kernel<
         chainId
       });
 
-      const signature = await owner.signMessage({
+      const signature = await viem_signMessage(client, {
+        account: owner,
         message: { raw: hash }
       });
 
       return signature;
     }
-  });
+  }) as unknown as KernelSmartAccountReturnType;
 }
