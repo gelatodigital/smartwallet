@@ -10,7 +10,9 @@ const delegationAddress = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
 
 describe("Initial Delegation Test", () => {
   test("Delegate with native payment", async () => {
-    const gelatoClient = await createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -37,7 +39,9 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Delegate with ERC20 payment", async () => {
-    const gelatoClient = await createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -80,7 +84,9 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Delegate with sponsor payment", async () => {
-    const gelatoClient = await createGelatoSmartWalletClient(walletClient);
+    const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
+      scw: { type: "gelato" }
+    });
 
     const sponsorKey = getApiKeyStaging();
 
