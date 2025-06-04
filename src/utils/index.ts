@@ -33,6 +33,7 @@ export const transformIntoGelatoSmartAccount = async (
 
   if (params.scw?.type === "gelato") {
     return gelato({
+      ...params.scw,
       client,
       owner: client.account
     });
@@ -40,9 +41,9 @@ export const transformIntoGelatoSmartAccount = async (
 
   if (params.scw?.type === "kernel") {
     return kernel({
+      ...params.scw,
       client,
       owner: client.account,
-      eip7702: params.scw.eip7702 ?? true
     });
   }
 
@@ -58,12 +59,11 @@ export const transformIntoGelatoSmartAccount = async (
     return custom({
       client,
       owner: client.account,
+      ...params.scw,
       eip7702: params.scw.eip7702 ?? true,
       scw: {
         encoding: params.scw.encoding ?? "erc7821"
       },
-      entryPoint: params.scw.entryPoint,
-      authorization: params.scw.authorization
     });
   }
 
