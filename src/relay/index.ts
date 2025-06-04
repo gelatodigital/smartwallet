@@ -1,5 +1,4 @@
 import type { Chain, SignedAuthorizationList, Transport } from "viem";
-import type { SmartAccount } from "viem/account-abstraction";
 
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { GelatoWalletClient } from "../actions/index.js";

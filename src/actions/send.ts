@@ -5,7 +5,6 @@ import type { GelatoResponse } from "../relay/index.js";
 import { walletSendPreparedCalls } from "../relay/rpc/index.js";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
 import type { GelatoWalletClient } from "./index.js";
-import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 import { sign } from "./sign.js";
 
 /**

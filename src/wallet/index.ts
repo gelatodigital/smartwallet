@@ -1,8 +1,3 @@
-import type { Chain, Transport } from "viem";
-import type { SmartAccount } from "viem/account-abstraction";
-
-import type { GelatoWalletClient } from "../actions/index.js";
-
 export enum WalletType {
   Gelato = "gelato",
   Kernel = "kernel",
