@@ -18,8 +18,13 @@ import {
 } from "wagmi/query";
 
 import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
+import React from "react";
 import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 import type { ConfigParameter } from "./useSendTransaction.js";
+
+// Since GelatoSmartWalletClient is complex to cache in React query, it causes exceeded call stack
+// here keep a global client and update it when it changes
+let globalClient: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount> | undefined;
 
 export type WaitForTransactionReceiptQueryKey<
   config extends Config,
@@ -32,7 +37,6 @@ export function waitForTransactionReceiptQueryKey<
 >(
   options: Omit<WaitForTransactionReceiptOptions<config, chainId>, "hash" | "onReplaced"> & {
     id?: string;
-    client?: GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>;
   } = {}
 ) {
   return ["waitForTransactionReceipt", options] as const;
@@ -64,16 +68,16 @@ function waitForTransactionReceiptQueryOptions<
   return {
     async queryFn({ queryKey }) {
       const { scopeKey: _, id, ...parameters } = queryKey[1];
-      let txHash: string;
+
       if (!id) throw new Error("id is required");
 
       if (!isHash(id)) {
         throw new Error("task id is required");
       }
 
-      const { client } = useGelatoSmartWalletClient();
-      if (client) {
-        txHash = await track(id, client).wait();
+      let txHash: string;
+      if (globalClient) {
+        txHash = await track(id, globalClient).wait();
       } else {
         txHash = id;
       }
@@ -130,6 +134,11 @@ export function useWaitForTransactionReceipt<
   const { query = {} } = parameters;
   const config = useConfig(parameters);
   const chainId = useChainId({ config });
+  const { client } = useGelatoSmartWalletClient();
+
+  React.useEffect(() => {
+    globalClient = client;
+  }, [client]);
 
   const enabled = Boolean(parameters.id && (query.enabled ?? true));
 
