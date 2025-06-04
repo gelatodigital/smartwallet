@@ -41,7 +41,8 @@ export const transformIntoGelatoSmartAccount = async (
   if (params.scw?.type === "kernel") {
     return kernel({
       client,
-      owner: client.account
+      owner: client.account,
+      eip7702: params.scw.eip7702 ?? true
     });
   }
 
