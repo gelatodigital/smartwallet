@@ -1,12 +1,12 @@
 import { http, createWalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { getPrivateKey } from "./env.js";
 
 export const deployerAccount = privateKeyToAccount(getPrivateKey());
 
 export const walletClient = createWalletClient({
   account: deployerAccount,
-  chain: sepolia,
+  chain: baseSepolia,
   transport: http()
 });
