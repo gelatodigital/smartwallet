@@ -43,7 +43,7 @@ export const transformIntoGelatoSmartAccount = async (
     return kernel({
       ...params.scw,
       client,
-      owner: client.account,
+      owner: client.account
     });
   }
 
@@ -63,7 +63,7 @@ export const transformIntoGelatoSmartAccount = async (
       eip7702: params.scw.eip7702 ?? true,
       scw: {
         encoding: params.scw.encoding ?? "erc7821"
-      },
+      }
     });
   }
 
