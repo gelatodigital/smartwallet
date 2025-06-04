@@ -22,7 +22,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           params={{
             apiKey: sponsorApiKey,
             scw: {
-              type: "safe"
+              type: "kernel",
+              eip7702: false
             }
           }}
         >

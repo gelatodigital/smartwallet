@@ -61,13 +61,13 @@ export type SendTransactionMutate<config extends Config, context = unknown> = <
   variables: SendTransactionVariables<config, chainId>,
   options?:
     | Prettify<
-      MutateOptions<
-        SendTransactionData,
-        SendTransactionErrorType | SendCallsErrorType,
-        Prettify<SendTransactionVariables<config, chainId>>,
-        context
+        MutateOptions<
+          SendTransactionData,
+          SendTransactionErrorType | SendCallsErrorType,
+          Prettify<SendTransactionVariables<config, chainId>>,
+          context
+        >
       >
-    >
     | undefined
 ) => void;
 
@@ -77,13 +77,13 @@ export type SendTransactionMutateAsync<config extends Config, context = unknown>
   variables: SendTransactionVariables<config, chainId>,
   options?:
     | Prettify<
-      MutateOptions<
-        SendTransactionData,
-        SendTransactionErrorType | SendCallsErrorType,
-        Prettify<SendTransactionVariables<config, chainId>>,
-        context
+        MutateOptions<
+          SendTransactionData,
+          SendTransactionErrorType | SendCallsErrorType,
+          Prettify<SendTransactionVariables<config, chainId>>,
+          context
+        >
       >
-    >
     | undefined
 ) => Promise<SendTransactionData>;
 
@@ -98,13 +98,13 @@ export type UseSendTransactionParameters<
   ConfigParameter<config> & {
     payment?: Payment;
     mutation?:
-    | UseMutationParameters<
-      SendTransactionData,
-      SendTransactionErrorType | SendCallsErrorType,
-      SendTransactionVariables<config, config["chains"][number]["id"]>,
-      context
-    >
-    | undefined;
+      | UseMutationParameters<
+          SendTransactionData,
+          SendTransactionErrorType | SendCallsErrorType,
+          SendTransactionVariables<config, config["chains"][number]["id"]>,
+          context
+        >
+      | undefined;
   }
 >;
 

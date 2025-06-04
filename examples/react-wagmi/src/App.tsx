@@ -32,8 +32,9 @@ function App() {
     setTxError(undefined);
     try {
       await sendTransactionAsync({
-        to: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-        data: "0x1234"
+        to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+        data: "0xd09de08a",
+        value: 0n
       });
       // biome-ignore lint/suspicious/noExplicitAny: example any error
     } catch (error: any) {
