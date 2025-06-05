@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.7
+
+### Patch Changes
+
+- 707d1a4: feat: smart accounts
+- 707d1a4: feat: prepare and send calls
+
 ## 0.0.6
 
 ### Patch Changes

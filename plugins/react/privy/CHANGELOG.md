@@ -1,5 +1,16 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.7
+
+### Patch Changes
+
+- 707d1a4: feat: smart accounts
+- 707d1a4: feat: prepare and send calls
+- Updated dependencies [707d1a4]
+- Updated dependencies [707d1a4]
+  - @gelatonetwork/smartwallet-react-types@0.0.7
+  - @gelatonetwork/smartwallet@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes
