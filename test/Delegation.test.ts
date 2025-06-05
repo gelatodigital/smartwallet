@@ -31,7 +31,7 @@ describe("Initial Delegation Test", () => {
 
     console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash });
+    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash, confirmations: 3 });
     console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
@@ -69,7 +69,7 @@ describe("Initial Delegation Test", () => {
 
     console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash });
+    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash, confirmations: 3 });
     console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
@@ -118,7 +118,7 @@ describe("Initial Delegation Test", () => {
 
     console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash });
+    await publicClient.waitForTransactionReceipt({ hash: receipt as Hash, confirmations: 3 });
     console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
