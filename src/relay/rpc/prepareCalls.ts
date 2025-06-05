@@ -52,7 +52,10 @@ export const walletPrepareCalls = async <
     nonceKey: serializeNonceKey(params.nonceKey)
   };
 
-  const raw = await fetch(`${api()}/smartwallet`, {
+  const apiKey = client._internal.apiKey();
+  const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
+
+  const raw = await fetch(url, {
     method: "POST",
     headers: {
       Accept: "application/json",
