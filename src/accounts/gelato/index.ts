@@ -117,8 +117,9 @@ export async function gelato<eip7702 extends boolean = true>(
       account: PrivateKeyAccount;
       address: Address;
     },
+    isDeployed,
     async signAuthorization() {
-      const _isDeployed = await isDeployed();
+      const _isDeployed = await this.isDeployed();
 
       if (!_isDeployed) {
         if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
@@ -198,7 +199,6 @@ export async function gelato<eip7702 extends boolean = true>(
             ]
       });
     },
-    isDeployed,
     async getAddress() {
       return owner.address;
     },

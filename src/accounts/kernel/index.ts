@@ -164,6 +164,7 @@ export async function kernel<
   };
 
   let chainId: number;
+  let deployed = false;
 
   const getMemoizedChainId = async () => {
     if (chainId) return chainId;
@@ -271,6 +272,26 @@ export async function kernel<
     return { accountAddress, getFactoryArgs: getFactoryArgsFunc };
   })();
 
+  const isDeployed = async () => {
+    if (deployed) {
+      return true;
+    }
+
+    const code = await getCode(client, { address: accountAddress });
+
+    deployed = authorization
+      ? Boolean(
+          !code ||
+            code.length === 0 ||
+            !code
+              .toLowerCase()
+              .startsWith(`0xef0100${authorization.address.slice(2).toLowerCase()}`)
+        )
+      : Boolean(code);
+
+    return deployed;
+  };
+
   return toSmartAccount({
     authorization: authorization as {
       account: PrivateKeyAccount;
@@ -287,20 +308,15 @@ export async function kernel<
       scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
     },
     entryPoint,
+    isDeployed,
     async signAuthorization() {
       if (!authorization) {
         return undefined;
       }
 
-      const code = await getCode(client, { address: accountAddress });
+      const _isDeployed = await this.isDeployed();
 
-      const isDeployed = Boolean(
-        !code ||
-          code.length === 0 ||
-          !code.toLowerCase().startsWith(`0xef0100${authorization.address.slice(2).toLowerCase()}`)
-      );
-
-      if (!isDeployed && authorization) {
+      if (!_isDeployed && authorization) {
         if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
