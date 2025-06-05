@@ -15,7 +15,7 @@ describe("Initial Delegation Test", () => {
     console.log("ERC20 Address:", constants.erc20Address());
   });
 
-  test("Delegate with native payment", async () => {
+  test("Gelato SCW transaction with native payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -44,7 +44,7 @@ describe("Initial Delegation Test", () => {
     expect(balanceFinal).toBeLessThan(balanceInitial);
   });
 
-  test("Delegate with ERC20 payment", async () => {
+  test("Gelato SCW transaction with ERC20 payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -89,7 +89,7 @@ describe("Initial Delegation Test", () => {
     expect(erc20BalanceFinal).toBeLessThan(erc20BalanceInitial);
   });
 
-  test("Delegate with sponsor payment", async () => {
+  test("Gelato SCW transaction with sponsor payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
