@@ -1,8 +1,7 @@
 import type { Chain, PublicActions, Transport } from "viem";
 
-import type { GelatoResponse } from "../index.js";
-import type { GelatoTaskWaitEvent } from "./types.js";
-import type { GelatoTaskEvent } from "./types.js";
+import type { GelatoResponse, WaitParams } from "../index.js";
+import type { GelatoTaskEvent, GelatoTaskWaitEvent } from "./types.js";
 
 import type { GelatoSmartAccount } from "../../accounts/index.js";
 import { on } from "../actions/on.js";
@@ -26,8 +25,8 @@ export function track<
 >(taskId: string, client?: PublicActions<transport, chain, account>): GelatoResponse {
   return {
     id: taskId,
-    wait: (e: GelatoTaskWaitEvent = "execution") =>
-      wait(taskId, { client, submission: e === "submission" }),
+    wait: (e?: GelatoTaskWaitEvent, params?: WaitParams) =>
+      wait(taskId, { client, event: e, ...params }),
     on: (update: GelatoTaskEvent | "error", callback) => on(taskId, { update, callback, client })
   };
 }

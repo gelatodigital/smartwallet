@@ -29,8 +29,8 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
-    const receipt = await response.wait();
-    console.log(receipt);
+    const hash = await response.wait("execution", { confirmations: 3 });
+    console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -65,8 +65,8 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
-    const receipt = await response.wait();
-    console.log(receipt);
+    const hash = await response.wait("execution", { confirmations: 3 });
+    console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -112,8 +112,8 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
-    const receipt = await response.wait();
-    console.log(receipt);
+    const hash = await response.wait("execution", { confirmations: 3 });
+    console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
