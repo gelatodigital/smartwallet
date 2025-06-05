@@ -1,13 +1,16 @@
-import type { Account, Chain, Hash, PublicActions, Transport } from "viem";
+import type { Chain, Hash, PublicActions, Transport } from "viem";
 
 import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
 
-import { statusApiPollingInterval } from "../../constants/index.js";
+import type { GelatoSmartAccount } from "../../accounts/index.js";
+import { defaultProviderPollingInterval } from "../../constants/index.js";
+import type { WaitParams } from "../index.js";
 import {
   ExecutionCancelledError,
   ExecutionRevertedError,
   GelatoTaskError,
+  type GelatoTaskWaitEvent,
   InternalError,
   TaskState,
   type TransactionStatusResponse
@@ -26,17 +29,18 @@ type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
 export const wait = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   taskId: string,
-  parameters: {
-    submission: boolean;
+  parameters: WaitParams & {
+    event?: GelatoTaskWaitEvent;
     client?: PublicActions<transport, chain, account>;
-    pollingInterval?: number;
     maxRetries?: number;
-  } = { submission: false }
+  } = { event: "execution" }
 ): Promise<Hash> => {
-  const { client, submission, pollingInterval, maxRetries } = parameters;
+  const { client, event, pollingInterval, maxRetries, confirmations } = parameters;
+
+  const submission = event === "submission";
 
   // Check with HTTP first
   const transactionHash = await waitHttp(taskId, submission);
@@ -104,15 +108,42 @@ export const wait = async <
         rejectPromise = reject;
       });
 
-      const _result = client
+      const { resolver, result: _result } = client
         ? await Promise.race([
-            promise,
-            client.waitForTransactionReceipt({
-              hash: result.hash,
-              pollingInterval: statusApiPollingInterval()
-            })
+            promise.then((result) => {
+              return {
+                resolver: "statusApi",
+                result
+              };
+            }),
+            client
+              .waitForTransactionReceipt({
+                hash: result.hash,
+                pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+                confirmations
+              })
+              .then((result) => {
+                return {
+                  resolver: "provider",
+                  result
+                };
+              })
           ])
-        : await promise;
+        : await promise.then((result) => {
+            return {
+              resolver: "statusApi",
+              result
+            };
+          });
+
+      // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
+      if (resolver === "statusApi" && client && confirmations !== undefined) {
+        await client.waitForTransactionReceipt({
+          hash: result.hash,
+          pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+          confirmations
+        });
+      }
 
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
         // Resubmission occurred, race for new hash again

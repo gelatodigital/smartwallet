@@ -1,5 +1,6 @@
-import type { Account, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
 
+import type { GelatoSmartAccount } from "../../accounts/index.js";
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
 import type { GelatoResponse } from "../index.js";
@@ -13,7 +14,7 @@ import { serializeAuthorizationList } from "./utils/serialize.js";
 export const walletSendPreparedCalls = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends Account = Account
+  account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
   params: WalletSendPreparedCallsParams
@@ -21,7 +22,10 @@ export const walletSendPreparedCalls = async <
   const { context, signature } = params;
   const authorizationList = serializeAuthorizationList(params.authorizationList);
 
-  const response = await fetch(`${api()}/smartwallet`, {
+  const apiKey = client._internal.apiKey();
+  const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
+
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       Accept: "application/json",

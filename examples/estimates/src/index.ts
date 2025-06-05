@@ -1,6 +1,7 @@
-import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import "dotenv/config";
-import { http, type Hex, createWalletClient, formatUnits } from "viem";
+import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
+import { gelato } from "@gelatonetwork/smartwallet/accounts";
+import { http, type Hex, createPublicClient, createWalletClient, formatEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
@@ -11,16 +12,28 @@ if (!sponsorApiKey) {
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
-const account = privateKeyToAccount(privateKey);
+const owner = privateKeyToAccount(privateKey);
 
-const client = createWalletClient({
-  account,
+const publicClient = createPublicClient({
   chain: sepolia,
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
-  .estimate({
+(async () => {
+  const account = await gelato({
+    owner,
+    client: publicClient
+  });
+
+  const client = createWalletClient({
+    account,
+    chain: sepolia,
+    transport: http()
+  });
+
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+
+  const response = await swc.estimate({
     payment: sponsored(sponsorApiKey),
     calls: [
       {
@@ -29,9 +42,9 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey })
         value: 0n
       }
     ]
-  })
-  .then(async ({ fee, gas }) => {
-    console.log(`Estimated fee: ${formatUnits(BigInt(fee.estimatedFee), fee.decimals)} ETH`);
-    console.log(`Estimated gas: ${gas} GAS`);
-    process.exit(0);
   });
+
+  console.log(`Estimated fee: ${formatEther(BigInt(response.fee.estimatedFee))} ETH`);
+  console.log(`Estimated gas: ${response.gas} GAS`);
+  process.exit(0);
+})();

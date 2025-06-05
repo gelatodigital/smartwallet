@@ -1,13 +1,13 @@
+import "dotenv/config";
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  kernel,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import "dotenv/config";
-import { http, type Hex, createWalletClient } from "viem";
+import { kernel } from "@gelatonetwork/smartwallet/accounts";
+import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { baseSepolia, sepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
@@ -16,16 +16,31 @@ if (!sponsorApiKey) {
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
-const account = privateKeyToAccount(privateKey);
+const owner = privateKeyToAccount(privateKey);
 
-const client = createWalletClient({
-  account,
-  chain: sepolia,
+const publicClient = createPublicClient({
+  chain: baseSepolia,
   transport: http()
 });
 
-createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey, wallet: kernel() })
-  .execute({
+(async () => {
+  const account = await kernel({
+    owner,
+    client: publicClient,
+    eip7702: false
+  });
+
+  console.log("Account address:", account.address);
+
+  const client = createWalletClient({
+    account,
+    chain: baseSepolia,
+    transport: http()
+  });
+
+  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+
+  const response = await swc.execute({
     payment: sponsored(sponsorApiKey),
     calls: [
       {
@@ -34,18 +49,18 @@ createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey, wallet: kernel() 
         value: 0n
       }
     ]
-  })
-  .then((response) => {
-    console.log(`Your Gelato id is: ${response.id}`);
-    console.log("Waiting for transaction to be confirmed...");
-
-    // Listen for events
-    response.on("success", (status: GelatoTaskStatus) => {
-      console.log(`Transaction successful: ${status.transactionHash}`);
-      process.exit(0);
-    });
-    response.on("error", (error: Error) => {
-      console.error(`Transaction failed: ${error.message}`);
-      process.exit(1);
-    });
   });
+
+  console.log(`Your Gelato id is: ${response.id}`);
+  console.log("Waiting for transaction to be confirmed...");
+
+  // Listen for events
+  response.on("success", (status: GelatoTaskStatus) => {
+    console.log(`Transaction successful: ${status.transactionHash}`);
+    process.exit(0);
+  });
+  response.on("error", (error: Error) => {
+    console.error(`Transaction failed: ${error.message}`);
+    process.exit(1);
+  });
+})();

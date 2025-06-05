@@ -7,9 +7,8 @@ import {
   wagmi
 } from "@gelatonetwork/smartwallet-react-sdk";
 import { useEffect, useState } from "react";
-import { http, useAccount } from "wagmi";
-
 import { baseSepolia, sepolia } from "viem/chains";
+import { http, useAccount } from "wagmi";
 
 // Chain configuration interface
 interface ChainConfig {
@@ -263,7 +262,9 @@ export default function Providers() {
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
         apiKey: sponsorApiKey,
-        // wallet: "kernel"
+        scw: {
+          type: "gelato"
+        },
         waas: dynamic(waasAppId),
         wagmi: wagmi({
           chains: [sepolia, baseSepolia],
