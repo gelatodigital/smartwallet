@@ -1,7 +1,11 @@
 import type { Chain, Hash, PublicActions, Transport } from "viem";
 
 import type { GelatoSmartAccount } from "../../../accounts/index.js";
-import { statusApiPollingInterval, statusApiPollingMaxRetries } from "../../../constants/index.js";
+import {
+  defaultProviderPollingInterval,
+  statusApiPollingInterval,
+  statusApiPollingMaxRetries
+} from "../../../constants/index.js";
 import { ExecutionTimeoutError } from "../../status/types.js";
 import { waitHttp } from "./waitHttp.js";
 
@@ -16,14 +20,14 @@ export const waitPolling = async <
     submissionHash?: Hash;
     client?: PublicActions<transport, chain, account>;
     pollingInterval?: number;
+    confirmations?: number;
     maxRetries?: number;
   }
 ): Promise<Hash> => {
-  const { submission, submissionHash, client, pollingInterval, maxRetries } = parameters;
+  const { submission, submissionHash, client, pollingInterval, maxRetries, confirmations } =
+    parameters;
 
-  const _pollInterval = pollingInterval ?? statusApiPollingInterval();
   const _maxRetries = maxRetries ?? statusApiPollingMaxRetries();
-
   const httpRequest = async () => {
     for (let attempt = 0; attempt < _maxRetries; attempt++) {
       const transactionHash = await waitHttp(taskId, submission);
@@ -33,7 +37,7 @@ export const waitPolling = async <
       }
 
       // If not in a final state, wait before polling again
-      await new Promise((resolve) => setTimeout(resolve, _pollInterval));
+      await new Promise((resolve) => setTimeout(resolve, statusApiPollingInterval()));
     }
     return undefined;
   };
@@ -41,15 +45,44 @@ export const waitPolling = async <
   // Waiting for execution but TX hash gathered from submission event already
   // race with provider's receipt
   if (!submission && submissionHash) {
-    const response = client
+    const { resolver, result } = client
       ? await Promise.race([
-          httpRequest(),
-          client.waitForTransactionReceipt({ hash: submissionHash, pollingInterval: _pollInterval })
+          httpRequest().then((result) => {
+            return {
+              resolver: "statusApi",
+              result
+            };
+          }),
+          client
+            .waitForTransactionReceipt({
+              hash: submissionHash,
+              pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+              confirmations
+            })
+            .then((result) => {
+              return {
+                resolver: "provider",
+                result
+              };
+            })
         ])
-      : await httpRequest();
+      : await httpRequest().then((result) => {
+          return {
+            resolver: "statusApi",
+            result
+          };
+        });
 
-    if (response) {
-      return response.transactionHash;
+    if (resolver === "statusApi" && client && confirmations !== undefined) {
+      await client.waitForTransactionReceipt({
+        hash: submissionHash,
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+        confirmations
+      });
+    }
+
+    if (result) {
+      return result.transactionHash;
     }
   } else {
     const response = await httpRequest();
