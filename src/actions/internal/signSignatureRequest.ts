@@ -17,10 +17,12 @@ export async function signSignatureRequest<
   let signature: Hex;
 
   if (signatureRequest.type === SignatureRequestType.TypedData) {
+    console.log("signing with account: ", client.account.address);
     signature = await client.signTypedData({
       account: client.account,
       ...signatureRequest.data
     });
+    console.log("signature: ", signature);
   } else if (signatureRequest.type === SignatureRequestType.UserOperation) {
     if (!userOp) {
       throw new Error(

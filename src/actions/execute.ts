@@ -22,5 +22,6 @@ export async function execute<
   parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
 ): Promise<GelatoResponse> {
   const preparedCalls = await prepare(client, parameters);
+  console.log("preparedCalls sig request: ", JSON.stringify(preparedCalls.signatureRequest));
   return send(client, { preparedCalls });
 }
