@@ -1,8 +1,8 @@
-import { erc20Abi } from "viem";
+import { type Hash, erc20Abi } from "viem";
 import { beforeAll, describe, expect, test } from "vitest";
 import { delegationCode } from "../src/constants/index.js";
 import { createGelatoSmartWalletClient, erc20, native, sponsored } from "../src/index.js";
-import { deployerAccount, walletClient } from "./src/account.js";
+import { deployerAccount, publicClient, walletClient } from "./src/account.js";
 import { getApiKeyStaging } from "./src/env.js";
 import { constants } from "./src/index.js";
 
@@ -29,8 +29,10 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
+    console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    console.log(receipt);
+    await publicClient.getTransactionReceipt({ hash: receipt as Hash });
+    console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -65,8 +67,10 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
+    console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    console.log(receipt);
+    await publicClient.getTransactionReceipt({ hash: receipt as Hash });
+    console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -112,8 +116,10 @@ describe("Initial Delegation Test", () => {
       calls: constants.testCalls
     });
 
+    console.log(`Gelato id: ${response.id}`);
     const receipt = await response.wait();
-    console.log(receipt);
+    await publicClient.getTransactionReceipt({ hash: receipt as Hash });
+    console.log(`Tx hash: ${receipt}`);
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
