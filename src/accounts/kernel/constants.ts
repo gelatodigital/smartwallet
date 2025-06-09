@@ -1,5 +1,5 @@
 import { type Address, type Hex, concatHex } from "viem";
-import { baseSepolia, sepolia } from "viem/chains";
+import { arbitrumSepolia, baseSepolia, inkSepolia, sepolia } from "viem/chains";
 
 /// Constants
 
@@ -11,7 +11,9 @@ export const KERNEL_V3_3_FACTORY_ADDRESS: Hex = "0xE30c76Dc9eCF1c19F6Fec070674E1
 export const KERNEL_V3_3_META_FACTORY_ADDRESS: Hex = "0xd703aaE79538628d27099B8c4f621bE4CCd142d5";
 const KERNEL_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
-  [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
+  [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
+  [inkSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
+  [arbitrumSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
 };
 
 export const delegationAddress = (chainId: number) => {
