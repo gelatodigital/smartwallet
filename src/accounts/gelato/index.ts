@@ -24,7 +24,14 @@ import {
   signMessage as viem_signMessage,
   signTypedData as viem_signTypedData
 } from "viem/actions";
-import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
+import {
+  arbitrumSepolia,
+  baseSepolia,
+  basecampTestnet,
+  inkSepolia,
+  sepolia,
+  storyTestnet
+} from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 
@@ -264,7 +271,10 @@ export async function gelato<eip7702 extends boolean = true>(
 const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
   [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
   [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
+  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [basecampTestnet.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [storyTestnet.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
+  [arbitrumSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
 };
 
 const delegationAddress = (chainId: number) => {
