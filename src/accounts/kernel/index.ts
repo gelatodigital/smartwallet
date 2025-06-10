@@ -46,6 +46,8 @@ import {
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 import { delegationAbi as abi } from "../../abis/delegation.js";
+import { delegationCode } from "../../constants/index.js";
+import { lowercase } from "../../utils/index.js";
 import { getSenderAddress } from "../actions/getSenderAddress.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
 import {
@@ -58,8 +60,6 @@ import {
   KernelV3MetaFactoryDeployWithFactoryAbi,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
-import { lowercase } from "../../utils/index.js";
-import { delegationCode } from "../../constants/index.js";
 
 export type KernelSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
