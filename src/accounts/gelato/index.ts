@@ -102,7 +102,7 @@ export async function gelato<eip7702 extends boolean = true>(
     return deployed;
   };
 
-  return toSmartAccount({
+  const account = (await toSmartAccount({
     abi,
     client,
     extend: {
@@ -117,9 +117,8 @@ export async function gelato<eip7702 extends boolean = true>(
       account: PrivateKeyAccount;
       address: Address;
     },
-    isDeployed,
     async signAuthorization() {
-      const _isDeployed = await this.isDeployed();
+      const _isDeployed = await isDeployed();
 
       if (!_isDeployed) {
         if (!isAddressEqual(authorization.address, GELATO_V0_1_DELEGATION_ADDRESS)) {
@@ -256,7 +255,12 @@ export async function gelato<eip7702 extends boolean = true>(
 
       return signature;
     }
-  }) as unknown as GelatoSmartAccountReturnType;
+  })) as unknown as GelatoSmartAccountReturnType;
+
+  // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
+  account.isDeployed = isDeployed;
+
+  return account;
 }
 
 /// Constants

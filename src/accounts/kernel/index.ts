@@ -58,6 +58,8 @@ import {
   KernelV3MetaFactoryDeployWithFactoryAbi,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
+import { lowercase } from "../../utils/index.js";
+import { delegationCode } from "../../constants/index.js";
 
 export type KernelSmartAccountImplementation<
   entryPointAbi extends Abi | readonly unknown[] = Abi,
@@ -284,18 +286,16 @@ export async function kernel<
 
     deployed = authorization
       ? Boolean(
-          !code ||
-            code.length === 0 ||
-            !code
-              .toLowerCase()
-              .startsWith(`0xef0100${authorization.address.slice(2).toLowerCase()}`)
+          code?.length &&
+            code.length > 0 &&
+            lowercase(code) === lowercase(delegationCode(authorization.address))
         )
       : Boolean(code);
 
     return deployed;
   };
 
-  return toSmartAccount({
+  const account = (await toSmartAccount({
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
@@ -311,13 +311,12 @@ export async function kernel<
       scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
     },
     entryPoint,
-    isDeployed,
     async signAuthorization() {
       if (!authorization) {
         return undefined;
       }
 
-      const _isDeployed = await this.isDeployed();
+      const _isDeployed = await isDeployed();
 
       if (!_isDeployed && authorization) {
         if (!isAddressEqual(authorization.address, KERNEL_V3_3_DELEGATION_ADDRESS)) {
@@ -468,5 +467,10 @@ export async function kernel<
 
       return signature;
     }
-  }) as unknown as KernelSmartAccountReturnType;
+  })) as unknown as KernelSmartAccountReturnType;
+
+  // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
+  account.isDeployed = isDeployed;
+
+  return account;
 }
