@@ -24,7 +24,6 @@ import {
   signMessage as viem_signMessage,
   signTypedData as viem_signTypedData
 } from "viem/actions";
-import { baseSepolia, inkSepolia, sepolia } from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 
@@ -261,5 +260,4 @@ export async function gelato<eip7702 extends boolean = true>(
 }
 
 /// Constants
-
 const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";

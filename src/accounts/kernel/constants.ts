@@ -1,5 +1,4 @@
 import { type Address, type Hex, concatHex } from "viem";
-import { baseSepolia, sepolia } from "viem/chains";
 
 /// Constants
 
