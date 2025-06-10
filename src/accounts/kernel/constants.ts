@@ -9,18 +9,7 @@ export const KERNEL_V3_3_ECDSA_VALIDATOR_KEY = BigInt(
 export const KERNEL_V3_3_ECDSA_VALIDATOR: Hex = "0x845ADb2C711129d4f3966735eD98a9F09fC4cE57";
 export const KERNEL_V3_3_FACTORY_ADDRESS: Hex = "0xE30c76Dc9eCF1c19F6Fec070674E1b4eFfE069FA";
 export const KERNEL_V3_3_META_FACTORY_ADDRESS: Hex = "0xd703aaE79538628d27099B8c4f621bE4CCd142d5";
-const KERNEL_V3_3_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28",
-  [baseSepolia.id]: "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28"
-};
-
-export const delegationAddress = (chainId: number) => {
-  const address = KERNEL_V3_3_DELEGATION_ADDRESSES[chainId];
-  if (!address) {
-    throw new Error(`Unsupported chain: ${chainId}`);
-  }
-  return address;
-};
+export const KERNEL_V3_3_DELEGATION_ADDRESS: Address = "0xd6CEDDe84be40893d153Be9d467CD6aD37875b28";
 
 export const kernelV3_3_EcdsaRootIdentifier = () =>
   concatHex(["0x01", KERNEL_V3_3_ECDSA_VALIDATOR]);

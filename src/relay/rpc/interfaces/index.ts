@@ -2,7 +2,7 @@ import type { Address, Call, Hex, SignedAuthorizationList, TypedDataDefinition }
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { Payment } from "../../../payment/index.js";
-import type { Wallet } from "../../../wallet/index.js";
+import type { WalletDetails } from "../../../wallet/index.js";
 
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
@@ -57,36 +57,33 @@ export interface EntryPoint {
   address: Address;
 }
 
-export interface BaseCapabilities {
-  wallet: Wallet;
+export interface GelatoCapabilities {
+  wallet: WalletDetails;
   payment: Payment;
   authorization?: Authorization;
-}
-
-export interface SmartWalletCapabilities extends BaseCapabilities {
   nonceKey?: string;
-  authorization: Authorization;
 }
 
-export interface KernelCapabilities extends BaseCapabilities {
+export interface ERC4337Capabilities extends GelatoCapabilities {
+  entryPoint: EntryPoint;
   factory?: Factory;
-  entryPoint?: EntryPoint;
 }
 
-export type Capabilities = SmartWalletCapabilities | KernelCapabilities;
+export type Capabilities = GelatoCapabilities | ERC4337Capabilities;
 
-export interface SmartWalletContext extends SmartWalletCapabilities, Partial<GatewaySignature> {
+export interface GelatoContext extends GelatoCapabilities, Partial<GatewaySignature> {
   calls: Call[];
+  from: Address;
   nonceKey: string;
   quote: Quote;
 }
 
-export interface KernelContext extends KernelCapabilities, Partial<GatewaySignature> {
+export interface ERC4337Context extends ERC4337Capabilities, Partial<GatewaySignature> {
   userOp: UserOperation;
   quote: Quote;
 }
 
-export type Context = SmartWalletContext | KernelContext;
+export type Context = GelatoContext | ERC4337Context;
 
 export interface SingleNetworkCapabilities {
   feeCollector: Address;

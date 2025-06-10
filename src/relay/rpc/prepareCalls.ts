@@ -5,7 +5,7 @@ import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
 import type {
   Capabilities,
-  SmartWalletCapabilities,
+  GelatoCapabilities,
   WalletPrepareCallsParams,
   WalletPrepareCallsResponse
 } from "./interfaces/index.js";
@@ -25,8 +25,11 @@ export const walletPrepareCalls = async <
 
   const isDeployed = await client.account.isDeployed();
 
-  const capabilities: Capabilities = <SmartWalletCapabilities>{
-    wallet: client.account.scw,
+  const capabilities: Capabilities = <GelatoCapabilities>{
+    wallet: {
+      encoding: client.account.scw.encoding,
+      version: client.account.scw.version
+    },
     payment,
     authorization: client.account.authorization
       ? {

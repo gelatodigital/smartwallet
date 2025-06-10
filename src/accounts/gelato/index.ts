@@ -79,10 +79,11 @@ export async function gelato<eip7702 extends boolean = true>(
       };
     }
 
-    const chainId = await getMemoizedChainId();
-
     return {
-      authorization: { account: owner, address: delegationAddress(chainId) }
+      authorization: {
+        account: owner,
+        address: GELATO_V0_1_DELEGATION_ADDRESS
+      }
     };
   })();
 
@@ -122,7 +123,7 @@ export async function gelato<eip7702 extends boolean = true>(
       const _isDeployed = await this.isDeployed();
 
       if (!_isDeployed) {
-        if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
+        if (!isAddressEqual(authorization.address, GELATO_V0_1_DELEGATION_ADDRESS)) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
           );
@@ -261,16 +262,4 @@ export async function gelato<eip7702 extends boolean = true>(
 
 /// Constants
 
-const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
-};
-
-const delegationAddress = (chainId: number) => {
-  const address = GELATO_V0_0_DELEGATION_ADDRESSES[chainId];
-  if (!address) {
-    throw new Error(`Unsupported chain: ${chainId}`);
-  }
-  return address;
-};
+const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
