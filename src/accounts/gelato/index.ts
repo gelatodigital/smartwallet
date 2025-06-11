@@ -24,14 +24,6 @@ import {
   signMessage as viem_signMessage,
   signTypedData as viem_signTypedData
 } from "viem/actions";
-import {
-  arbitrumSepolia,
-  baseSepolia,
-  basecampTestnet,
-  inkSepolia,
-  sepolia,
-  storyTestnet
-} from "viem/chains";
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 
@@ -86,10 +78,11 @@ export async function gelato<eip7702 extends boolean = true>(
       };
     }
 
-    const chainId = await getMemoizedChainId();
-
     return {
-      authorization: { account: owner, address: delegationAddress(chainId) }
+      authorization: {
+        account: owner,
+        address: GELATO_V0_1_DELEGATION_ADDRESS
+      }
     };
   })();
 
@@ -109,7 +102,7 @@ export async function gelato<eip7702 extends boolean = true>(
     return deployed;
   };
 
-  return toSmartAccount({
+  const account = (await toSmartAccount({
     abi,
     client,
     extend: {
@@ -124,12 +117,11 @@ export async function gelato<eip7702 extends boolean = true>(
       account: PrivateKeyAccount;
       address: Address;
     },
-    isDeployed,
     async signAuthorization() {
-      const _isDeployed = await this.isDeployed();
+      const _isDeployed = await isDeployed();
 
       if (!_isDeployed) {
-        if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
+        if (!isAddressEqual(authorization.address, GELATO_V0_1_DELEGATION_ADDRESS)) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
           );
@@ -263,24 +255,13 @@ export async function gelato<eip7702 extends boolean = true>(
 
       return signature;
     }
-  }) as unknown as GelatoSmartAccountReturnType;
+  })) as unknown as GelatoSmartAccountReturnType;
+
+  // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
+  account.isDeployed = isDeployed;
+
+  return account;
 }
 
 /// Constants
-
-const GELATO_V0_0_DELEGATION_ADDRESSES: { [chainId: number]: Address } = {
-  [sepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [baseSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [inkSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [basecampTestnet.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [storyTestnet.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289",
-  [arbitrumSepolia.id]: "0x11923B4c785D87bb34da4d4E34e9fEeA09179289"
-};
-
-const delegationAddress = (chainId: number) => {
-  const address = GELATO_V0_0_DELEGATION_ADDRESSES[chainId];
-  if (!address) {
-    throw new Error(`Unsupported chain: ${chainId}`);
-  }
-  return address;
-};
+const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";

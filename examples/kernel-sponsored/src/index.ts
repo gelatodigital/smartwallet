@@ -7,7 +7,7 @@ import {
 import { kernel } from "@gelatonetwork/smartwallet/accounts";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { baseSepolia, sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
@@ -38,7 +38,9 @@ const publicClient = createPublicClient({
     transport: http()
   });
 
-  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+  const swc = await createGelatoSmartWalletClient(client, {
+    apiKey: sponsorApiKey
+  });
 
   const response = await swc.execute({
     payment: sponsored(sponsorApiKey),

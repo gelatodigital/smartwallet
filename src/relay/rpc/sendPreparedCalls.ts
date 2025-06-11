@@ -38,7 +38,6 @@ export const walletSendPreparedCalls = async <
       params: [
         {
           chainId: client.chain.id,
-          from: client.account.address,
           context,
           signature,
           authorizationList

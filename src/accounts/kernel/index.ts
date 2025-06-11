@@ -46,16 +46,18 @@ import {
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 import { delegationAbi as abi } from "../../abis/delegation.js";
+import { delegationCode } from "../../constants/index.js";
+import { lowercase } from "../../utils/index.js";
 import { getSenderAddress } from "../actions/getSenderAddress.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
 import {
+  KERNEL_V3_3_DELEGATION_ADDRESS,
   KERNEL_V3_3_ECDSA_VALIDATOR_KEY,
   KERNEL_V3_3_FACTORY_ADDRESS,
   KERNEL_V3_3_META_FACTORY_ADDRESS,
   KernelV3AccountAbi,
   KernelV3FactoryAbi,
   KernelV3MetaFactoryDeployWithFactoryAbi,
-  delegationAddress,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
 
@@ -95,11 +97,7 @@ export type KernelSmartAccountParameters<
 
 export type KernelSmartAccountReturnType = Prettify<SmartAccount<KernelSmartAccountImplementation>>;
 
-const getInitializationData = ({
-  validatorData
-}: {
-  validatorData: Hex;
-}) => {
+const getInitializationData = ({ validatorData }: { validatorData: Hex }) => {
   return encodeFunctionData({
     abi: KernelV3AccountAbi,
     functionName: "initialize",
@@ -193,10 +191,11 @@ export async function kernel<
       };
     }
 
-    const chainId = await getMemoizedChainId();
-
     return {
-      authorization: { account: owner, address: delegationAddress(chainId) }
+      authorization: {
+        account: owner,
+        address: KERNEL_V3_3_DELEGATION_ADDRESS
+      }
     };
   })();
 
@@ -224,7 +223,10 @@ export async function kernel<
     return digest;
   };
 
-  const getFactoryArgsFunc = async (): Promise<{ factory: Hex; factoryData: Hex }> => {
+  const getFactoryArgsFunc = async (): Promise<{
+    factory: Hex;
+    factoryData: Hex;
+  }> => {
     if (eip7702) {
       return { factory: "0x7702", factoryData: "0x" };
     }
@@ -240,7 +242,10 @@ export async function kernel<
     getFactoryArgs: () => Promise<{ factory: Hex; factoryData: Hex }>;
   }> => {
     if (eip7702) {
-      return { accountAddress: owner.address, getFactoryArgs: getFactoryArgsFunc };
+      return {
+        accountAddress: owner.address,
+        getFactoryArgs: getFactoryArgsFunc
+      };
     }
 
     if (address) {
@@ -281,18 +286,16 @@ export async function kernel<
 
     deployed = authorization
       ? Boolean(
-          !code ||
-            code.length === 0 ||
-            !code
-              .toLowerCase()
-              .startsWith(`0xef0100${authorization.address.slice(2).toLowerCase()}`)
+          code?.length &&
+            code.length > 0 &&
+            lowercase(code) === lowercase(delegationCode(authorization.address))
         )
       : Boolean(code);
 
     return deployed;
   };
 
-  return toSmartAccount({
+  const account = (await toSmartAccount({
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
@@ -308,16 +311,15 @@ export async function kernel<
       scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
     },
     entryPoint,
-    isDeployed,
     async signAuthorization() {
       if (!authorization) {
         return undefined;
       }
 
-      const _isDeployed = await this.isDeployed();
+      const _isDeployed = await isDeployed();
 
       if (!_isDeployed && authorization) {
-        if (!isAddressEqual(authorization.address, delegationAddress(chainId))) {
+        if (!isAddressEqual(authorization.address, KERNEL_V3_3_DELEGATION_ADDRESS)) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
           );
@@ -465,5 +467,10 @@ export async function kernel<
 
       return signature;
     }
-  }) as unknown as KernelSmartAccountReturnType;
+  })) as unknown as KernelSmartAccountReturnType;
+
+  // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
+  account.isDeployed = isDeployed;
+
+  return account;
 }
