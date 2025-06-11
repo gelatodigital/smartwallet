@@ -31,9 +31,15 @@ export type SignatureRequest =
   | UserOperationSignatureRequest;
 
 export interface Quote {
-  fee: { estimatedFee: string; decimals: number; conversionRate: number };
-  gas: bigint;
-  l1Gas: bigint;
+  fee: {
+    amount: string;
+    rate: number;
+    decimals: number;
+  };
+  gas: {
+    amount: string;
+    l1: string;
+  };
 }
 
 export interface GatewaySignature {
