@@ -1,8 +1,7 @@
 import type { Address, Hex } from "viem";
 
-//const GELATO_API = "https://api.dev.gelato.digital";
-const GELATO_API = "http://localhost:3100";
-const GELATO_API_WS = "wss://api.dev.gelato.digital";
+const GELATO_API = "https://api.staging.gelato.digital";
+const GELATO_API_WS = "wss://api.staging.gelato.digital";
 
 export type Mode = "single" | "default" | "opData";
 
