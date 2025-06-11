@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-wagmi",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Gelato",
   "type": "module",
   "description": "Wagmi provider for the Gelato Smartwallet",

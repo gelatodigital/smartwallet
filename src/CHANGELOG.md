@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.9
+
+### Patch Changes
+
+- 34454ca: fix: revert unintended changes
+- 966c807: feat: universal wallet
+
 ## 0.0.8
 
 ### Patch Changes
