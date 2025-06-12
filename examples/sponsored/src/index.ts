@@ -53,6 +53,7 @@ const publicClient = createPublicClient({
 
   console.log("Sending transaction...");
   const start = performance.now();
+  const startTimestamp = Date.now();
   const response = await swc.send({
     preparedCalls
   });
@@ -68,9 +69,13 @@ const publicClient = createPublicClient({
     console.log(`Time from sending to onchain submission: ${(end - start).toFixed(2)}ms`);
   });
   response.on("success", async (status: GelatoTaskStatus) => {
-    const end = performance.now();
     console.log(`Transaction successful: ${status.transactionHash}`);
-    console.log(`Time from sending to onchain success: ${(end - start).toFixed(2)}ms`);
+    const blockTimestamp = await publicClient
+      .getTransactionReceipt({ hash: status.transactionHash as `0x${string}` })
+      .then(({ blockHash }) => publicClient.getBlock({ blockHash: blockHash }))
+      .then((block) => Number(block.timestamp) * 1000);
+    const latency = blockTimestamp - startTimestamp;
+    console.log(`Latency to get transaction included: ${latency}ms`);
     process.exit(0);
   });
   response.on("error", (error: Error) => {
