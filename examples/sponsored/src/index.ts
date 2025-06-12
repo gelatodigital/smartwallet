@@ -40,6 +40,7 @@ const publicClient = createPublicClient({
   const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
 
   console.log("Preparing transaction...");
+  const startPrepare = performance.now();
   const preparedCalls = await swc.prepare({
     payment: sponsored(sponsorApiKey),
     calls: [
@@ -50,23 +51,25 @@ const publicClient = createPublicClient({
       }
     ]
   });
+  const endPrepare = performance.now();
+  console.log(`Took ${(endPrepare - startPrepare).toFixed(2)}ms to prepare your request.`);
 
   console.log("Sending transaction...");
-  const start = performance.now();
+  const startSend = performance.now();
   const startTimestamp = Date.now();
   const response = await swc.send({
     preparedCalls
   });
-  const end = performance.now();
+  const endSend = performance.now();
   console.log(
-    `Took ${(end - start).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`
+    `Took ${(endSend - startSend).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`
   );
 
   // Listen for events
   response.on("submitted", (status: GelatoTaskStatus) => {
     const end = performance.now();
     console.log(`Transaction submitted: ${status.transactionHash}`);
-    console.log(`Time from sending to onchain submission: ${(end - start).toFixed(2)}ms`);
+    console.log(`Time from sending to onchain submission: ${(end - startSend).toFixed(2)}ms`);
   });
   response.on("success", async (status: GelatoTaskStatus) => {
     console.log(`Transaction successful: ${status.transactionHash}`);
@@ -81,7 +84,7 @@ const publicClient = createPublicClient({
   response.on("error", (error: Error) => {
     const end = performance.now();
     console.error(`Transaction failed: ${error.message}`);
-    console.log(`Time from sending to error: ${(end - start).toFixed(2)}ms`);
+    console.log(`Time from sending to error: ${(end - startSend).toFixed(2)}ms`);
     process.exit(1);
   });
 })();
