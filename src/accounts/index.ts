@@ -5,10 +5,11 @@ import type { PrivateKeyAccount } from "viem/accounts";
 export { gelato } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
 export { safe } from "./safe/index.js";
+export { okx } from "./okx/index.js";
 export { custom } from "./custom/index.js";
 
 export type GelatoSmartAccountSCWEncoding = "erc7821" | "safe";
-export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "safe" | "custom";
+export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "safe" | "okx" | "custom";
 export type GelatoSmartAccountSCW =
   | {
       type: Exclude<GelatoSmartAccountSCWType, "custom">;

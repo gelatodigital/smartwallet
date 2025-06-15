@@ -1,14 +1,13 @@
 import type {
   Account,
   Address,
-  Call,
   Hex,
   Prettify,
   PrivateKeyAccount,
   TypedData,
   TypedDataDefinition
 } from "viem";
-import { BaseError, decodeAbiParameters, decodeFunctionData, isAddressEqual } from "viem";
+import { BaseError, isAddressEqual } from "viem";
 import type { SmartAccount, SmartAccountImplementation } from "viem/account-abstraction";
 import {
   entryPoint08Abi,
@@ -27,26 +26,26 @@ import {
 import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 
-import { delegationAbi as abi } from "../../abis/delegation.js";
+import { okxAbi as abi } from "../../abis/okx.js";
 import { delegationCode } from "../../constants/index.js";
 import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
 
-export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> =
+export type OKXSmartAccountImplementation<eip7702 extends boolean = boolean> =
   SmartAccountImplementation<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, eip7702>;
 
-export type GelatoSmartAccountParameters<eip7702 extends boolean = true> = {
-  client: GelatoSmartAccountImplementation<eip7702>["client"];
+export type OKXSmartAccountParameters<eip7702 extends boolean = true> = {
+  client: OKXSmartAccountImplementation<eip7702>["client"];
   owner: Account;
-  authorization?: GelatoSmartAccountImplementation<eip7702>["authorization"];
+  authorization?: OKXSmartAccountImplementation<eip7702>["authorization"];
   eip7702?: eip7702;
 };
 
-export type GelatoSmartAccountReturnType = Prettify<SmartAccount<GelatoSmartAccountImplementation>>;
+export type OKXSmartAccountReturnType = Prettify<SmartAccount<OKXSmartAccountImplementation>>;
 
-export async function gelato<eip7702 extends boolean = true>(
-  parameters: GelatoSmartAccountParameters<eip7702>
-): Promise<GelatoSmartAccountReturnType> {
+export async function okx<eip7702 extends boolean = true>(
+  parameters: OKXSmartAccountParameters<eip7702>
+): Promise<OKXSmartAccountReturnType> {
   const { client, owner, eip7702: _eip7702, authorization: _authorization } = parameters;
 
   const eip7702 = _eip7702 ?? true;
@@ -81,7 +80,7 @@ export async function gelato<eip7702 extends boolean = true>(
     return {
       authorization: {
         account: owner,
-        address: GELATO_V0_1_DELEGATION_ADDRESS
+        address: OKX_V1_0_DELEGATION_ADDRESS
       }
     };
   })();
@@ -92,6 +91,8 @@ export async function gelato<eip7702 extends boolean = true>(
     }
 
     const code = await getCode(client, { address: owner.address });
+    console.log("code", code);
+    console.log("owner", owner.address);
 
     deployed = Boolean(
       code?.length &&
@@ -110,7 +111,7 @@ export async function gelato<eip7702 extends boolean = true>(
       owner,
       eip7702,
       erc4337,
-      scw: { type: "gelato", encoding: "erc7821", version: "0.1" } as const
+      scw: { type: "okx", encoding: "okx", version: "1.0" } as const
     },
     entryPoint,
     authorization: authorization as {
@@ -121,7 +122,7 @@ export async function gelato<eip7702 extends boolean = true>(
       const _isDeployed = await isDeployed();
 
       if (!_isDeployed) {
-        if (!isAddressEqual(authorization.address, GELATO_V0_1_DELEGATION_ADDRESS)) {
+        if (!isAddressEqual(authorization.address, OKX_V1_0_DELEGATION_ADDRESS)) {
           throw new Error(
             "EIP-7702 authorization delegation address does not match account implementation address"
           );
@@ -146,48 +147,20 @@ export async function gelato<eip7702 extends boolean = true>(
 
       return undefined;
     },
-    async decodeCalls(data) {
-      const result = decodeFunctionData({
-        abi,
-        data
-      });
-
-      if (result.functionName === "execute") {
-        // First argument is the opMode
-        const [_, executionData] = result.args as [Hex, Hex];
-
-        const [decodedCalls] = decodeAbiParameters(
-          [
-            {
-              type: "tuple[]",
-              components: [
-                { type: "address", name: "to" },
-                { type: "uint256", name: "value" },
-                { type: "bytes", name: "data" }
-              ]
-            }
-          ],
-          executionData
-        ) as [Call[]];
-
-        const calls: Call[] = decodedCalls;
-
-        return calls;
-      }
-
-      throw new BaseError(`unable to decode calls for "${result.functionName}"`);
+    async decodeCalls() {
+      // TODO
+      throw new BaseError("Decoding calls is not implemented");
     },
 
     async encodeCalls(calls, opData?: Hex) {
       return encodeCalls(calls, opData);
     },
 
-    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
+    async getNonce(): Promise<bigint> {
       return readContract(client, {
         abi,
         address: owner.address,
         functionName: "getNonce",
-        args: [parameters?.key],
         stateOverride: (await isDeployed())
           ? undefined
           : [
@@ -255,7 +228,7 @@ export async function gelato<eip7702 extends boolean = true>(
 
       return signature;
     }
-  })) as unknown as GelatoSmartAccountReturnType;
+  })) as unknown as OKXSmartAccountReturnType;
 
   // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
   account.isDeployed = isDeployed;
@@ -264,4 +237,4 @@ export async function gelato<eip7702 extends boolean = true>(
 }
 
 /// Constants
-const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
+const OKX_V1_0_DELEGATION_ADDRESS: Address = "0x3e6d01DE5fe7cB3A4C2a94B57e3631d069a9A355";
