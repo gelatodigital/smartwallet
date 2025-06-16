@@ -5,7 +5,8 @@ vi.mock("../src/constants/index.js", async () => {
 
   return {
     ...actual,
-    api: (t = "http") => (t === "http" ? "https://api.gelato.digital" : "wss://api.gelato.digital")
+    api: (t = "http") =>
+      t === "http" ? "https://api.staging.gelato.digital" : "wss://api.staging.gelato.digital"
   };
 });
 
