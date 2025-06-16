@@ -23,7 +23,7 @@ export const walletSendPreparedCalls = async <
   const authorizationList = serializeAuthorizationList(params.authorizationList);
 
   const apiKey = client._internal.apiKey();
-  const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
+  const url = `${api.url()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
 
   const response = await fetch(url, {
     method: "POST",

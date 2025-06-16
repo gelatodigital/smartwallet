@@ -6,7 +6,7 @@ export const getTaskStatus = async (
   taskId: string
 ): Promise<TransactionStatusResponse | undefined> => {
   try {
-    return (await fetch(`${api()}/tasks/status/${taskId}`).then((response) => response.json()))
+    return (await fetch(`${api.url()}/tasks/status/${taskId}`).then((response) => response.json()))
       .task;
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {

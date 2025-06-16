@@ -3,10 +3,10 @@ import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import type { CustomSmartAccountParameters } from "./accounts/custom/index.js";
-import type { GelatoSmartAccount } from "./accounts/index.js";
-import type { GelatoSmartAccountSCW } from "./accounts/index.js";
+import type { GelatoSmartAccount, GelatoSmartAccountSCW } from "./accounts/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
+import { api } from "./constants/index.js";
 import { transformIntoGelatoSmartAccount } from "./utils/index.js";
 
 export type GelatoSmartWalletParams = {
@@ -36,6 +36,9 @@ export const createGelatoSmartWalletClient = async <
     publicClient as unknown as PublicClient,
     params
   );
+
+  api.setTestnet(client.chain.testnet);
+
   const baseClient = Object.assign(
     Object.assign(publicClient, { account }),
     internal({
@@ -52,7 +55,7 @@ export const createGelatoSmartWalletClient = async <
   >;
 };
 
-export { erc20, native, sponsored, Payment } from "./payment/index.js";
-export { track } from "./relay/status/index.js";
 export * as accounts from "./accounts/index.js";
+export { Payment, erc20, native, sponsored } from "./payment/index.js";
+export { track } from "./relay/status/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";

@@ -1,7 +1,7 @@
-import WebSocket from "isomorphic-ws";
 import type { ClientOptions, ErrorEvent, MessageEvent } from "isomorphic-ws";
+import WebSocket from "isomorphic-ws";
 
-import { api } from "../../constants/index.js";
+import { api } from "../../constants/api.js";
 import type {
   ErrorWebsocketMessage,
   TransactionStatusResponse,
@@ -12,7 +12,6 @@ import { WebsocketEvent } from "./types.js";
 import { isFinalTaskState } from "./utils.js";
 
 class WebsocketHandler {
-  readonly #url: string;
   readonly #config: ClientOptions | undefined;
   readonly #subscriptions: Set<string> = new Set();
   #updateHandlers: ((taskStatus: TransactionStatusResponse) => void)[] = [];
@@ -21,8 +20,7 @@ class WebsocketHandler {
   readonly #reconnectIntervalMillis = 1000;
   readonly #connectTimeoutMillis = 10000;
 
-  constructor(url: string, config?: ClientOptions) {
-    this.#url = `${url}/tasks/ws/status`;
+  constructor(config?: ClientOptions) {
     this.#config = config;
   }
 
@@ -101,7 +99,7 @@ class WebsocketHandler {
       return;
     }
 
-    this.#websocket = new WebSocket(this.#url, this.#config);
+    this.#websocket = new WebSocket(this._url(), this.#config);
 
     this.#websocket.onopen = async () => {
       for (const taskId of this.#subscriptions) {
@@ -196,7 +194,7 @@ class WebsocketHandler {
     while (!this.#websocket || this.#websocket.readyState !== WebSocket.OPEN) {
       const elapsed = Date.now() - start;
       if (elapsed > this.#connectTimeoutMillis) {
-        this._handleError(new Error(`Timeout connecting to ${this.#url} after ${elapsed}ms`));
+        this._handleError(new Error(`Timeout connecting to ${this._url()} after ${elapsed}ms`));
 
         return false;
       }
@@ -211,6 +209,10 @@ class WebsocketHandler {
       handler(error);
     }
   }
+
+  private _url() {
+    return `${api.url("ws")}/tasks/ws/status`;
+  }
 }
 
-export const statusApiWebSocket = new WebsocketHandler(api("ws"));
+export const statusApiWebSocket = new WebsocketHandler();

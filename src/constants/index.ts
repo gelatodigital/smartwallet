@@ -1,7 +1,6 @@
 import type { Address, Hex } from "viem";
 
-const GELATO_API = "https://api.staging.gelato.digital";
-const GELATO_API_WS = "wss://api.staging.gelato.digital";
+export { api } from "./api.js";
 
 export type Mode = "single" | "default" | "opData";
 
@@ -16,8 +15,6 @@ const EXECUTION_MODE: { [mode in Mode]: Address } = {
 const GELATO_STATUS_API_POLLING_INTERVAL = 3000;
 const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
 const DEFAULT_PROVIDER_POLLING_INTERVAL = 1000;
-
-export const api = (t: "http" | "ws" = "http") => (t === "http" ? GELATO_API : GELATO_API_WS);
 
 export const mode = (mode: Mode) => EXECUTION_MODE[mode] as Hex;
 
