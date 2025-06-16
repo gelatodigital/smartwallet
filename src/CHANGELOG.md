@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.11
+
+### Patch Changes
+
+- a2944cc: feat: to prod
+
 ## 0.0.10
 
 ### Patch Changes
