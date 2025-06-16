@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.10
+
+### Patch Changes
+
+- 10f007d: feat: okx support
+
 ## 0.0.9
 
 ### Patch Changes
