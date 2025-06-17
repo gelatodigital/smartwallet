@@ -13,7 +13,7 @@ import type { SmartAccount, SmartAccountImplementation } from "viem/account-abst
 import {
   entryPoint08Abi,
   entryPoint08Address,
-  getUserOperationHash,
+  getUserOperationTypedData,
   toSmartAccount
 } from "viem/account-abstraction";
 import {
@@ -237,20 +237,23 @@ export async function gelato<eip7702 extends boolean = true>(
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
 
-      const hash = getUserOperationHash({
+      if (entryPoint.version !== "0.8") {
+        throw new Error("Only EntryPoint version 0.8 is supported for Gelato accounts");
+      }
+
+      const typedData = getUserOperationTypedData({
+        chainId,
+        entryPointAddress: entryPoint.address,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
-        },
-        entryPointAddress: entryPoint.address,
-        entryPointVersion: entryPoint.version,
-        chainId
+        }
       });
 
-      const signature = await viem_signMessage(client, {
-        account: owner,
-        message: { raw: hash }
+      const signature = await viem_signTypedData(client, {
+        ...typedData,
+        account: owner
       });
 
       return signature;
