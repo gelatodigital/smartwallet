@@ -5,7 +5,7 @@ export const erc20Address = () => "0x036CbD53842c5426634e7929541eC2318f3dCF7e" a
 
 export const testCalls: Call[] = [
   {
-    to: "0xa8851f5f279eD47a292f09CA2b6D40736a51788E",
+    to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
     data: "0xd09de08a",
     value: 0n
   }
