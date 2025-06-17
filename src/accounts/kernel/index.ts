@@ -308,7 +308,7 @@ export async function kernel<
       owner,
       eip7702,
       erc4337,
-      scw: { type: "kernel", encoding: "erc7821", version: "3.3" } as const
+      scw: { type: "kernel", encoding: "erc7579", version: "3.3" } as const
     },
     entryPoint,
     async signAuthorization() {
