@@ -8,6 +8,7 @@ import {
   entryPoint08Abi,
   entryPoint08Address,
   getUserOperationHash,
+  getUserOperationTypedData,
   toSmartAccount
 } from "viem/account-abstraction";
 import {
@@ -204,6 +205,25 @@ export async function custom<
     },
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
+
+      if (entryPoint.version === "0.8") {
+        const typedData = getUserOperationTypedData({
+          chainId,
+          entryPointAddress: entryPoint.address,
+          userOperation: {
+            ...userOperation,
+            sender: userOperation.sender ?? (await this.getAddress()),
+            signature: "0x"
+          }
+        });
+
+        const signature = await viem_signTypedData(client, {
+          ...typedData,
+          account: owner
+        });
+
+        return signature;
+      }
 
       const hash = getUserOperationHash({
         userOperation: {
