@@ -4,7 +4,6 @@ import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Payment } from "../payment/index.js";
 import { walletPrepareCalls } from "../relay/rpc/index.js";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
-import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
 
 /**
@@ -22,8 +21,6 @@ export async function prepare<
   parameters: { payment: Payment; calls: Call[]; nonceKey?: bigint }
 ): Promise<WalletPrepareCallsResponse> {
   const { payment, calls, nonceKey } = parameters;
-
-  await initializeNetworkCapabilities(client);
 
   return await walletPrepareCalls(client, {
     calls,
