@@ -3,7 +3,7 @@ import {
   createGelatoSmartWalletClient,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { custom } from "@gelatonetwork/smartwallet/accounts";
+import { type GelatoSmartAccountExtension, custom } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
 import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
@@ -27,7 +27,7 @@ const publicClient = createPublicClient({
 (async () => {
   // Defining an EIP7702 account using as delegation address "0x11923b4c785d87bb34da4d4e34e9feea09179289"
   // Using ERC4337 and entry point v0.8
-  const account = await custom<typeof entryPoint08Abi, "0.8", true>({
+  const account = await custom<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, true>({
     owner,
     client: publicClient,
     authorization: {
