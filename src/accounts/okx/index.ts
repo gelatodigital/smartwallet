@@ -91,8 +91,6 @@ export async function okx<eip7702 extends boolean = true>(
     }
 
     const code = await getCode(client, { address: owner.address });
-    console.log("code", code);
-    console.log("owner", owner.address);
 
     deployed = Boolean(
       code?.length &&
