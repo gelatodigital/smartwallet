@@ -4,7 +4,6 @@ import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Payment } from "../payment/index.js";
 import type { Quote } from "../relay/rpc/interfaces/index.js";
 import { walletPrepareCalls } from "../relay/rpc/prepareCalls.js";
-import { initializeNetworkCapabilities } from "../relay/rpc/utils/networkCapabilities.js";
 import type { GelatoWalletClient } from "./index.js";
 
 /**
@@ -23,8 +22,6 @@ export async function estimate<
   parameters: { payment: Payment; calls: Call[] }
 ): Promise<Quote> {
   const { payment, calls } = structuredClone(parameters);
-
-  await initializeNetworkCapabilities(client);
 
   const { context } = await walletPrepareCalls(client, {
     payment,
