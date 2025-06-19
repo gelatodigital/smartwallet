@@ -2,13 +2,13 @@ import type { Abi } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 import type { PrivateKeyAccount } from "viem/accounts";
 
+export { custom } from "./custom/index.js";
 export { gelato } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
-export { safe } from "./safe/index.js";
 export { okx } from "./okx/index.js";
-export { custom } from "./custom/index.js";
+export { safe } from "./safe/index.js";
 
-export type GelatoSmartAccountSCWEncoding = "erc7821" | "safe";
+export type GelatoSmartAccountSCWEncoding = "erc7821" | "safe" | "okx" | "erc7579";
 export type GelatoSmartAccountSCWType = "gelato" | "kernel" | "safe" | "okx" | "custom";
 export type GelatoSmartAccountSCW =
   | {
