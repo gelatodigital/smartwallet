@@ -179,6 +179,50 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
+  examples/okx-erc20:
+    dependencies:
+      '@gelatonetwork/smartwallet':
+        specifier: workspace:*
+        version: link:../../src
+      viem:
+        specifier: 'catalog:'
+        version: 2.29.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 24.0.3
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      tsx:
+        specifier: ^4.19.4
+        version: 4.19.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  examples/okx-native:
+    dependencies:
+      '@gelatonetwork/smartwallet':
+        specifier: workspace:*
+        version: link:../../src
+      viem:
+        specifier: 'catalog:'
+        version: 2.29.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 24.0.3
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      tsx:
+        specifier: ^4.19.4
+        version: 4.19.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
   examples/okx-sponsored:
     dependencies:
       '@gelatonetwork/smartwallet':
