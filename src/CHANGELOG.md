@@ -1,5 +1,15 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.12
+
+### Patch Changes
+
+- dd8473c: chore: add erc7579 encoding
+- 05357f6: chore: entrypoint 0.8 signature
+- 4b80977: chore: remove initialize network capabilities from prepareCalls
+- 7be9f8f: fix: remove debug log
+- 788b7a7: feat: support trust wallet
+
 ## 0.0.11
 
 ### Patch Changes
