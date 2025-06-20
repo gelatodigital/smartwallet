@@ -3,7 +3,6 @@ import type { Chain, Transport } from "viem";
 import type { GelatoSmartAccount } from "../../accounts/index.js";
 import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
-import { WalletType } from "../../wallet/index.js";
 import type {
   Capabilities,
   GelatoCapabilities,
@@ -28,7 +27,7 @@ export const walletPrepareCalls = async <
 
   const capabilities: Capabilities = <GelatoCapabilities>{
     wallet: {
-      type: client.account.scw.type === "okx" ? WalletType.OKX : undefined,
+      type: client.account.scw.type,
       encoding: client.account.scw.encoding,
       version: client.account.scw.version
     },
