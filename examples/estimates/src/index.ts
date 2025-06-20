@@ -3,7 +3,7 @@ import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
 import { http, type Hex, createPublicClient, createWalletClient, formatEther } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 
 const sponsorApiKey = process.env.SPONSOR_API_KEY;
 
@@ -15,7 +15,7 @@ const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
 const owner = privateKeyToAccount(privateKey);
 
 const publicClient = createPublicClient({
-  chain: sepolia,
+  chain: baseSepolia,
   transport: http()
 });
 
@@ -27,11 +27,13 @@ const publicClient = createPublicClient({
 
   const client = createWalletClient({
     account,
-    chain: sepolia,
+    chain: baseSepolia,
     transport: http()
   });
 
-  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+  const swc = await createGelatoSmartWalletClient(client, {
+    apiKey: sponsorApiKey
+  });
 
   const response = await swc.estimate({
     payment: sponsored(sponsorApiKey),
