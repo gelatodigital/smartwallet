@@ -1,4 +1,4 @@
-# OKX ERC20 Payment Example
+# OKX Native Payment Example
 
 ## Prerequisites
 
