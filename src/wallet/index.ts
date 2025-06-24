@@ -8,11 +8,11 @@ export enum WalletType {
 }
 
 export enum WalletEncoding {
-  ERC7821 = "erc7821",
   Safe = "safe",
   OKX = "okx",
   ERC7579 = "erc7579",
-  TrustWallet = "trustWallet"
+  TrustWallet = "trustWallet",
+  Gelato = "gelato"
 }
 
 export interface WalletDetails {
