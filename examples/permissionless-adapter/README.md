@@ -1,4 +1,4 @@
-# Permissionless/Viem Example
+# Permissionless Adapter Example
 
 ## Prerequisites
 

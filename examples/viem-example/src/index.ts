@@ -1,9 +1,8 @@
 import { WalletEncoding, sponsored } from "@gelatonetwork/smartwallet";
 import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
-import { toKernelSmartAccount } from "permissionless/accounts";
 import { http, type Hex, createPublicClient } from "viem";
-import { createBundlerClient, entryPoint07Address } from "viem/account-abstraction";
+import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -22,18 +21,13 @@ const client = createPublicClient({
 });
 
 (async () => {
-  // You can use any permissionless adapter here
-  const account = await toKernelSmartAccount({
+  // You can also use any permissionless adapter here
+  const account = await toCoinbaseSmartAccount({
     client,
-    entryPoint: {
-      address: entryPoint07Address,
-      version: "0.7"
-    },
-    owners: [owner],
-    version: "0.3.3"
+    owners: [owner]
   });
 
-  // You can also use viem `createBundlerClient` instead of permissionless
+  // You can also use permissionless `createSmartAccountClient` instead of viem
   const bundler = createBundlerClient({
     account,
     client,
