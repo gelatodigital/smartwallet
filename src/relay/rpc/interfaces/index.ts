@@ -1,4 +1,11 @@
-import type { Address, Call, Hex, SignedAuthorizationList, TypedDataDefinition } from "viem";
+import type {
+  Address,
+  Call,
+  Hex,
+  RpcUserOperation,
+  SignedAuthorizationList,
+  TypedDataDefinition
+} from "viem";
 
 import type { UserOperation } from "viem/account-abstraction";
 import type { Payment } from "../../../payment/index.js";
@@ -85,7 +92,7 @@ export interface GelatoContext extends GelatoCapabilities, Partial<GatewaySignat
 }
 
 export interface ERC4337Context extends ERC4337Capabilities, Partial<GatewaySignature> {
-  userOp: UserOperation;
+  userOp: RpcUserOperation;
   quote: Quote;
 }
 

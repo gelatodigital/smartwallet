@@ -52,6 +52,7 @@ export const createGelatoSmartWalletClient = async <
   >;
 };
 
+export { WalletEncoding } from "./wallet/index.js";
 export { erc20, native, sponsored, Payment } from "./payment/index.js";
 export { track } from "./relay/status/index.js";
 export * as accounts from "./accounts/index.js";

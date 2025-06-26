@@ -1,6 +1,7 @@
 import type { Chain, Hex, Transport } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 
+import { formatUserOperation } from "viem/account-abstraction";
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
 import type { GelatoWalletClient } from "./index.js";
@@ -22,7 +23,7 @@ export async function sign<
 ): Promise<{ signature: Hex; authorizationList?: SignAuthorizationReturnType[] }> {
   const { context, signatureRequest } = preparedCalls;
 
-  const userOp = "userOp" in context ? context.userOp : undefined;
+  const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
   const signature = await signSignatureRequest(client, signatureRequest, userOp);
 
   const isDeployed = await client.account.isDeployed();
