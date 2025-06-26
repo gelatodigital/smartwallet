@@ -43,7 +43,7 @@ const client = createPublicClient({
       payment: sponsored(sponsorApiKey),
       // payment: erc20(paymentToken),
       // payment: native(),
-      encoding: WalletEncoding.ERC7821
+      encoding: WalletEncoding.Safe
     })
   );
 
