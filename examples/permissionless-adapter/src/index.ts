@@ -2,9 +2,8 @@ import { WalletEncoding, sponsored } from "@gelatonetwork/smartwallet";
 import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
 import { createSmartAccountClient } from "permissionless";
-import { toKernelSmartAccount, toSafeSmartAccount } from "permissionless/accounts";
+import { toSafeSmartAccount } from "permissionless/accounts";
 import { http, type Hex, createPublicClient } from "viem";
-import { entryPoint07Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -26,10 +25,6 @@ const client = createPublicClient({
   // You can use any permissionless adapter here
   const account = await toSafeSmartAccount({
     client,
-    entryPoint: {
-      address: entryPoint07Address,
-      version: "0.7"
-    },
     owners: [owner],
     version: "1.4.1"
   });
