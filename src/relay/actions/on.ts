@@ -1,6 +1,6 @@
-import type { Chain, Hash, PublicActions, Transport } from "viem";
+import type { Client, Hash, Transport } from "viem";
 
-import type { GelatoSmartAccount } from "../../accounts/index.js";
+import { waitForTransactionReceipt } from "viem/actions";
 import { defaultProviderPollingInterval } from "../../constants/index.js";
 import type { GelatoTaskEvent, TransactionStatusResponse } from "../status/index.js";
 import { TaskState } from "../status/index.js";
@@ -13,14 +13,10 @@ type Callback = SuccessCallback | ErrorCallback;
 
 type TaskStatusReturn = { taskStatus: TransactionStatusResponse; waitForReceipt?: boolean };
 
-export const on = <
-  transport extends Transport = Transport,
-  chain extends Chain = Chain,
-  account extends GelatoSmartAccount = GelatoSmartAccount
->(
+export const on = (
   taskId: string,
   parameters: {
-    client?: PublicActions<transport, chain, account>;
+    client?: Client<Transport>;
     confirmations?: number;
     pollingInterval?: number;
     update: GelatoTaskEvent | "error";
@@ -79,18 +75,16 @@ export const on = <
                 result
               };
             }),
-            client
-              .waitForTransactionReceipt({
-                hash: result.taskStatus.transactionHash as Hash,
-                pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-                confirmations
-              })
-              .then((result) => {
-                return {
-                  resolver: "provider",
-                  result
-                };
-              })
+            waitForTransactionReceipt(client, {
+              hash: result.taskStatus.transactionHash as Hash,
+              pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+              confirmations
+            }).then((result) => {
+              return {
+                resolver: "provider",
+                result
+              };
+            })
           ])
         : await promise.then((result) => {
             return {
@@ -101,7 +95,7 @@ export const on = <
 
       // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
       if (resolver === "statusApi" && client && confirmations !== undefined) {
-        await client.waitForTransactionReceipt({
+        await waitForTransactionReceipt(client, {
           hash: result.taskStatus.transactionHash as Hash,
           pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
           confirmations
