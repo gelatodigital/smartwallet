@@ -1,5 +1,9 @@
 import type { Chain, Client, Transport } from "viem";
-import type { BundlerActions, SmartAccount } from "viem/account-abstraction";
+import {
+  type BundlerActions,
+  type SmartAccount,
+  formatUserOperation
+} from "viem/account-abstraction";
 import { type Payment, isSponsored } from "../payment/index.js";
 import type { WalletEncoding } from "../wallet/index.js";
 import {
@@ -23,7 +27,7 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
   return <
     transport extends Transport = Transport,
     chain extends Chain = Chain,
-    account extends SmartAccount | undefined = SmartAccount | undefined
+    account extends SmartAccount = SmartAccount
   >(
     client: Client<transport, chain, account>
   ): BundlerActions<account> => {
@@ -40,7 +44,15 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
       getSupportedEntryPoints: () => getSupportedEntryPoints(),
       getUserOperation: (parameters) => getUserOperation(client, parameters),
       getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
-      prepareUserOperation: (parameters) => prepareUserOperation(client, parameters, config),
+      prepareUserOperation: async (parameters) => {
+        const response = await prepareUserOperation(client, parameters, config);
+
+        return {
+          ...formatUserOperation(response.context.userOp),
+          preparedCalls: response
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        } as any;
+      },
       sendUserOperation: (parameters) => sendUserOperation(client, parameters, config),
       waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters)
     };

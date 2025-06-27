@@ -6,6 +6,7 @@ import type {
   SmartAccount
 } from "viem/account-abstraction";
 import type { GelatoBundlerConfig } from "../index.js";
+import { hasPreparedCalls } from "../utils/index.js";
 import { prepareUserOperation } from "./index.js";
 
 export async function estimateUserOperationGas<
@@ -17,14 +18,11 @@ export async function estimateUserOperationGas<
   parameters: EstimateUserOperationGasParameters<account, accountOverride, calls>,
   config: GelatoBundlerConfig
 ): Promise<EstimateUserOperationGasReturnType<account, accountOverride>> {
-  const { preVerificationGas, verificationGasLimit, callGasLimit } = await prepareUserOperation(
-    client,
-    {
-      ...parameters,
-      parameters: ["gas"]
-    } as unknown as PrepareUserOperationParameters,
-    config
-  );
+  const preparedCalls = hasPreparedCalls(parameters)
+    ? parameters.preparedCalls
+    : await prepareUserOperation(client, parameters as PrepareUserOperationParameters, config);
+
+  const { preVerificationGas, verificationGasLimit, callGasLimit } = preparedCalls.context.userOp;
 
   return {
     preVerificationGas,

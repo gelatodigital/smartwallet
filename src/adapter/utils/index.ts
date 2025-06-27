@@ -1,5 +1,21 @@
 import { slice } from "viem";
-import type { PackedUserOperation, UserOperation } from "viem/account-abstraction";
+import type {
+  EstimateUserOperationGasParameters,
+  PackedUserOperation,
+  SendUserOperationParameters,
+  UserOperation
+} from "viem/account-abstraction";
+import type { ERC4337Context, WalletPrepareCallsResponse } from "../../relay/rpc/index.js";
+
+export function hasPreparedCalls<
+  T extends SendUserOperationParameters | EstimateUserOperationGasParameters
+>(
+  parameters: T
+): parameters is T & {
+  preparedCalls: WalletPrepareCallsResponse<ERC4337Context>;
+} {
+  return "preparedCalls" in parameters;
+}
 
 export function toUnpackedUserOperation(packedUserOperation: PackedUserOperation): UserOperation {
   const {
