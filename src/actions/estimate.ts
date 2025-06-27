@@ -25,7 +25,10 @@ export async function estimate<
 
   const { context } = await walletPrepareCalls(client, {
     payment,
-    calls
+    calls,
+    scw: client.account.scw,
+    erc4337: client.account.erc4337,
+    apiKey: client._internal.apiKey()
   });
 
   const { quote } = context;

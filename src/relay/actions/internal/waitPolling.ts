@@ -1,6 +1,6 @@
-import type { Chain, Hash, PublicActions, Transport } from "viem";
+import type { Client, Hash, Transport } from "viem";
 
-import type { GelatoSmartAccount } from "../../../accounts/index.js";
+import { waitForTransactionReceipt } from "viem/actions";
 import {
   defaultProviderPollingInterval,
   statusApiPollingInterval,
@@ -9,16 +9,12 @@ import {
 import { ExecutionTimeoutError } from "../../status/types.js";
 import { waitHttp } from "./waitHttp.js";
 
-export const waitPolling = async <
-  transport extends Transport = Transport,
-  chain extends Chain = Chain,
-  account extends GelatoSmartAccount = GelatoSmartAccount
->(
+export const waitPolling = async (
   taskId: string,
   parameters: {
     submission: boolean;
     submissionHash?: Hash;
-    client?: PublicActions<transport, chain, account>;
+    client?: Client<Transport>;
     pollingInterval?: number;
     confirmations?: number;
     maxRetries?: number;
@@ -53,18 +49,16 @@ export const waitPolling = async <
               result
             };
           }),
-          client
-            .waitForTransactionReceipt({
-              hash: submissionHash,
-              pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-              confirmations
-            })
-            .then((result) => {
-              return {
-                resolver: "provider",
-                result
-              };
-            })
+          waitForTransactionReceipt(client, {
+            hash: submissionHash,
+            pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+            confirmations
+          }).then((result) => {
+            return {
+              resolver: "provider",
+              result
+            };
+          })
         ])
       : await httpRequest().then((result) => {
           return {
@@ -74,7 +68,7 @@ export const waitPolling = async <
         });
 
     if (resolver === "statusApi" && client && confirmations !== undefined) {
-      await client.waitForTransactionReceipt({
+      await waitForTransactionReceipt(client, {
         hash: submissionHash,
         pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
         confirmations
