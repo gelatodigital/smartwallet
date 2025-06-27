@@ -34,7 +34,8 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
     }
 
     return {
-      estimateUserOperationGas: (parameters) => estimateUserOperationGas(client, parameters),
+      estimateUserOperationGas: (parameters) =>
+        estimateUserOperationGas(client, parameters, config),
       getChainId: () => getChainId(client),
       getSupportedEntryPoints: () => getSupportedEntryPoints(),
       getUserOperation: (parameters) => getUserOperation(client, parameters),

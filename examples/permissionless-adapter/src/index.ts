@@ -53,4 +53,8 @@ const client = createPublicClient({
   });
 
   console.log(`Your Gelato id is: ${taskId}`);
+  console.log("Waiting for transaction to be confirmed...");
+
+  const receipt = await bundler.waitForUserOperationReceipt({ hash: taskId });
+  console.log(`Transaction successful: ${receipt.receipt.transactionHash}`);
 })();

@@ -25,8 +25,8 @@ export async function sendUserOperation<
   config: GelatoBundlerConfig
 ): Promise<SendUserOperationReturnType> {
   const { account = client.account } = parameters;
-  if (!account) throw new AccountNotFoundError();
 
+  if (!account) throw new AccountNotFoundError();
   if (account.entryPoint.version === "0.6") {
     throw new Error("entryPoint 0.6 is not supported");
   }

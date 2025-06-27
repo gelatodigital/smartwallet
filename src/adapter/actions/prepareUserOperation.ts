@@ -4,15 +4,15 @@ import {
   type PrepareUserOperationRequest,
   type PrepareUserOperationReturnType,
   type SmartAccount,
+  type UserOperation,
   formatUserOperation
 } from "viem/account-abstraction";
 import { api } from "../../constants/index.js";
-import {
-  type Capabilities,
-  type ERC4337Context,
-  GatewaySignature,
-  type Quote,
-  type WalletPrepareCallsResponse
+import type {
+  Capabilities,
+  ERC4337Context,
+  Quote,
+  WalletPrepareCallsResponse
 } from "../../relay/rpc/index.js";
 import { serializeCalls } from "../../relay/rpc/utils/serialize.js";
 import { WalletType } from "../../wallet/index.js";
@@ -27,45 +27,97 @@ interface GelatoUserOpExtension {
   };
 }
 
-export const prepareUserOperation = async <
+const defaultParameters = [
+  "factory",
+  "fees",
+  "gas",
+  "paymaster",
+  "nonce",
+  "signature",
+  "authorization"
+];
+
+export async function prepareUserOperation<
   account extends SmartAccount | undefined,
   const calls extends readonly unknown[],
   const request extends PrepareUserOperationRequest<account, accountOverride, calls>,
   accountOverride extends SmartAccount | undefined = undefined
 >(
   client: Client<Transport, Chain, account>,
-  parameters: PrepareUserOperationParameters<account, accountOverride, calls, request>,
+  parameters_: PrepareUserOperationParameters<account, accountOverride, calls, request>,
   config: GelatoBundlerConfig
 ): Promise<
   PrepareUserOperationReturnType<account, accountOverride, calls, request> & GelatoUserOpExtension
-> => {
-  const { account = client.account } = parameters;
-  if (!account) throw new AccountNotFoundError();
+> {
+  const parameters = parameters_ as PrepareUserOperationParameters & Partial<GelatoUserOpExtension>;
+  const { account = client.account, parameters: properties = defaultParameters } = parameters;
 
+  if (!account) throw new AccountNotFoundError();
   if (account.entryPoint.version === "0.6") {
     throw new Error("entryPoint 0.6 is not supported");
   }
 
-  const calls = await (async () => {
-    if (parameters.calls) {
-      return serializeCalls(parameters.calls as Call[]);
+  const shouldPrepareCalls =
+    typeof parameters.gelato === "undefined" ||
+    (properties.includes("gas") &&
+      (typeof parameters.preVerificationGas === "undefined" ||
+        typeof parameters.verificationGasLimit === "undefined" ||
+        typeof parameters.callGasLimit === "undefined")) ||
+    typeof parameters.callData === "undefined";
+
+  const shouldGetFactory =
+    shouldPrepareCalls ||
+    (properties.includes("factory") &&
+      (typeof parameters.factory === "undefined" || typeof parameters.factoryData === "undefined"));
+
+  const factory = shouldGetFactory ? await account.getFactoryArgs() : undefined;
+
+  if (!shouldPrepareCalls) {
+    // We already have everything we need, no need to call wallet_prepareCalls
+    const userOp: Partial<UserOperation> = {
+      callData: parameters.callData,
+      sender: parameters.sender ?? account.address
+    };
+
+    if (properties.includes("factory")) {
+      userOp.factory = parameters.factory ?? factory?.factory;
+      userOp.factoryData = parameters.factoryData ?? factory?.factoryData;
     }
 
-    if (!parameters.callData) {
-      throw new Error("No calls/callData specified");
+    if (properties.includes("fees")) {
+      userOp.maxFeePerGas = 0n;
+      userOp.maxPriorityFeePerGas = 0n;
     }
 
-    if (!account.decodeCalls) {
+    if (properties.includes("gas")) {
+      userOp.preVerificationGas = parameters.preVerificationGas;
+      userOp.verificationGasLimit = parameters.verificationGasLimit;
+      userOp.callGasLimit = parameters.callGasLimit;
+    }
+
+    if (properties.includes("nonce")) {
+      userOp.nonce = parameters.nonce ?? (await account.getNonce());
+    }
+
+    if (properties.includes("signature")) {
+      userOp.signature = parameters.signature ?? (await account.getStubSignature());
+    }
+
+    return {
+      ...userOp,
+      gelato: parameters.gelato
+    } as unknown as PrepareUserOperationReturnType<account, accountOverride, calls, request> &
+      GelatoUserOpExtension;
+  }
+
+  const calls = (() => {
+    if (!parameters.calls) {
       throw new Error(
-        "callData may only be specified if account.decodeCalls is defined, consider passing calls instead"
+        "No calls specified, if you are passing callData directly, consider passing calls instead"
       );
     }
-
-    const decodedCalls = await account.decodeCalls(parameters.callData);
-    return serializeCalls(decodedCalls as Call[]);
+    return serializeCalls(parameters.calls as Call[]);
   })();
-
-  const factory = await account.getFactoryArgs();
 
   const capabilities: Capabilities = {
     wallet: {
@@ -78,7 +130,7 @@ export const prepareUserOperation = async <
       address: account.entryPoint.address
     },
     factory:
-      factory.factory && factory.factoryData
+      factory?.factory && factory?.factoryData
         ? {
             address: factory.factory,
             data: factory.factoryData
@@ -127,4 +179,4 @@ export const prepareUserOperation = async <
     }
   } as unknown as PrepareUserOperationReturnType<account, accountOverride, calls, request> &
     GelatoUserOpExtension;
-};
+}
