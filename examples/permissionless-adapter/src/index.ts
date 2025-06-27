@@ -57,4 +57,6 @@ const client = createPublicClient({
 
   const receipt = await bundler.waitForUserOperationReceipt({ hash: taskId });
   console.log(`Transaction successful: ${receipt.receipt.transactionHash}`);
+
+  process.exit(0);
 })();
