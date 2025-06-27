@@ -22,10 +22,7 @@ export async function estimateUserOperationGas<
     ? parameters.preparedCalls
     : await prepareUserOperation(
         client,
-        {
-          ...parameters,
-          parameters: ["gas"]
-        } as unknown as PrepareUserOperationParameters,
+        parameters as unknown as PrepareUserOperationParameters,
         config
       );
 
