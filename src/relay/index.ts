@@ -1,4 +1,4 @@
-import type { Hex, Hash, SignedAuthorizationList } from "viem";
+import type { Hash, Hex, SignedAuthorizationList } from "viem";
 
 import type {
   GelatoTaskEvent,
