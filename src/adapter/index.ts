@@ -46,8 +46,12 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
       getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
       prepareUserOperation: async (parameters) => {
         const response = await prepareUserOperation(client, parameters, config);
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        return formatUserOperation(response.context.userOp) as any;
+
+        return {
+          ...formatUserOperation(response.context.userOp),
+          prepareCalls: response
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        } as any;
       },
       sendUserOperation: (parameters) => sendUserOperation(client, parameters, config),
       waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters)

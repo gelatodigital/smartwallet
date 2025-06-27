@@ -17,7 +17,7 @@ export async function estimateUserOperationGas<
   parameters: EstimateUserOperationGasParameters<account, accountOverride, calls>,
   config: GelatoBundlerConfig
 ): Promise<EstimateUserOperationGasReturnType<account, accountOverride>> {
-  const { preVerificationGas, verificationGasLimit, callGasLimit } = await prepareUserOperation(
+  const preparedCalls = await prepareUserOperation(
     client,
     {
       ...parameters,
@@ -25,6 +25,8 @@ export async function estimateUserOperationGas<
     } as unknown as PrepareUserOperationParameters,
     config
   );
+
+  const { preVerificationGas, verificationGasLimit, callGasLimit } = preparedCalls.context.userOp;
 
   return {
     preVerificationGas,
