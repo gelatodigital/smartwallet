@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.13
+
+### Patch Changes
+
+- 3c59577: feat: bundler adapter
+
 ## 0.0.12
 
 ### Patch Changes
