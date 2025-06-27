@@ -425,7 +425,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  examples/viem-example:
+  examples/viem-adapter:
     dependencies:
       '@gelatonetwork/smartwallet':
         specifier: workspace:*
