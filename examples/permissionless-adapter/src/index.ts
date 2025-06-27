@@ -1,4 +1,4 @@
-import { WalletEncoding, sponsored } from "@gelatonetwork/smartwallet";
+import { WalletEncoding, sponsored, track } from "@gelatonetwork/smartwallet";
 import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
 import { createSmartAccountClient } from "permissionless";

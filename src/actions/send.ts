@@ -31,6 +31,7 @@ export async function send<
   return await walletSendPreparedCalls(client, {
     context,
     signature,
-    authorizationList
+    authorizationList,
+    apiKey: client._internal.apiKey()
   });
 }

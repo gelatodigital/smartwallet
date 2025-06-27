@@ -8,6 +8,7 @@ import type {
 } from "viem";
 
 import type { UserOperation } from "viem/account-abstraction";
+import type { GelatoSmartAccountSCW } from "../../../accounts/index.js";
 import type { Payment } from "../../../payment/index.js";
 import type { WalletDetails } from "../../../wallet/index.js";
 
@@ -118,12 +119,15 @@ export interface NetworkCapabilities {
 export interface WalletPrepareCallsParams {
   calls: Call[];
   payment: Payment;
+  scw: GelatoSmartAccountSCW;
+  erc4337: boolean;
   nonceKey?: bigint;
+  apiKey?: string;
 }
 
-export interface WalletPrepareCallsResponse {
+export interface WalletPrepareCallsResponse<T extends Context = Context> {
   chainId: number;
-  context: Context;
+  context: T;
   signatureRequest: SignatureRequest;
 }
 
@@ -131,6 +135,7 @@ export interface WalletSendPreparedCallsParams {
   context: Context;
   signature: Hex;
   authorizationList?: SignedAuthorizationList;
+  apiKey?: string;
 }
 
 export interface WalletSendPreparedCallsResponse {

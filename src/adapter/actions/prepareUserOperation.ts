@@ -14,7 +14,6 @@ import type {
   Quote,
   WalletPrepareCallsResponse
 } from "../../relay/rpc/index.js";
-import { serializeCalls } from "../../relay/rpc/utils/serialize.js";
 import { WalletType } from "../../wallet/index.js";
 import { AccountNotFoundError } from "../errors/index.js";
 import type { GelatoBundlerConfig } from "../index.js";
@@ -41,6 +40,8 @@ export async function prepareUserOperation<
   account extends SmartAccount | undefined,
   const calls extends readonly unknown[],
   const request extends PrepareUserOperationRequest<account, accountOverride, calls>,
+  account extends SmartAccount | undefined,
+  chain extends Chain | undefined,
   accountOverride extends SmartAccount | undefined = undefined
 >(
   client: Client<Transport, Chain, account>,
@@ -52,7 +53,10 @@ export async function prepareUserOperation<
   const parameters = parameters_ as PrepareUserOperationParameters & Partial<GelatoUserOpExtension>;
   const { account = client.account, parameters: properties = defaultParameters } = parameters;
 
-  if (!account) throw new AccountNotFoundError();
+  if (!account) {
+    throw new AccountNotFoundError();
+  }
+
   if (account.entryPoint.version === "0.6") {
     throw new Error("entryPoint 0.6 is not supported");
   }
@@ -116,67 +120,20 @@ export async function prepareUserOperation<
         "No calls specified, if you are passing callData directly, consider passing calls instead"
       );
     }
-    return serializeCalls(parameters.calls as Call[]);
+
+    return parameters.calls as Call[];
   })();
 
-  const capabilities: Capabilities = {
-    wallet: {
+  const response = await walletPrepareCalls(client as Client<Transport, Chain, SmartAccount>, {
+    calls,
+    payment: config.payment,
+    apiKey: config.apiKey,
+    scw: {
       type: WalletType.Custom,
       encoding: config.encoding
     },
-    payment: config.payment,
-    entryPoint: {
-      version: account.entryPoint.version,
-      address: account.entryPoint.address
-    },
-    factory:
-      factory?.factory && factory?.factoryData
-        ? {
-            address: factory.factory,
-            data: factory.factoryData
-          }
-        : undefined
-  };
-
-  const url = config.apiKey
-    ? `${api()}/smartwallet?apiKey=${config.apiKey}`
-    : `${api()}/smartwallet`;
-
-  const raw = await fetch(url, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "wallet_prepareCalls",
-      params: [
-        {
-          chainId: client.chain.id,
-          from: account.address,
-          calls,
-          capabilities
-        }
-      ]
-    })
+    erc4337: true
   });
 
-  const data = await raw.json();
-  if (data.error || data.message)
-    throw new Error(data.error?.message || data.message || "wallet_prepareCalls failed");
-
-  const response = data.result as WalletPrepareCallsResponse;
-  const { userOp, quote, timestamp, signature } = response.context as ERC4337Context;
-
-  return {
-    ...formatUserOperation(userOp),
-    gelato: {
-      quote,
-      timestamp,
-      signature
-    }
-  } as unknown as PrepareUserOperationReturnType<account, accountOverride, calls, request> &
-    GelatoUserOpExtension;
-}
+  return response as WalletPrepareCallsResponse<ERC4337Context>;
+};
