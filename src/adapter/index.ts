@@ -49,7 +49,7 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
 
         return {
           ...formatUserOperation(response.context.userOp),
-          prepareCalls: response
+          preparedCalls: response
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         } as any;
       },
