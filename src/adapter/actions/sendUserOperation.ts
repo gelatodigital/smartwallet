@@ -35,11 +35,7 @@ export async function sendUserOperation<
 
   const preparedCalls = hasPreparedCalls(parameters)
     ? parameters.preparedCalls
-    : await prepareUserOperation(
-        client,
-        parameters as unknown as PrepareUserOperationParameters,
-        config
-      );
+    : await prepareUserOperation(client, parameters as PrepareUserOperationParameters, config);
 
   const { context } = preparedCalls;
   const { signature, authorizationList } = await sign(

@@ -20,11 +20,7 @@ export async function estimateUserOperationGas<
 ): Promise<EstimateUserOperationGasReturnType<account, accountOverride>> {
   const preparedCalls = hasPreparedCalls(parameters)
     ? parameters.preparedCalls
-    : await prepareUserOperation(
-        client,
-        parameters as unknown as PrepareUserOperationParameters,
-        config
-      );
+    : await prepareUserOperation(client, parameters as PrepareUserOperationParameters, config);
 
   const { preVerificationGas, verificationGasLimit, callGasLimit } = preparedCalls.context.userOp;
 
