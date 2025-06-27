@@ -6,12 +6,12 @@ import type {
 } from "viem/account-abstraction";
 import type { ERC4337Context, WalletPrepareCallsResponse } from "../../relay/rpc/index.js";
 
-export function hasPrepareCalls(
+export function hasPreparedCalls(
   parameters: SendUserOperationParameters
 ): parameters is SendUserOperationParameters & {
-  prepareCalls: WalletPrepareCallsResponse<ERC4337Context>;
+  preparedCalls: WalletPrepareCallsResponse<ERC4337Context>;
 } {
-  return "prepareCalls" in parameters;
+  return "preparedCalls" in parameters;
 }
 
 export function toUnpackedUserOperation(packedUserOperation: PackedUserOperation): UserOperation {

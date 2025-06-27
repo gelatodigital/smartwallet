@@ -9,7 +9,7 @@ import { sign } from "../../actions/sign.js";
 import { walletSendPreparedCalls } from "../../relay/rpc/sendPreparedCalls.js";
 import { AccountNotFoundError } from "../errors/index.js";
 import type { GelatoBundlerConfig } from "../index.js";
-import { hasPrepareCalls } from "../utils/index.js";
+import { hasPreparedCalls } from "../utils/index.js";
 import { prepareUserOperation } from "./index.js";
 
 export async function sendUserOperation<
@@ -32,8 +32,8 @@ export async function sendUserOperation<
     throw new Error("entryPoint 0.6 is not supported");
   }
 
-  const preparedCalls = hasPrepareCalls(parameters)
-    ? parameters.prepareCalls
+  const preparedCalls = hasPreparedCalls(parameters)
+    ? parameters.preparedCalls
     : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       await prepareUserOperation(client as any, parameters as any, config);
 
