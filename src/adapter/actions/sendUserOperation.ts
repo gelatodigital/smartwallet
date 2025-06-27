@@ -1,5 +1,6 @@
 import type { Chain, Client, Hex, Transport, WalletClient } from "viem";
 import type {
+  PrepareUserOperationParameters,
   SendUserOperationParameters,
   SendUserOperationReturnType,
   SmartAccount
@@ -34,8 +35,11 @@ export async function sendUserOperation<
 
   const preparedCalls = hasPreparedCalls(parameters)
     ? parameters.preparedCalls
-    : // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      await prepareUserOperation(client as any, parameters as any, config);
+    : await prepareUserOperation(
+        client,
+        parameters as unknown as PrepareUserOperationParameters,
+        config
+      );
 
   const { context } = preparedCalls;
   const { signature, authorizationList } = await sign(
