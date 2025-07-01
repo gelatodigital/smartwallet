@@ -6,7 +6,7 @@ import { deployerAccount, walletClient } from "./src/account.js";
 import { getApiKeyStaging } from "./src/env.js";
 import { constants } from "./src/index.js";
 
-const delegationAddress = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
+const delegationAddress = "0x5aF42746a8Af42d8a4708dF238C53F1F71abF0E0";
 
 describe("Initial Delegation Test", () => {
   beforeAll(async () => {

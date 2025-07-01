@@ -7,7 +7,69 @@ A Modern Account Abstraction SDK for building and interacting with smart wallets
 - Node.js >= 23
 - pnpm >= 10.8.1
 
+## Packages
+
+- [@gelatonetwork/smartwallet](./src/): All you need to build with Gelato SmartWallets APIs and Contracts.
+- [@gelatonetwork/smartwallet-react-sdk](./plugins/react/sdk/): A unified React SDK for Gelato SmartWallet APIs and Contracts that supports multiple WaaS providers: Dynamic and Privy.
+- [@gelatonetwork/smartwallet-react-wagmi](./plugins/react/wagmi/): Use Gelato SmartWallet APIs and Contracts with WAGMI applications, without any complexity.
+
+
+## Overview
+
+```ts
+import {
+  createGelatoSmartWalletClient,
+  sponsored
+} from "@gelatonetwork/smartwallet";
+import { http, createWalletClient } from "viem";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { baseSepolia } from "viem/chains";
+
+const privateKey = generatePrivateKey();
+const account = privateKeyToAccount(privateKey);
+
+const client = createWalletClient({
+    account,
+    chain: baseSepolia,
+    transport: http()
+});
+
+const swc = await createGelatoSmartWalletClient(client, { apiKey });
+
+const response = await swc.execute({
+    payment: sponsored(apiKey),
+    calls: [
+      {
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
+        data: "0xd09de08a",
+        value: 0n
+      }
+    ]
+});
+
+response.on("submitted", (status) => {
+    console.log(`Transaction submitted: ${status.transactionHash}`);
+});
+
+response.on("success", async (status) => {
+    console.log(`Transaction successful: ${status.transactionHash}`);
+});
+
+response.on("error", (error) => {
+    console.error(`Transaction failed: ${error.message}`);
+});
+```
+
 ## Quick Start
+
+### NPM
+
+1. Install package
+```bash
+pnpm i @gelatonetwork/smartwallet
+```
+
+### Locally
 
 1. Clone the repository:
 
