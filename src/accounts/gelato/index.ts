@@ -267,4 +267,4 @@ export async function gelato<eip7702 extends boolean = true>(
 }
 
 /// Constants
-const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x11923B4c785D87bb34da4d4E34e9fEeA09179289";
+const GELATO_V0_1_DELEGATION_ADDRESS: Address = "0x5aF42746a8Af42d8a4708dF238C53F1F71abF0E0";

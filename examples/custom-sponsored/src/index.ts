@@ -32,7 +32,7 @@ const publicClient = createPublicClient({
     client: publicClient,
     authorization: {
       account: owner,
-      address: "0x11923b4c785d87bb34da4d4e34e9feea09179289"
+      address: "0x5aF42746a8Af42d8a4708dF238C53F1F71abF0E0"
     },
     entryPoint: {
       abi: entryPoint08Abi,
@@ -53,7 +53,9 @@ const publicClient = createPublicClient({
     transport: http()
   });
 
-  const swc = await createGelatoSmartWalletClient(client, { apiKey: sponsorApiKey });
+  const swc = await createGelatoSmartWalletClient(client, {
+    apiKey: sponsorApiKey
+  });
 
   const response = await swc.execute({
     payment: sponsored(sponsorApiKey),
