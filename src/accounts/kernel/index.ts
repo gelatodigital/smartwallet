@@ -54,10 +54,8 @@ import {
   KERNEL_V3_3_DELEGATION_ADDRESS,
   KERNEL_V3_3_ECDSA_VALIDATOR_KEY,
   KERNEL_V3_3_FACTORY_ADDRESS,
-  KERNEL_V3_3_META_FACTORY_ADDRESS,
   KernelV3AccountAbi,
   KernelV3FactoryAbi,
-  KernelV3MetaFactoryDeployWithFactoryAbi,
   kernelV3_3_EcdsaRootIdentifier
 } from "./constants.js";
 
@@ -82,7 +80,6 @@ export type KernelSmartAccountParameters<
   eip7702?: eip7702;
   address?: Address;
   index?: bigint;
-  useMetaFactory?: boolean;
   authorization?: KernelSmartAccountImplementation<
     entryPointAbi,
     entryPointVersion,
@@ -107,29 +104,19 @@ const getInitializationData = ({ validatorData }: { validatorData: Hex }) => {
 
 const getAccountInitCode = async ({
   validatorData,
-  index,
-  useMetaFactory
+  index
 }: {
   validatorData: Hex;
   index: bigint;
-  useMetaFactory: boolean;
 }): Promise<Hex> => {
   const initializationData = getInitializationData({
     validatorData
   });
 
-  if (!useMetaFactory) {
-    return encodeFunctionData({
-      abi: KernelV3FactoryAbi,
-      functionName: "createAccount",
-      args: [initializationData, toHex(index, { size: 32 })]
-    });
-  }
-
   return encodeFunctionData({
-    abi: KernelV3MetaFactoryDeployWithFactoryAbi,
-    functionName: "deployWithFactory",
-    args: [KERNEL_V3_3_FACTORY_ADDRESS, initializationData, toHex(index, { size: 32 })]
+    abi: KernelV3FactoryAbi,
+    functionName: "createAccount",
+    args: [initializationData, toHex(index, { size: 32 })]
   });
 };
 
@@ -143,7 +130,6 @@ export async function kernel<
   const {
     client,
     owner,
-    useMetaFactory: _useMetaFactory,
     index = 0n,
     address,
     eip7702: _eip7702,
@@ -153,7 +139,6 @@ export async function kernel<
 
   const eip7702 = _eip7702 ?? true;
   const erc4337 = true;
-  const useMetaFactory = _useMetaFactory ?? true;
 
   const entryPoint = _entryPoint ?? {
     abi: entryPoint07Abi,
@@ -170,11 +155,10 @@ export async function kernel<
     return chainId;
   };
 
-  const generateInitCode = async (_useMetaFactory: boolean) => {
+  const generateInitCode = async () => {
     return getAccountInitCode({
       validatorData: owner.address,
-      index,
-      useMetaFactory: _useMetaFactory
+      index
     });
   };
 
@@ -232,8 +216,8 @@ export async function kernel<
     }
 
     return {
-      factory: useMetaFactory ? KERNEL_V3_3_META_FACTORY_ADDRESS : KERNEL_V3_3_FACTORY_ADDRESS,
-      factoryData: await generateInitCode(useMetaFactory)
+      factory: KERNEL_V3_3_FACTORY_ADDRESS,
+      factoryData: await generateInitCode()
     };
   };
 
@@ -248,30 +232,16 @@ export async function kernel<
       };
     }
 
-    if (address) {
-      return { accountAddress: address, getFactoryArgs: getFactoryArgsFunc };
-    }
-
     const { factory, factoryData } = await getFactoryArgsFunc();
 
-    let accountAddress = await getSenderAddress(client, {
+    const accountAddress = await getSenderAddress(client, {
       factory,
       factoryData,
       entryPointAddress: entryPoint.address
     });
 
-    if (address === accountAddress) {
-      return { accountAddress, getFactoryArgs: getFactoryArgsFunc };
-    }
-
-    if (!useMetaFactory && accountAddress === zeroAddress) {
-      const { factory, factoryData } = await getFactoryArgsFunc();
-
-      accountAddress = await getSenderAddress(client, {
-        factory,
-        factoryData,
-        entryPointAddress: entryPoint.address
-      });
+    if (address !== accountAddress && address !== undefined) {
+      throw new Error(`${address} does not belong to owner`);
     }
 
     return { accountAddress, getFactoryArgs: getFactoryArgsFunc };

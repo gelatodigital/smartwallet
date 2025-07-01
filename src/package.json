@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": "Gelato",
   "description": "Gelato SmartWallet: A Modern Account Abstraction SDK",
   "main": "./_dist/index.js",
@@ -16,6 +16,11 @@
       "types": "./_dist/accounts/index.d.ts",
       "import": "./_dist/accounts/index.js",
       "default": "./_dist/accounts/index.js"
+    },
+    "./adapter": {
+      "types": "./_dist/adapter/index.d.ts",
+      "import": "./_dist/adapter/index.js",
+      "default": "./_dist/adapter/index.js"
     }
   },
   "scripts": {

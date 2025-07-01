@@ -25,6 +25,9 @@ export async function prepare<
   return await walletPrepareCalls(client, {
     calls,
     payment,
-    nonceKey
+    nonceKey,
+    scw: client.account.scw,
+    erc4337: client.account.erc4337,
+    apiKey: client._internal.apiKey()
   });
 }

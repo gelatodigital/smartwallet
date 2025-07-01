@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-types",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": "Gelato",
   "description": "Common react types",
   "main": "./_dist/index.js",

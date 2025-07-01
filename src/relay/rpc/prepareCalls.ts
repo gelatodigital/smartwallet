@@ -1,7 +1,6 @@
-import type { Chain, Transport } from "viem";
+import type { Chain, Client, Transport } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 
-import type { GelatoSmartAccount } from "../../accounts/index.js";
-import type { GelatoWalletClient } from "../../actions/index.js";
 import { api } from "../../constants/index.js";
 import type {
   Capabilities,
@@ -14,23 +13,19 @@ import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends GelatoSmartAccount = GelatoSmartAccount
+  account extends SmartAccount = SmartAccount
 >(
-  client: GelatoWalletClient<transport, chain, account>,
+  client: Client<transport, chain, account>,
   params: WalletPrepareCallsParams
 ): Promise<WalletPrepareCallsResponse> => {
-  const { payment } = params;
+  const { payment, apiKey, scw, erc4337 } = params;
 
   const calls = serializeCalls(params.calls);
 
   const isDeployed = await client.account.isDeployed();
 
   const capabilities: Capabilities = <GelatoCapabilities>{
-    wallet: {
-      type: client.account.scw.type,
-      encoding: client.account.scw.encoding,
-      version: client.account.scw.version
-    },
+    wallet: scw,
     payment,
     authorization: client.account.authorization
       ? {
@@ -47,7 +42,7 @@ export const walletPrepareCalls = async <
             data: factoryData
           })),
     entryPoint:
-      client.account.entryPoint && client.account.erc4337
+      client.account.entryPoint && erc4337
         ? {
             version: client.account.entryPoint.version,
             address: client.account.entryPoint.address
@@ -56,7 +51,6 @@ export const walletPrepareCalls = async <
     nonceKey: serializeNonceKey(params.nonceKey)
   };
 
-  const apiKey = client._internal.apiKey();
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
 
   const raw = await fetch(url, {

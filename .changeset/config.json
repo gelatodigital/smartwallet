@@ -20,6 +20,8 @@
     "okx-sponsored-payment",
     "okx-erc20-payment",
     "okx-native-payment",
-    "trust-wallet-sponsored-payment"
+    "trust-wallet-sponsored-payment",
+    "permissionless-adapter",
+    "viem-adapter"
   ]
 }

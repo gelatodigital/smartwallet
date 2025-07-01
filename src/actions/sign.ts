@@ -1,9 +1,9 @@
-import type { Chain, Hex, Transport } from "viem";
+import type { Chain, Hex, Transport, WalletClient } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
+import { signAuthorization } from "viem/actions";
 
-import type { GelatoSmartAccount } from "../accounts/index.js";
+import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
-import type { GelatoWalletClient } from "./index.js";
 import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 
 /**
@@ -15,22 +15,22 @@ import { signSignatureRequest } from "./internal/signSignatureRequest.js";
 export async function sign<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
-  account extends GelatoSmartAccount = GelatoSmartAccount
+  account extends SmartAccount = SmartAccount
 >(
-  client: GelatoWalletClient<transport, chain, account>,
+  client: WalletClient<transport, chain, account>,
   preparedCalls: WalletPrepareCallsResponse
 ): Promise<{ signature: Hex; authorizationList?: SignAuthorizationReturnType[] }> {
   const { context, signatureRequest } = preparedCalls;
 
-  const userOp = "userOp" in context ? context.userOp : undefined;
+  const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
   const signature = await signSignatureRequest(client, signatureRequest, userOp);
 
   const isDeployed = await client.account.isDeployed();
   const authorizationList =
-    client.account.authorization && client.account.eip7702 && !isDeployed
+    client.account.authorization && !isDeployed
       ? // smart account must implement "signAuthorization"
         [
-          await client.signAuthorization({
+          await signAuthorization(client, {
             account: client.account.authorization.account,
             contractAddress: client.account.authorization.address
           })
