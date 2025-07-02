@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-sdk",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "author": "Gelato",
   "type": "module",
   "description": "Gelato SmartWallet React SDK",

@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.15
+
+### Patch Changes
+
+- 3338755: feat: support executeUserOp
+
 ## 0.0.14
 
 ### Patch Changes
