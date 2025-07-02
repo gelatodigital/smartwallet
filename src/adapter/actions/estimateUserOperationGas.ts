@@ -14,7 +14,7 @@ export async function estimateUserOperationGas<
   account extends SmartAccount | undefined,
   accountOverride extends SmartAccount | undefined = undefined
 >(
-  client: Client<Transport, Chain, account>,
+  client: Client<Transport, Chain | undefined, account>,
   parameters: EstimateUserOperationGasParameters<account, accountOverride, calls>,
   config: GelatoBundlerConfig
 ): Promise<EstimateUserOperationGasReturnType<account, accountOverride>> {
