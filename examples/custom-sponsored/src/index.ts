@@ -40,7 +40,7 @@ const publicClient = createPublicClient({
       version: "0.8"
     },
     scw: {
-      encoding: "erc7821"
+      encoding: "gelato"
     },
     eip7702: true
   });

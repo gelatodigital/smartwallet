@@ -110,7 +110,7 @@ export async function gelato<eip7702 extends boolean = true>(
       owner,
       eip7702,
       erc4337,
-      scw: { type: "gelato", encoding: "erc7821", version: "0.1" } as const
+      scw: { type: "gelato", encoding: "gelato", version: "0.1" } as const
     },
     entryPoint,
     authorization: authorization as {
