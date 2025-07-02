@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet-react-types
 
+## 0.0.15
+
+### Patch Changes
+
+- fa0d8ad: feat: allow privy supported networks to be passed by the user
+- Updated dependencies [3338755]
+  - @gelatonetwork/smartwallet@0.0.15
+
 ## 0.0.14
 
 ### Patch Changes
