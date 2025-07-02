@@ -1,5 +1,5 @@
-import { WalletEncoding, sponsored, track } from "@gelatonetwork/smartwallet";
-import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
+import { WalletEncoding, sponsored } from "@gelatonetwork/smartwallet";
+import { gelatoBundlerActions, getUserOperationGasPrice } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
 import { createSmartAccountClient } from "permissionless";
 import { toSafeSmartAccount } from "permissionless/accounts";
@@ -32,7 +32,13 @@ const client = createPublicClient({
   const bundler = createSmartAccountClient({
     account,
     chain: baseSepolia,
-    bundlerTransport: http()
+    // Important: Chain transport (chain rpc) must be passed here instead of bundler transport
+    bundlerTransport: http(),
+    userOperation: {
+      estimateFeesPerGas: async () => {
+        return getUserOperationGasPrice(baseSepolia.id, sponsorApiKey).then(({ fast }) => fast);
+      }
+    }
   }).extend(
     gelatoBundlerActions({
       payment: sponsored(sponsorApiKey),
@@ -41,6 +47,9 @@ const client = createPublicClient({
       encoding: WalletEncoding.Safe
     })
   );
+
+  const gasPrice = await bundler.getUserOperationGasPrice().then(({ fast }) => fast);
+  console.log("User operation gas price: ", gasPrice);
 
   const taskId = await bundler.sendUserOperation({
     calls: [

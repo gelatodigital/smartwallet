@@ -7,6 +7,10 @@ import {
 import { type Payment, isSponsored } from "../payment/index.js";
 import type { WalletEncoding } from "../wallet/index.js";
 import {
+  type GetUserOperationGasPriceReturnType,
+  getUserOperationGasPrice as getUserOperationGasPriceAction
+} from "./actions/getUserOperationGasPrice.js";
+import {
   estimateUserOperationGas,
   getChainId,
   getSupportedEntryPoints,
@@ -23,14 +27,18 @@ export interface GelatoBundlerConfig {
   apiKey?: string;
 }
 
+type GelatoUserOperationGasPriceAction = {
+  getUserOperationGasPrice: () => Promise<GetUserOperationGasPriceReturnType>;
+};
+
 export function gelatoBundlerActions(config: GelatoBundlerConfig) {
   return <
     transport extends Transport = Transport,
-    chain extends Chain = Chain,
-    account extends SmartAccount = SmartAccount
+    chain extends Chain | undefined = undefined,
+    account extends SmartAccount | undefined = SmartAccount | undefined
   >(
     client: Client<transport, chain, account>
-  ): BundlerActions<account> => {
+  ): BundlerActions<account> & GelatoUserOperationGasPriceAction => {
     config.apiKey = (isSponsored(config.payment) && config.payment.sponsorApiKey) || config.apiKey;
 
     if (isSponsored(config.payment) && !config.apiKey) {
@@ -54,7 +62,26 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
         } as any;
       },
       sendUserOperation: (parameters) => sendUserOperation(client, parameters, config),
-      waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters)
+      waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters),
+      getUserOperationGasPrice: () => getUserOperationGasPriceAction(client, config.apiKey)
     };
   };
+}
+
+export function gelatoUserOperationGasPriceAction() {
+  return <
+    transport extends Transport = Transport,
+    chain extends Chain | undefined = undefined,
+    account extends SmartAccount | undefined = SmartAccount | undefined
+  >(
+    client: Client<transport, chain, account>
+  ): GelatoUserOperationGasPriceAction => {
+    return {
+      getUserOperationGasPrice: () => getUserOperationGasPriceAction(client)
+    };
+  };
+}
+
+export function getUserOperationGasPrice(chainId: number, sponsorApiKey?: string) {
+  return getUserOperationGasPriceAction(chainId, sponsorApiKey);
 }

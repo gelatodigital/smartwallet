@@ -33,6 +33,7 @@ const client = createPublicClient({
   const bundler = createBundlerClient({
     account,
     client,
+    // Important: Chain transport (chain rpc) must be passed here instead of bundler transport
     transport: http()
   }).extend(
     gelatoBundlerActions({
