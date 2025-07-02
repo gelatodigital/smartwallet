@@ -95,8 +95,11 @@ const GelatoSmartWalletPrivyInternal: FC<{
       try {
         // Privy wallet provides chainId in CAIP2 format
         const { reference: chainId } = ChainId.parse(primaryWallet.chainId);
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        const chain = extractChain({ chains: Object.values(chains), id: Number(chainId) as any });
+        const chain = extractChain({
+          chains: Object.values(chains),
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          id: Number(chainId) as any
+        });
 
         if (!chain) {
           return;
@@ -168,7 +171,9 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
     <PrivyProvider
       appId={settings.waas.appId}
       config={{
-        defaultChain: settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? chains.sepolia
+        defaultChain:
+          settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? chains.sepolia,
+        supportedChains: settings.supportedChains
       }}
     >
       <GelatoSmartWalletPrivyInternal

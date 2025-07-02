@@ -40,6 +40,9 @@ export interface ProviderProps {
       appId: string;
     };
     defaultChain?: Chain;
+    // Supported chains for Privy component
+    // Check [Privy docs](https://docs.privy.io/basics/react/advanced/configuring-evm-networks) for more information
+    supportedChains?: Chain[];
     wagmi?: {
       config: CreateConfigParameters;
     };
