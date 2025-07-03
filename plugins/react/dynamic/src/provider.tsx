@@ -16,6 +16,7 @@ import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Chain, Transport } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
+import { prepareAuthorization } from "viem/actions";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
@@ -87,20 +88,15 @@ const GelatoSmartWalletDynamicInternal: FC<{
 
         const client = await primaryWallet.getWalletClient();
 
-        client.signAuthorization = async (parameters) => {
-          const { chainId, nonce } = parameters;
-          const contractAddress = parameters.contractAddress ?? parameters.address;
+        client.account.signAuthorization = async (parameters) => {
+          const preparedAuthorization = await prepareAuthorization(client, parameters);
 
-          const signedAuthorization = await connector.signAuthorization({
-            address: contractAddress,
-            chainId,
-            nonce
-          });
+          const signedAuthorization = await connector.signAuthorization(preparedAuthorization);
 
           return {
-            address: contractAddress,
-            chainId,
-            nonce,
+            address: preparedAuthorization.address,
+            chainId: preparedAuthorization.chainId,
+            nonce: preparedAuthorization.nonce,
             r: signedAuthorization.r,
             s: signedAuthorization.s,
             v: signedAuthorization.v,
