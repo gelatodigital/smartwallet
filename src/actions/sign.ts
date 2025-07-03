@@ -1,4 +1,4 @@
-import type { Chain, Hex, Transport, WalletClient } from "viem";
+import type { Chain, Hex, Transport, WalletActions, WalletClient } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 
 import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
@@ -24,11 +24,16 @@ export async function sign<
   const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
   const signature = await signSignatureRequest(client, signatureRequest, userOp);
 
+  const signAuthorization =
+    "signAuthorization" in client.account
+      ? (client.account.signAuthorization as WalletActions["signAuthorization"])
+      : client.signAuthorization;
+
   const isDeployed = await client.account.isDeployed();
   const authorizationList =
     client.account.authorization && !isDeployed
       ? [
-          await client.signAuthorization({
+          await signAuthorization({
             account: client.account.authorization.account,
             contractAddress: client.account.authorization.address
           })
