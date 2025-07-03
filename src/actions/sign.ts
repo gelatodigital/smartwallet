@@ -24,6 +24,11 @@ export async function sign<
   const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
   const signature = await signSignatureRequest(client, signatureRequest, userOp);
 
+  // IMPORTANT: this is required since `sign` is called in different
+  // places(react, adapter, etc.) and React components, like Privy,
+  // use JSON - RPC accounts which don't have the `signAuthorization`
+  // method. If the account provides `signAuthorization`
+  // we should use that and otherwise use `signAuthorization` from the client directly.
   const signAuthorization =
     "signAuthorization" in client.account
       ? (client.account.signAuthorization as WalletActions["signAuthorization"])
