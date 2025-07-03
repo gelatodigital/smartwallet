@@ -1,7 +1,7 @@
 import {
   type GelatoTaskStatus,
   createGelatoSmartWalletClient,
-  native
+  sponsored
 } from "@gelatonetwork/smartwallet";
 import { uniswap } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
@@ -42,7 +42,7 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.execute({
-    payment: native(),
+    payment: sponsored(sponsorApiKey),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
