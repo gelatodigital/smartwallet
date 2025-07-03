@@ -2,6 +2,10 @@
 
 A Modern Account Abstraction SDK for building and interacting with smart wallets.
 
+> [!NOTE]
+> This library is currently in Developer Preview. It may include breaking changes in non-major versions.
+
+
 ## Prerequisites
 
 - Node.js >= 23
