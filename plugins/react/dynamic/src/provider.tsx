@@ -14,17 +14,8 @@ import type {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  type Account,
-  type Chain,
-  type Client,
-  type JsonRpcAccount,
-  type LocalAccount,
-  type Transport,
-  type WalletClient,
-  createWalletClient,
-  custom
-} from "viem";
+import type { Chain, Transport } from "viem";
+import type { SignAuthorizationReturnType } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
 
@@ -96,7 +87,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
 
         const client = await primaryWallet.getWalletClient();
 
-        client.account.signAuthorization = async (parameters) => {
+        client.signAuthorization = async (parameters) => {
           const { chainId, nonce } = parameters;
           const contractAddress = parameters.contractAddress ?? parameters.address;
 
@@ -114,7 +105,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
             s: signedAuthorization.s,
             v: signedAuthorization.v,
             yParity: signedAuthorization.yParity
-          };
+          } as SignAuthorizationReturnType;
         };
 
         const smartWalletClient = await createGelatoSmartWalletClient(client, {

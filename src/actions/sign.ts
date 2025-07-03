@@ -1,6 +1,5 @@
 import type { Chain, Hex, Transport, WalletClient } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
-import { signAuthorization } from "viem/actions";
 
 import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
 import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
@@ -30,7 +29,7 @@ export async function sign<
     client.account.authorization && !isDeployed
       ? // smart account must implement "signAuthorization"
         [
-          await signAuthorization(client, {
+          await client.signAuthorization({
             account: client.account.authorization.account,
             contractAddress: client.account.authorization.address
           })
