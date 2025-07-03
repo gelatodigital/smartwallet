@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.17
+
+### Patch Changes
+
+- 69c8072: fix: privy cannot sign authorization
+- 69c8072: fix: prepare authorization properly
+
 ## 0.0.16
 
 ### Patch Changes
