@@ -15,6 +15,7 @@ import type { WalletDetails } from "../../../wallet/index.js";
 export enum SignatureRequestType {
   TypedData = "eth_signTypedData_v4",
   EthSign = "eth_sign",
+  PersonalSign = "personal_sign",
   UserOperation = "eth_signUserOperation"
 }
 
@@ -23,8 +24,8 @@ type TypedDataSignatureRequest = {
   data: TypedDataDefinition;
 };
 
-type EthSignSignatureRequest = {
-  type: SignatureRequestType.EthSign;
+type PersonalSignSignatureRequest = {
+  type: SignatureRequestType.EthSign | SignatureRequestType.PersonalSign;
   data: Hex;
 };
 
@@ -35,7 +36,7 @@ type UserOperationSignatureRequest = {
 
 export type SignatureRequest =
   | TypedDataSignatureRequest
-  | EthSignSignatureRequest
+  | PersonalSignSignatureRequest
   | UserOperationSignatureRequest;
 
 export interface Quote {
