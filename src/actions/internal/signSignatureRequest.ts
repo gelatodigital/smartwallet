@@ -26,7 +26,9 @@ export async function signSignatureRequest<
       );
     }
     signature = await client.account.signUserOperation(userOp);
-  } else if (signatureRequest.type === SignatureRequestType.EthSign) {
+    // Notice: EthSign is being treated as being the same as PersonalSign
+    // This is to maintain backwards compatibility, EthSign will be deprecated in the future
+  } else if (signatureRequest.type === SignatureRequestType.EthSign || signatureRequest.type === SignatureRequestType.PersonalSign) {
     signature = await client.signMessage({
       account: client.account,
       message: { raw: signatureRequest.data }
