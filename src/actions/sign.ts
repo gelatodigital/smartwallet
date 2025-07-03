@@ -27,8 +27,7 @@ export async function sign<
   const isDeployed = await client.account.isDeployed();
   const authorizationList =
     client.account.authorization && !isDeployed
-      ? // smart account must implement "signAuthorization"
-        [
+      ? [
           await client.signAuthorization({
             account: client.account.authorization.account,
             contractAddress: client.account.authorization.address
