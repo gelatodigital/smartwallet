@@ -21,6 +21,7 @@ import {
   createWalletClient,
   custom
 } from "viem";
+import { prepareAuthorization } from "viem/actions";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 import type { Config as WagmiConfig } from "wagmi";
@@ -113,17 +114,12 @@ const GelatoSmartWalletPrivyInternal: FC<{
         });
 
         client.signAuthorization = async (parameters) => {
-          const { chainId, nonce } = parameters;
-          const contractAddress = parameters.contractAddress ?? parameters.address;
-
-          if (!contractAddress) {
-            throw new Error("Contract address is required");
-          }
+          const preparedAuthorization = await prepareAuthorization(client, parameters);
 
           const signedAuthorization = await signAuthorization({
-            contractAddress,
-            chainId,
-            nonce
+            contractAddress: preparedAuthorization.address,
+            chainId: preparedAuthorization.chainId,
+            nonce: preparedAuthorization.nonce
           });
 
           return signedAuthorization;
