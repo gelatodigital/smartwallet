@@ -1,5 +1,16 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.17
+
+### Patch Changes
+
+- 69c8072: fix: privy cannot sign authorization
+- 69c8072: fix: prepare authorization properly
+- Updated dependencies [69c8072]
+- Updated dependencies [69c8072]
+  - @gelatonetwork/smartwallet@0.0.17
+  - @gelatonetwork/smartwallet-react-types@0.0.17
+
 ## 0.0.16
 
 ### Patch Changes
