@@ -4,6 +4,7 @@ export enum WalletType {
   Safe = "safe",
   OKX = "okx",
   TrustWallet = "trustWallet",
+  Uniswap = "uniswap",
   Custom = "custom"
 }
 
@@ -12,7 +13,8 @@ export enum WalletEncoding {
   OKX = "okx",
   ERC7579 = "erc7579",
   TrustWallet = "trustWallet",
-  Gelato = "gelato"
+  Gelato = "gelato",
+  Uniswap = "uniswap"
 }
 
 export interface WalletDetails {
