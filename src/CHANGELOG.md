@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.18
+
+### Patch Changes
+
+- ba8e9e7: fix: allow passing signed authorization
+- 7789b61: fix: add personal_sign option (maintaining backwards compatibility with eth_sign type)
+
 ## 0.0.17
 
 ### Patch Changes
