@@ -1,5 +1,14 @@
 # @gelatonetwork/smartwallet-react-wagmi
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [ba8e9e7]
+- Updated dependencies [7789b61]
+  - @gelatonetwork/smartwallet@0.0.18
+  - @gelatonetwork/smartwallet-react-types@0.0.18
+
 ## 0.0.12
 
 ### Patch Changes
