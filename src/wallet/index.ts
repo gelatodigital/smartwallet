@@ -12,7 +12,8 @@ export enum WalletEncoding {
   OKX = "okx",
   ERC7579 = "erc7579",
   TrustWallet = "trustWallet",
-  Gelato = "gelato"
+  Gelato = "gelato",
+  LightAccount = "lightAccount"
 }
 
 export interface WalletDetails {
