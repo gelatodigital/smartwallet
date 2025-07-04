@@ -1,29 +1,20 @@
-import type { Chain, Hex, Transport, WalletActions, WalletClient } from "viem";
+import type { Chain, Transport, WalletActions, WalletClient } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 
-import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
-import type { WalletPrepareCallsResponse } from "../relay/rpc/interfaces/index.js";
-import { signSignatureRequest } from "./internal/signSignatureRequest.js";
+import type { SmartAccount } from "viem/account-abstraction";
 
 /**
  *
  * @param client - Client.
- * @param preparedCalls - Prepared calls.
- * @returns Signature and authorization list.
+ * @returns Sign authorization list.
  */
-export async function sign<
+export async function signAuthorizationList<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends SmartAccount = SmartAccount
 >(
-  client: WalletClient<transport, chain, account>,
-  preparedCalls: WalletPrepareCallsResponse
-): Promise<{ signature: Hex; authorizationList?: SignAuthorizationReturnType[] }> {
-  const { context, signatureRequest } = preparedCalls;
-
-  const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
-  const signature = await signSignatureRequest(client, signatureRequest, userOp);
-
+  client: WalletClient<transport, chain, account>
+): Promise<SignAuthorizationReturnType[] | undefined> {
   // IMPORTANT: this is required since `sign` is called in different
   // places(react, adapter, etc.) and React components, like Privy,
   // use JSON - RPC accounts which don't have the `signAuthorization`
@@ -45,5 +36,5 @@ export async function sign<
         ]
       : undefined;
 
-  return { signature, authorizationList };
+  return authorizationList;
 }

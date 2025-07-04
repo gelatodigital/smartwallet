@@ -6,7 +6,8 @@ import type {
   SmartAccount
 } from "viem/account-abstraction";
 
-import { sign } from "../../actions/sign.js";
+import { signAuthorizationList } from "../../actions/internal/signAuthorizationList.js";
+import { signSignatureRequest } from "../../actions/internal/signSignatureRequest.js";
 import { walletSendPreparedCalls } from "../../relay/rpc/sendPreparedCalls.js";
 import { AccountNotFoundError } from "../errors/index.js";
 import type { GelatoBundlerConfig } from "../index.js";
@@ -38,9 +39,12 @@ export async function sendUserOperation<
     : await prepareUserOperation(client, parameters as PrepareUserOperationParameters, config);
 
   const { context } = preparedCalls;
-  const { signature, authorizationList } = await sign(
+  const signature = await signSignatureRequest(
     client as unknown as WalletClient<Transport, Chain, SmartAccount>,
     preparedCalls
+  );
+  const authorizationList = await signAuthorizationList(
+    client as unknown as WalletClient<Transport, Chain, SmartAccount>
   );
 
   const { id } = await walletSendPreparedCalls(client as Client<Transport, Chain, SmartAccount>, {
