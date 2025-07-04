@@ -23,6 +23,6 @@
     "trust-wallet-sponsored-payment",
     "permissionless-adapter",
     "viem-adapter",
-    "light-account-sponsored"
+    "light-account-sponsored-payment"
   ]
 }
