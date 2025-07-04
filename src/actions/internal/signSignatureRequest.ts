@@ -1,17 +1,17 @@
 import type { Chain, Hex, Transport, WalletClient } from "viem";
-import type { SmartAccount, UserOperation } from "viem/account-abstraction";
+import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
 
-import { type SignatureRequest, SignatureRequestType } from "../../relay/rpc/index.js";
+import { SignatureRequestType, type WalletPrepareCallsResponse } from "../../relay/rpc/index.js";
 
 export async function signSignatureRequest<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends SmartAccount = SmartAccount
->(
-  client: WalletClient<transport, chain, account>,
-  signatureRequest: SignatureRequest,
-  userOp?: UserOperation
-) {
+>(client: WalletClient<transport, chain, account>, preparedCalls: WalletPrepareCallsResponse) {
+  const { context, signatureRequest } = preparedCalls;
+
+  const userOp = "userOp" in context ? formatUserOperation(context.userOp) : undefined;
+
   let signature: Hex;
 
   if (signatureRequest.type === SignatureRequestType.TypedData) {
