@@ -14,7 +14,7 @@ export async function waitForUserOperationReceipt(
 
   return new Promise((resolve, reject) => {
     response.on("success", async (status) => {
-      const receipt = await getUserOperationReceiptFromTaskStatus(client, status);
+      const receipt = await getUserOperationReceiptFromTaskStatus(client, status, true);
       resolve(receipt);
     });
     response.on("error", (error) => {
