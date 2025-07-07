@@ -12,7 +12,7 @@ import {
   UserOperationNotFoundError,
   entryPoint07Abi
 } from "viem/account-abstraction";
-import { getTransactionReceipt } from "viem/actions";
+import { getTransactionReceipt, waitForTransactionReceipt } from "viem/actions";
 import {
   TaskState,
   type TransactionStatusResponse,
@@ -22,9 +22,12 @@ import { isFinalTaskState } from "../../relay/status/utils.js";
 
 export async function getUserOperationReceiptFromTaskStatus(
   client: Client<Transport>,
-  status: TransactionStatusResponse
+  status: TransactionStatusResponse,
+  wait: boolean
 ): Promise<GetUserOperationReceiptReturnType> {
-  const receipt = await getTransactionReceipt(client, { hash: status.transactionHash as Hex });
+  const receipt = wait
+    ? await waitForTransactionReceipt(client, { hash: status.transactionHash as Hex })
+    : await getTransactionReceipt(client, { hash: status.transactionHash as Hex });
 
   const logs = parseEventLogs({
     abi: entryPoint07Abi,
@@ -75,5 +78,5 @@ export async function getUserOperationReceipt(
     } as GetUserOperationReceiptReturnType;
   }
 
-  return getUserOperationReceiptFromTaskStatus(client, status);
+  return getUserOperationReceiptFromTaskStatus(client, status, false);
 }
