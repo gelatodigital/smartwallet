@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.19
+
+### Patch Changes
+
+- c8d03bd: feat: support light account
+
 ## 0.0.18
 
 ### Patch Changes
