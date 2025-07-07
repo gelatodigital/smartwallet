@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.20
+
+### Patch Changes
+
+- c02e775: fix: receipt not found
+
 ## 0.0.19
 
 ### Patch Changes
