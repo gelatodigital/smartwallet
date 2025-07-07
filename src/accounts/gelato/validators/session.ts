@@ -9,7 +9,7 @@ import {
 } from "viem";
 import { delegationAbi } from "../../../abis/delegation";
 
-const VALIDATOR_ADDRESS: Address = "0x9A9DB961d0CAefF03B0d9f3124e783469393f75c"; // TODO: update
+const VALIDATOR_ADDRESS: Address = "0x50Bb0D492426692ba5fC09B40Ac9Cf4C5754E1c5";
 
 const ABI = parseAbi([
   "function addSession(address signer, uint256 expiry)",
