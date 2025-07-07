@@ -48,6 +48,9 @@ export interface Quote {
   gas: {
     amount: string;
     l1: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+    gasPrice: string;
   };
 }
 
