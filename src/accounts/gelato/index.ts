@@ -102,6 +102,23 @@ export async function gelato<eip7702 extends boolean = true>(
     return deployed;
   };
 
+  const getNonce = async (parameters?: { key?: bigint }) => {
+    return readContract(client, {
+      abi,
+      address: owner.address,
+      functionName: "getNonce",
+      args: [parameters?.key ?? 0n],
+      stateOverride: (await isDeployed())
+        ? undefined
+        : [
+            {
+              address: owner.address,
+              code: delegationCode(authorization.address)
+            }
+          ]
+    });
+  };
+
   const account = (await toSmartAccount({
     abi,
     client,
@@ -182,22 +199,6 @@ export async function gelato<eip7702 extends boolean = true>(
       return encodeCalls(calls, opData);
     },
 
-    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
-      return readContract(client, {
-        abi,
-        address: owner.address,
-        functionName: "getNonce",
-        args: [parameters?.key],
-        stateOverride: (await isDeployed())
-          ? undefined
-          : [
-              {
-                address: owner.address,
-                code: delegationCode(this.authorization.address)
-              }
-            ]
-      });
-    },
     async getAddress() {
       return owner.address;
     },
@@ -262,6 +263,9 @@ export async function gelato<eip7702 extends boolean = true>(
 
   // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
   account.isDeployed = isDeployed;
+
+  // Required since `toSmartAccount` overwrites any provided `getNonce` implementation
+  account.getNonce = getNonce;
 
   return account;
 }

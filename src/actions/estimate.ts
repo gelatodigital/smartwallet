@@ -1,10 +1,9 @@
-import type { Call, Chain, Transport } from "viem";
+import type { Chain, Transport } from "viem";
 
 import type { GelatoSmartAccount } from "../accounts/index.js";
-import type { Payment } from "../payment/index.js";
 import type { Quote } from "../relay/rpc/interfaces/index.js";
-import { walletPrepareCalls } from "../relay/rpc/prepareCalls.js";
-import type { GelatoWalletClient } from "./index.js";
+import type { GelatoActionArgs, GelatoWalletClient } from "./index.js";
+import { prepare } from "./prepare.js";
 
 /**
  *
@@ -19,19 +18,8 @@ export async function estimate<
   account extends GelatoSmartAccount = GelatoSmartAccount
 >(
   client: GelatoWalletClient<transport, chain, account>,
-  parameters: { payment: Payment; calls: Call[] }
+  parameters: GelatoActionArgs
 ): Promise<Quote> {
-  const { payment, calls } = structuredClone(parameters);
-
-  const { context } = await walletPrepareCalls(client, {
-    payment,
-    calls,
-    scw: client.account.scw,
-    erc4337: client.account.erc4337,
-    apiKey: client._internal.apiKey()
-  });
-
-  const { quote } = context;
-
-  return quote;
+  const preparedCalls = await prepare(client, parameters);
+  return preparedCalls.context.quote;
 }
