@@ -213,7 +213,7 @@ export async function uniswap<eip7702 extends boolean = true>(
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
 
       if (entryPoint.version !== "0.8") {
-        throw new Error("Only EntryPoint version 0.8 is supported for Gelato accounts");
+        throw new Error("Only EntryPoint version 0.8 is supported for Uniswap accounts");
       }
 
       const typedData = getUserOperationTypedData({
