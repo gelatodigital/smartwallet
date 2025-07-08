@@ -23,6 +23,7 @@
     "trust-wallet-sponsored-payment",
     "permissionless-adapter",
     "viem-adapter",
-    "light-account-sponsored-payment"
+    "light-account-sponsored-payment",
+    "nonces-example"
   ]
 }
