@@ -9,6 +9,7 @@ export { kernel } from "./kernel/index.js";
 export { okx } from "./okx/index.js";
 export { safe } from "./safe/index.js";
 export { trustWallet } from "./trustWallet/index.js";
+export { uniswap } from "./uniswap/index.js";
 
 export type GelatoSmartAccountSCWEncoding = `${WalletEncoding}`;
 export type GelatoSmartAccountSCWType = `${WalletType}`;
