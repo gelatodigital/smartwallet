@@ -14,6 +14,7 @@ export enum WalletEncoding {
   ERC7579 = "erc7579",
   TrustWallet = "trustWallet",
   Gelato = "gelato",
+  LightAccount = "lightAccount",
   Uniswap = "uniswap"
 }
 
