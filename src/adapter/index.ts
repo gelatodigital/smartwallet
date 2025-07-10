@@ -5,7 +5,7 @@ import {
   formatUserOperation
 } from "viem/account-abstraction";
 import { type Payment, isSponsored } from "../payment/index.js";
-import type { WalletEncoding } from "../wallet/index.js";
+import type { ERC4337Encoding } from "../wallet/index.js";
 import {
   type GetUserOperationGasPriceReturnType,
   getUserOperationGasPrice as getUserOperationGasPriceAction
@@ -23,7 +23,7 @@ import {
 
 export interface GelatoBundlerConfig {
   payment: Payment;
-  encoding: WalletEncoding;
+  encoding: ERC4337Encoding;
   apiKey?: string;
 }
 

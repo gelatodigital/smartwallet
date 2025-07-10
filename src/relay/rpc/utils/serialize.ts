@@ -9,10 +9,6 @@ export function serializeCalls(calls: Call[]) {
   }));
 }
 
-export function serializeNonceKey(nonceKey?: bigint) {
-  return nonceKey !== undefined ? nonceKey.toString() : undefined;
-}
-
 export function serializeAuthorizationList(authorizationList?: SignedAuthorizationList) {
   if (authorizationList === undefined || authorizationList.length === 0) {
     return authorizationList;
