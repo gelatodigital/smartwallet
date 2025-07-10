@@ -13,11 +13,11 @@ interface BaseCallRequest {
   gasLimit?: string;
   retries?: number;
   authorizationList?: SignedAuthorizationList;
-  sponsorApiKey?: string;
+  apiKey?: string;
 }
 
 export interface SponsoredCallRequest extends BaseCallRequest {
-  sponsorApiKey: string;
+  apiKey: string;
 }
 
 export interface SmartWalletCallRequest extends BaseCallRequest {

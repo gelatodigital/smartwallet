@@ -8,10 +8,10 @@ import { entryPoint07Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -41,7 +41,7 @@ const client = createPublicClient({
     bundlerTransport: http()
   }).extend(
     gelatoBundlerActions({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       // payment: erc20(paymentToken),
       // payment: native(),
       encoding: WalletEncoding.LightAccount

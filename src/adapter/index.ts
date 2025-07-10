@@ -39,7 +39,7 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
   >(
     client: Client<transport, chain, account>
   ): BundlerActions<account> & GelatoUserOperationGasPriceAction => {
-    config.apiKey = (isSponsored(config.payment) && config.payment.sponsorApiKey) || config.apiKey;
+    config.apiKey = (isSponsored(config.payment) && config.payment.apiKey) || config.apiKey;
 
     if (isSponsored(config.payment) && !config.apiKey) {
       throw new Error("apiKey must be provided for sponsored payment");
@@ -82,6 +82,6 @@ export function gelatoUserOperationGasPriceAction() {
   };
 }
 
-export function getUserOperationGasPrice(chainId: number, sponsorApiKey?: string) {
-  return getUserOperationGasPriceAction(chainId, sponsorApiKey);
+export function getUserOperationGasPrice(chainId: number, apiKey?: string) {
+  return getUserOperationGasPriceAction(chainId, apiKey);
 }

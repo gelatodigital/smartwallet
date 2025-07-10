@@ -20,7 +20,7 @@ cp .env.example .env
 
 ```
 VITE_DYNAMIC_ENVIRONMENT_ID=your_dynamic_environment_id_here
-VITE_SPONSOR_API_KEY=your_sponsor_api_key_here
+VITE_GELATO_API_KEY=your_gelato_api_key_here
 ```
 
 4. Start the development server:
@@ -52,8 +52,8 @@ The example uses the `GelatoSmartWalletDynamicContextProvider` to wrap the appli
 ## Environment Variables
 
 - `VITE_DYNAMIC_ENVIRONMENT_ID`: Your Dynamic environment ID (required)
-- `VITE_SPONSOR_API_KEY`: Your Gelato sponsor API key (required)
+- `VITE_GELATO_API_KEY`: Your Gelato API key (required)
 
 ## Troubleshooting
 
-If you see an error message saying "Dynamic environment ID is not set" or "Sponsor API key is not set", make sure you have created a `.env` file with the correct environment variables.
+If you see an error message saying "Dynamic environment ID is not set" or "Gelato API key is not set", make sure you have created a `.env` file with the correct environment variables.

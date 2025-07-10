@@ -27,7 +27,7 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <GelatoSmartWalletProvider params={sponsorApiKey}>
+        <GelatoSmartWalletProvider params={gelatoApiKey}>
           <YourApp />
         </GelatoSmartWalletProvider>
       </QueryClientProvider>
@@ -51,7 +51,7 @@ function YourComponent() {
     data: taskId,
     isPending
   } = useSendTransaction({
-    payment: sponsored(sponsorApiKey)
+    payment: sponsored(gelatoApiKey)
   });
 
   const { data: receipt } = useWaitForTransactionReceipt({
@@ -69,4 +69,3 @@ function YourComponent() {
   // use context as your needs
 }
 ```
-

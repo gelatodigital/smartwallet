@@ -10,6 +10,7 @@ A Modern Account Abstraction SDK for building and interacting with smart wallets
 
 - Node.js >= 23
 - pnpm >= 10.8.1
+- Gelato API Key for sponsored transactions via 1Balance (Get your key [here](https://app.gelato.cloud/)
 
 ## Packages
 
