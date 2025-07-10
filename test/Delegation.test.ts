@@ -94,7 +94,7 @@ describe("Initial Delegation Test", () => {
       scw: { type: "gelato" }
     });
 
-    const sponsorKey = getApiKeyStaging();
+    const apiKey = getApiKeyStaging();
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -108,7 +108,7 @@ describe("Initial Delegation Test", () => {
     });
 
     const response = await gelatoClient.execute({
-      payment: sponsored(sponsorKey),
+      payment: sponsored(apiKey),
       calls: constants.testCalls
     });
 

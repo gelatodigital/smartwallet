@@ -6,7 +6,7 @@ import {
 import { useCallback, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
-const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+const gelatoApiKey = import.meta.env.VITE_GELATO_API_KEY;
 
 function App() {
   const account = useAccount();
@@ -20,7 +20,7 @@ function App() {
     data: taskId,
     isPending
   } = useSendTransaction({
-    payment: sponsored(sponsorApiKey)
+    payment: sponsored(gelatoApiKey)
   });
 
   const { data: receipt } = useWaitForTransactionReceipt({

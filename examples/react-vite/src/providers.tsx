@@ -65,7 +65,7 @@ const WalletInfoComponent = () => {
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
-  const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+  const gelatoApiKey = import.meta.env.VITE_GELATO_API_KEY;
 
   const executeTransaction = async () => {
     if (!client) return;
@@ -74,7 +74,7 @@ const WalletInfoComponent = () => {
     try {
       const payment =
         paymentType === "sponsored"
-          ? sponsored(sponsorApiKey)
+          ? sponsored(gelatoApiKey)
           : paymentType === "erc20"
             ? erc20(erc20TokenAddress)
             : native();
@@ -240,16 +240,16 @@ const WalletInfoComponent = () => {
 };
 
 export default function Providers() {
-  const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+  const gelatoApiKey = import.meta.env.VITE_GELATO_API_KEY;
   const waasAppId = import.meta.env.VITE_WAAS_APP_ID;
 
-  if (!waasAppId || !sponsorApiKey) {
+  if (!waasAppId || !gelatoApiKey) {
     return (
       <div>
         <h1>Error</h1>
         <p>
           {!waasAppId && "WAAS app ID is not set. "}
-          {!sponsorApiKey && "Sponsor API key is not set. "}
+          {!gelatoApiKey && "Gelato API key is not set. "}
           Please set the required environment variables.
         </p>
       </div>
@@ -261,7 +261,7 @@ export default function Providers() {
       // Changing this to `dynamic` or `privy` is enough to change WaaS provider
       // VITE_WAAS_APP_ID also needs to be set accordingly
       settings={{
-        apiKey: sponsorApiKey,
+        apiKey: gelatoApiKey,
         scw: {
           type: "gelato"
         },

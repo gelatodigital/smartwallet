@@ -3,14 +3,14 @@ import { kernel } from "@gelatonetwork/smartwallet/accounts";
 import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
 import { http, type Hex, createPublicClient } from "viem";
-import { createBundlerClient, toCoinbaseSmartAccount } from "viem/account-abstraction";
+import { createBundlerClient } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -37,7 +37,7 @@ const client = createPublicClient({
     transport: http()
   }).extend(
     gelatoBundlerActions({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       encoding: WalletEncoding.ERC7579
     })
   );
