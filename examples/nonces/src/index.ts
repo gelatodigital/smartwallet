@@ -5,10 +5,10 @@ import { http, type Call, type Hex, createPublicClient, createWalletClient } fro
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -34,7 +34,7 @@ const main = async () => {
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: sponsorApiKey
+    apiKey: gelatoApiKey
   });
 
   const calls: Call[] = [
@@ -48,7 +48,7 @@ const main = async () => {
   // Regular `execute` call key without `nonce` or `nonceKey` specified.
   // This defaults to `nonceKey` zero.
   const response1 = await swc.execute({
-    payment: sponsored(sponsorApiKey),
+    payment: sponsored(gelatoApiKey),
     calls
   });
 
@@ -59,12 +59,12 @@ const main = async () => {
   // To execute transactions in parallel, a different `nonceKey` can be specified for each call.
   const responses2 = await Promise.all([
     swc.execute({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       calls,
       nonceKey: 10n
     }),
     swc.execute({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       calls,
       nonceKey: 20n
     })
@@ -79,12 +79,12 @@ const main = async () => {
 
   const responses3 = await Promise.all([
     swc.execute({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       calls,
       nonce
     }),
     swc.execute({
-      payment: sponsored(sponsorApiKey),
+      payment: sponsored(gelatoApiKey),
       calls,
       nonce: nonce + 1n // this transaction will execute after the first one
     })
