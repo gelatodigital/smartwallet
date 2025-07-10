@@ -43,7 +43,7 @@ const publicClient = createPublicClient({
 
   console.log("Preparing transaction...");
   const startPrepare = performance.now();
-  const preparedCalls = await swc.prepare({
+  const preparedCalls = await swc.prepareCalls({
     payment: sponsored(sponsorApiKey),
     calls: [
       {
@@ -59,7 +59,7 @@ const publicClient = createPublicClient({
   console.log("Sending transaction...");
   const startSend = performance.now();
   const startTimestamp = Date.now();
-  const response = await swc.send({
+  const response = await swc.sendPreparedCalls({
     preparedCalls
   });
   const endSend = performance.now();

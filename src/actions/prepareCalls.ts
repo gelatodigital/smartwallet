@@ -12,7 +12,7 @@ import type { GelatoWalletClient } from "./index.js";
  * @param parameters - Execution parameters.
  * @returns Prepared calls.
  */
-export async function prepare<
+export async function prepareCalls<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends GelatoSmartAccount = GelatoSmartAccount
