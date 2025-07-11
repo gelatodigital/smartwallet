@@ -143,6 +143,18 @@ export interface WalletSendPreparedCallsResponse {
   id: string;
 }
 
+export interface WalletSendCallsParams {
+  to: Address;
+  data: Hex;
+  payment: Payment;
+  authorizationList?: SignedAuthorizationList;
+  apiKey?: string;
+}
+
+export interface WalletSendCallsResponse {
+  id: string;
+}
+
 export interface WalletGetCapabilitiesResponse {
   [chainId: number]: SingleNetworkCapabilities;
 }

@@ -1,7 +1,7 @@
 import type { Call, Chain, Client, Hex, PublicActions, Transport, WalletClient } from "viem";
 
 import type { PublicActionsL2 } from "viem/op-stack";
-import type { Payment } from "../payment/index.js";
+import type { Payment, SponsoredPayment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type {
   NetworkCapabilities,
@@ -20,10 +20,17 @@ export type GelatoSmartWalletActions = {
   execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
   estimate: (args: { payment: Payment; calls: Call[] }) => Promise<Quote>;
   prepare: (args: { payment: Payment; calls: Call[] }) => Promise<WalletPrepareCallsResponse>;
-  send: (args: {
-    preparedCalls: WalletPrepareCallsResponse;
-    signature?: Hex;
-  }) => Promise<GelatoResponse>;
+  send: (
+    args:
+      | {
+          preparedCalls: WalletPrepareCallsResponse;
+          signature?: Hex;
+        }
+      | {
+          data: Hex;
+          payment: SponsoredPayment;
+        }
+  ) => Promise<GelatoResponse>;
 };
 
 export type GelatoSmartWalletInternals = {
