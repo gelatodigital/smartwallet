@@ -37,7 +37,7 @@ export async function send<
     const authorizationList = _authorizationList ?? (await signAuthorizationList(client));
 
     return await walletSendCalls(client, {
-      from: client.account.address,
+      to: client.account.address,
       data,
       payment,
       authorizationList,

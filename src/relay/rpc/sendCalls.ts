@@ -37,7 +37,7 @@ export const walletSendCalls = async <
       params: [
         {
           chainId: client.chain.id,
-          from: client.account.address,
+          to: client.account.address,
           data: callData,
           capabilities,
           authorizationList

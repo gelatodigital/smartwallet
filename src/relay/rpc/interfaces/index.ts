@@ -144,7 +144,7 @@ export interface WalletSendPreparedCallsResponse {
 }
 
 export interface WalletSendCallsParams {
-  from: Address;
+  to: Address;
   data: Hex;
   payment: Payment;
   authorizationList?: SignedAuthorizationList;
