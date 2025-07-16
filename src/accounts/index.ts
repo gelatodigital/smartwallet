@@ -1,13 +1,17 @@
 import type { Abi } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 import type { WalletEncoding, WalletType } from "../wallet/index.js";
+import type { Validator } from "./gelato/index.js";
 
 export { custom } from "./custom/index.js";
 export {
   gelato,
   addSession,
   removeSession,
-  Validator
+  Validator,
+  ValidatorType,
+  SessionValidator,
+  session
 } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
 export { okx } from "./okx/index.js";
@@ -32,6 +36,7 @@ export type GelatoSmartAccountExtension = {
   scw: GelatoSmartAccountSCW;
   eip7702: boolean;
   erc4337: boolean;
+  validator?: Validator;
   abi?: Abi;
 };
 export type GelatoSmartAccount = SmartAccount & GelatoSmartAccountExtension;

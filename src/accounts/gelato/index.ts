@@ -20,37 +20,39 @@ import { delegationAbi as abi } from "../../abis/delegation.js";
 import { delegationCode } from "../../constants/index.js";
 import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
-import { Validator, encodeSessionSignature } from "./validators/index.js";
+import type { Validator } from "./validators/index.js";
 
 export * from "./validators/index.js";
 
-export type GelatoSmartAccountImplementation<eip7702 extends boolean = boolean> =
-  SmartAccountImplementation<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, eip7702>;
+export type GelatoSmartAccountImplementation = SmartAccountImplementation<
+  typeof entryPoint08Abi,
+  "0.8",
+  GelatoSmartAccountExtension
+>;
 
-export type GelatoSmartAccountParameters<eip7702 extends boolean = true> = {
-  client: GelatoSmartAccountImplementation<eip7702>["client"];
+export type GelatoSmartAccountParameters = {
+  client: GelatoSmartAccountImplementation["client"];
 } & (
   | {
       owner: Account;
     }
   | {
-      signer: Account;
-      address: Address;
       validator: Validator;
     }
 );
 
 export type GelatoSmartAccountReturnType = Prettify<SmartAccount<GelatoSmartAccountImplementation>>;
 
-export async function gelato<eip7702 extends boolean = true>(
-  parameters: GelatoSmartAccountParameters<eip7702>
+export async function gelato(
+  parameters: GelatoSmartAccountParameters
 ): Promise<GelatoSmartAccountReturnType> {
   const { client } = parameters;
 
   const owner = "owner" in parameters ? parameters.owner : undefined;
-  const address = "owner" in parameters ? parameters.owner.address : parameters.address;
-  const signer = "owner" in parameters ? parameters.owner : parameters.signer;
   const validator = "validator" in parameters ? parameters.validator : undefined;
+
+  const address = "owner" in parameters ? parameters.owner.address : parameters.validator.account;
+  const signer = "owner" in parameters ? parameters.owner : parameters.validator.signer;
 
   const entryPoint = {
     abi: entryPoint08Abi,
@@ -81,35 +83,6 @@ export async function gelato<eip7702 extends boolean = true>(
     return deployed;
   };
 
-  const signTypedData = async <
-    const typedData extends TypedData | Record<string, unknown>,
-    primaryType extends keyof typedData | "EIP712Domain" = keyof typedData
-  >(
-    parameters: TypedDataDefinition<typedData, primaryType>
-  ) => {
-    const { domain, types, primaryType, message } = parameters as TypedDataDefinition<
-      TypedData,
-      string
-    >;
-
-    const signature = await viem_signTypedData(client, {
-      domain,
-      message,
-      primaryType,
-      types,
-      account: signer
-    });
-
-    switch (validator) {
-      case Validator.Passkey:
-        throw new Error("Passkey validator not yet supported");
-      case Validator.Session:
-        return encodeSessionSignature(signer.address, signature);
-    }
-
-    return signature;
-  };
-
   const account = (await toSmartAccount({
     abi,
     client,
@@ -117,6 +90,7 @@ export async function gelato<eip7702 extends boolean = true>(
       abi,
       eip7702: true,
       erc4337: false,
+      validator,
       scw: { type: "gelato", encoding: "gelato", version: "0.1" } as const
     },
     entryPoint,
@@ -206,23 +180,25 @@ export async function gelato<eip7702 extends boolean = true>(
     async signMessage(parameters) {
       const { message } = parameters;
 
-      const signature = await viem_signMessage(client, {
+      return viem_signMessage(client, {
         account: signer,
         message
       });
-
-      switch (validator) {
-        case Validator.Passkey:
-          throw new Error("Passkey validator not yet supported");
-        case Validator.Session:
-          return encodeSessionSignature(signer.address, signature);
-      }
-
-      return signature;
     },
 
     async signTypedData(parameters) {
-      return await signTypedData(parameters);
+      const { domain, types, primaryType, message } = parameters as TypedDataDefinition<
+        TypedData,
+        string
+      >;
+
+      return viem_signTypedData(client, {
+        domain,
+        message,
+        primaryType,
+        types,
+        account: signer
+      });
     },
 
     async getStubSignature() {
@@ -242,7 +218,10 @@ export async function gelato<eip7702 extends boolean = true>(
         }
       });
 
-      return await signTypedData(typedData);
+      return viem_signTypedData(client, {
+        ...typedData,
+        account: signer
+      });
     }
   })) as unknown as GelatoSmartAccountReturnType;
 

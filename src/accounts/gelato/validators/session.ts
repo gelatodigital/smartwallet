@@ -1,15 +1,7 @@
-import {
-  type Address,
-  type Call,
-  type Hex,
-  encodeFunctionData,
-  encodePacked,
-  parseAbi,
-  zeroAddress
-} from "viem";
+import { type Address, type Call, encodeFunctionData, parseAbi, zeroAddress } from "viem";
 import { delegationAbi } from "../../../abis/delegation";
 
-const VALIDATOR_ADDRESS: Address = "0x50Bb0D492426692ba5fC09B40Ac9Cf4C5754E1c5";
+const VALIDATOR_ADDRESS: Address = "0xF1142FDd8179747DE0aD5FE1Cecaf645E727093a";
 
 const ABI = parseAbi([
   "function addSession(address signer, uint256 expiry)",
@@ -47,8 +39,4 @@ export function removeSession(signer: Address): Call {
       args: [signer]
     })
   };
-}
-
-export function encodeSessionSignature(signer: Address, signature: Hex) {
-  return encodePacked(["address", "address", "bytes"], [VALIDATOR_ADDRESS, signer, signature]);
 }

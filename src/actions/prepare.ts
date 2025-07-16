@@ -27,6 +27,7 @@ export async function prepare<
     payment,
     nonceKey,
     scw: client.account.scw,
+    validator: client.account.validator,
     erc4337: client.account.erc4337,
     apiKey: client._internal.apiKey()
   });

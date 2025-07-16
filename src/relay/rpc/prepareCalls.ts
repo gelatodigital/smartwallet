@@ -1,6 +1,7 @@
 import type { Chain, Client, Transport } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
 
+import { toValidatorRpc } from "../../accounts/gelato/index.js";
 import { api } from "../../constants/index.js";
 import type {
   Capabilities,
@@ -18,7 +19,7 @@ export const walletPrepareCalls = async <
   client: Client<transport, chain, account>,
   params: WalletPrepareCallsParams
 ): Promise<WalletPrepareCallsResponse> => {
-  const { payment, apiKey, scw, erc4337 } = params;
+  const { payment, apiKey, scw, erc4337, validator } = params;
 
   const calls = serializeCalls(params.calls);
 
@@ -27,6 +28,7 @@ export const walletPrepareCalls = async <
   const capabilities: Capabilities = <GelatoCapabilities>{
     wallet: scw,
     payment,
+    validator: validator ? toValidatorRpc(validator) : undefined,
     authorization: client.account.authorization
       ? {
           address: client.account.authorization.address,

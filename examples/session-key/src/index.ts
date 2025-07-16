@@ -1,5 +1,5 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
-import { Validator, addSession, gelato, removeSession } from "@gelatonetwork/smartwallet/accounts";
+import { addSession, gelato, removeSession, session } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
 import { http, type Address, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
@@ -64,9 +64,7 @@ const main = async () => {
   await new Promise((r) => setTimeout(r, 5000));
 
   const account = await gelato({
-    signer,
-    address: owner.address,
-    validator: Validator.Session,
+    validator: session(owner.address, signer),
     client: publicClient
   });
 
