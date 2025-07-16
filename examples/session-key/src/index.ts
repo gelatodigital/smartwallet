@@ -1,14 +1,14 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { addSession, gelato, removeSession, session } from "@gelatonetwork/smartwallet/accounts";
-import "dotenv/config";
 import { http, type Address, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
+import "dotenv/config";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -35,11 +35,11 @@ const createSession = async (signer: Address, expiry: number) => {
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: sponsorApiKey
+    apiKey: gelatoApiKey
   });
 
   const response = await swc.execute({
-    payment: sponsored(sponsorApiKey),
+    payment: sponsored(gelatoApiKey),
     calls: [
       // This call creates the session
       // You can execute other calls before or after this
@@ -60,8 +60,8 @@ const main = async () => {
   // Once this session is created, it itself can be used to create other sessions
   await createSession(signer.address, expiry);
 
-  console.log("Waiting 5 seconds...");
-  await new Promise((r) => setTimeout(r, 5000));
+  console.log("Waiting 2 seconds...");
+  await new Promise((r) => setTimeout(r, 2000));
 
   const account = await gelato({
     validator: session(owner.address, signer),
@@ -77,11 +77,11 @@ const main = async () => {
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: sponsorApiKey
+    apiKey: gelatoApiKey
   });
 
   const response = await swc.execute({
-    payment: sponsored(sponsorApiKey),
+    payment: sponsored(gelatoApiKey),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
