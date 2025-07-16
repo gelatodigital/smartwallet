@@ -55,6 +55,9 @@ const main = async () => {
   const hash1 = await response1.wait();
   console.log(`Transaction successful, hash: ${hash1}`);
 
+  console.log("Waiting 2 seconds...");
+  await new Promise((r) => setTimeout(r, 2000));
+
   // Same call with `nonceKey` specified (2-dimensional nonces).
   // To execute transactions in parallel, a different `nonceKey` can be specified for each call.
   const responses2 = await Promise.all([
@@ -72,6 +75,9 @@ const main = async () => {
 
   const hashes2 = await Promise.all(responses2.map((x) => x.wait()));
   console.log(`Transaction successful, hashes: ${hashes2}`);
+
+  console.log("Waiting 2 seconds...");
+  await new Promise((r) => setTimeout(r, 2000));
 
   // Same call with sequential `nonce` specified.
   // This allows you to submit multiple transaction with the same `nonceKey` at once by explicitly specifying the ordering (nonce).

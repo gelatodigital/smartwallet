@@ -19,7 +19,9 @@ export async function prepare<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: GelatoActionArgs
 ): Promise<WalletPrepareCallsResponse> {
-  const { payment, calls, nonceKey, nonce } = parameters;
+  const { payment, calls } = parameters;
+  const nonce = "nonce" in parameters ? parameters.nonce : undefined;
+  const nonceKey = "nonceKey" in parameters ? parameters.nonceKey : undefined;
 
   return await walletPrepareCalls(client, {
     calls,

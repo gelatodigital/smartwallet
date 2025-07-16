@@ -19,9 +19,14 @@ import { switchChain } from "./switchChain.js";
 export type GelatoActionArgs = {
   payment: Payment;
   calls: Call[];
-  nonce?: bigint;
-  nonceKey?: bigint;
-};
+} & (
+  | {
+      nonce?: bigint;
+    }
+  | {
+      nonceKey?: bigint;
+    }
+);
 
 export type GelatoSmartWalletActions = {
   execute: (args: GelatoActionArgs) => Promise<GelatoResponse>;
