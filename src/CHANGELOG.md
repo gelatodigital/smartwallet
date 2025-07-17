@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.21
+
+### Patch Changes
+
+- 41fb5f7: refactor: rename sponsorApiKey to apiKey
+- 0213d77: refactor: rename prepare to prepareCalls
+- 0213d77: refactor: rename send to sendPreparedCalls
+
 ## 0.0.20
 
 ### Patch Changes
