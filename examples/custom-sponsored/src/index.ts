@@ -10,10 +10,10 @@ import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -54,11 +54,11 @@ const publicClient = createPublicClient({
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: sponsorApiKey
+    apiKey: gelatoApiKey
   });
 
   const response = await swc.execute({
-    payment: sponsored(sponsorApiKey),
+    payment: sponsored(gelatoApiKey),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
