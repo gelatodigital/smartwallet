@@ -3,7 +3,7 @@ import type { Chain, Transport } from "viem";
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Quote } from "../relay/rpc/interfaces/index.js";
 import type { GelatoActionArgs, GelatoWalletClient } from "./index.js";
-import { prepare } from "./prepare.js";
+import { prepareCalls } from "./prepareCalls.js";
 
 /**
  *
@@ -20,6 +20,6 @@ export async function estimate<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: GelatoActionArgs
 ): Promise<Quote> {
-  const preparedCalls = await prepare(client, parameters);
+  const preparedCalls = await prepareCalls(client, parameters);
   return preparedCalls.context.quote;
 }
