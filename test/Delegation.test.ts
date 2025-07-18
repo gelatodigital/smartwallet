@@ -26,7 +26,8 @@ describe("Initial Delegation Test", () => {
 
     const response = await gelatoClient.execute({
       payment: native(),
-      calls: constants.testCalls
+      calls: constants.testCalls,
+      nonceKey: 0n
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
@@ -62,7 +63,8 @@ describe("Initial Delegation Test", () => {
 
     const response = await gelatoClient.execute({
       payment: erc20(constants.erc20Address()),
-      calls: constants.testCalls
+      calls: constants.testCalls,
+      nonceKey: 1n
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
@@ -109,7 +111,8 @@ describe("Initial Delegation Test", () => {
 
     const response = await gelatoClient.execute({
       payment: sponsored(apiKey),
-      calls: constants.testCalls
+      calls: constants.testCalls,
+      nonceKey: 2n
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
