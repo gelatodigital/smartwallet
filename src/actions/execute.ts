@@ -3,8 +3,8 @@ import type { Chain, Transport } from "viem";
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type { GelatoActionArgs, GelatoWalletClient } from "./index.js";
-import { prepare } from "./prepare.js";
-import { send } from "./send.js";
+import { prepareCalls } from "./prepareCalls.js";
+import { sendPreparedCalls } from "./sendPreparedCalls.js";
 
 /**
  *
@@ -20,6 +20,6 @@ export async function execute<
   client: GelatoWalletClient<transport, chain, account>,
   parameters: GelatoActionArgs
 ): Promise<GelatoResponse> {
-  const preparedCalls = await prepare(client, parameters);
-  return send(client, { preparedCalls });
+  const preparedCalls = await prepareCalls(client, parameters);
+  return sendPreparedCalls(client, { preparedCalls });
 }

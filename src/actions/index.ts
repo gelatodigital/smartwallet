@@ -12,8 +12,8 @@ import type {
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
-import { prepare } from "./prepare.js";
-import { send } from "./send.js";
+import { prepareCalls } from "./prepareCalls.js";
+import { sendPreparedCalls } from "./sendPreparedCalls.js";
 import { switchChain } from "./switchChain.js";
 
 export type GelatoActionArgs = {
@@ -31,8 +31,8 @@ export type GelatoActionArgs = {
 export type GelatoSmartWalletActions = {
   execute: (args: GelatoActionArgs) => Promise<GelatoResponse>;
   estimate: (args: GelatoActionArgs) => Promise<Quote>;
-  prepare: (args: GelatoActionArgs) => Promise<WalletPrepareCallsResponse>;
-  send: (args: {
+  prepareCalls: (args: GelatoActionArgs) => Promise<WalletPrepareCallsResponse>;
+  sendPreparedCalls: (args: {
     preparedCalls: WalletPrepareCallsResponse;
     signature?: Hex;
   }) => Promise<GelatoResponse>;
@@ -63,9 +63,9 @@ export function actions<
   return {
     execute: (args: GelatoActionArgs) => execute(client, args),
     estimate: (args: GelatoActionArgs) => estimate(client, args),
-    prepare: (args: GelatoActionArgs) => prepare(client, args),
-    send: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
-      send(client, args),
+    prepareCalls: (args: GelatoActionArgs) => prepareCalls(client, args),
+    sendPreparedCalls: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
+      sendPreparedCalls(client, args),
     switchChain: (args: { id: number }) => switchChain(client, args)
   };
 }
