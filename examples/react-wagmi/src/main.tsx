@@ -11,7 +11,7 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
-const sponsorApiKey = import.meta.env.VITE_SPONSOR_API_KEY;
+const gelatoApiKey = import.meta.env.VITE_GELATO_API_KEY;
 
 // biome-ignore lint/style/noNonNullAssertion: example
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <GelatoSmartWalletProvider
           params={{
-            apiKey: sponsorApiKey,
+            apiKey: gelatoApiKey,
             scw: {
               type: "kernel",
               eip7702: false

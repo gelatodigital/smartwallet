@@ -9,10 +9,10 @@ import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
-const sponsorApiKey = process.env.SPONSOR_API_KEY;
+const gelatoApiKey = process.env.GELATO_API_KEY;
 
-if (!sponsorApiKey) {
-  throw new Error("SPONSOR_API_KEY is not set");
+if (!gelatoApiKey) {
+  throw new Error("GELATO_API_KEY is not set");
 }
 
 const privateKey = (process.env.PRIVATE_KEY ?? generatePrivateKey()) as Hex;
@@ -38,13 +38,13 @@ const publicClient = createPublicClient({
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: sponsorApiKey
+    apiKey: gelatoApiKey
   });
 
   console.log("Preparing transaction...");
   const startPrepare = performance.now();
-  const preparedCalls = await swc.prepare({
-    payment: sponsored(sponsorApiKey),
+  const preparedCalls = await swc.prepareCalls({
+    payment: sponsored(gelatoApiKey),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
@@ -59,7 +59,7 @@ const publicClient = createPublicClient({
   console.log("Sending transaction...");
   const startSend = performance.now();
   const startTimestamp = Date.now();
-  const response = await swc.send({
+  const response = await swc.sendPreparedCalls({
     preparedCalls
   });
   const endSend = performance.now();
