@@ -8,7 +8,8 @@ import type {
 } from "viem";
 
 import type { UserOperation } from "viem/account-abstraction";
-import type { GelatoSmartAccountSCW } from "../../../accounts/index.js";
+import type { ValidatorRpc } from "../../../accounts/gelato/index.js";
+import type { GelatoSmartAccountSCW, Validator } from "../../../accounts/index.js";
 import type { Payment } from "../../../payment/index.js";
 import type { WalletDetails } from "../../../wallet/index.js";
 
@@ -75,6 +76,7 @@ export interface EntryPoint {
 export interface GelatoCapabilities {
   wallet: WalletDetails;
   payment: Payment;
+  validator?: ValidatorRpc;
   authorization?: Authorization;
   nonceKey?: string;
 }
@@ -124,6 +126,7 @@ export interface WalletPrepareCallsParams {
   erc4337: boolean;
   nonceKey?: bigint;
   apiKey?: string;
+  validator?: Validator;
 }
 
 export interface WalletPrepareCallsResponse<T extends Context = Context> {
