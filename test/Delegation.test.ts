@@ -21,7 +21,8 @@ describe("Initial Delegation Test", () => {
     });
 
     const balanceInitial = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const response = await gelatoClient.execute({
@@ -34,11 +35,13 @@ describe("Initial Delegation Test", () => {
     console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const balanceFinal = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
@@ -51,14 +54,16 @@ describe("Initial Delegation Test", () => {
     });
 
     const balanceInitial = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const erc20BalanceInitial = await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: erc20Abi,
       functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      args: [gelatoClient.account.address],
+      blockTag: "pending"
     });
 
     const response = await gelatoClient.execute({
@@ -71,18 +76,21 @@ describe("Initial Delegation Test", () => {
     console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const balanceFinal = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const erc20BalanceFinal = await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: erc20Abi,
       functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      args: [gelatoClient.account.address],
+      blockTag: "pending"
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
@@ -99,14 +107,16 @@ describe("Initial Delegation Test", () => {
     const apiKey = getApiKeyStaging();
 
     const balanceInitial = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const erc20BalanceInitial = await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: erc20Abi,
       functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      args: [gelatoClient.account.address],
+      blockTag: "pending"
     });
 
     const response = await gelatoClient.execute({
@@ -119,18 +129,21 @@ describe("Initial Delegation Test", () => {
     console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const balanceFinal = await gelatoClient.getBalance({
-      address: gelatoClient.account.address
+      address: gelatoClient.account.address,
+      blockTag: "pending"
     });
 
     const erc20BalanceFinal = await gelatoClient.readContract({
       address: constants.erc20Address(),
       abi: erc20Abi,
       functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      args: [gelatoClient.account.address],
+      blockTag: "pending"
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
