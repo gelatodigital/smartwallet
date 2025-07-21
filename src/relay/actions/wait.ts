@@ -97,6 +97,7 @@ export const wait = async (
     // `promise` will resolve with `waitForReceipt` set to true and Provider's TX receipt will race with
     // status API to fetch inclusion as quickly as possible
     const result = await promise;
+    console.log("RESULT", result);
     while (result.waitForReceipt && !submission) {
       fallbackHash = result.hash;
       const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
