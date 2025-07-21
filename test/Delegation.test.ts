@@ -42,10 +42,8 @@ describe("Initial Delegation Test", () => {
       nonceKey: 0n
     });
 
-    const hash = await response.wait("execution", { confirmations: 3 });
+    const hash = await response.wait("execution", { confirmations: 10 });
     console.log(`Transaction included: ${hash}`);
-
-    await new Promise((r) => setTimeout(r, 5000));
 
     console.log("after", await gelatoClient.getBalance({ address: gelatoClient.account.address }));
     console.log(
@@ -91,10 +89,8 @@ describe("Initial Delegation Test", () => {
       nonceKey: 1n
     });
 
-    const hash = await response.wait("execution", { confirmations: 3 });
+    const hash = await response.wait("execution", { confirmations: 10 });
     console.log(`Transaction included: ${hash}`);
-
-    await new Promise((r) => setTimeout(r, 5000));
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -144,10 +140,8 @@ describe("Initial Delegation Test", () => {
       nonceKey: 2n
     });
 
-    const hash = await response.wait("execution", { confirmations: 3 });
+    const hash = await response.wait("execution", { confirmations: 10 });
     console.log(`Transaction included: ${hash}`);
-
-    await new Promise((r) => setTimeout(r, 5000));
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
