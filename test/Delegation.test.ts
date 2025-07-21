@@ -16,21 +16,9 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Gelato SCW transaction with native payment", async () => {
-    console.log("starting test 1");
-
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
-
-    console.log("address", gelatoClient.account.address);
-    console.log(
-      "initial",
-      await gelatoClient.getBalance({ address: gelatoClient.account.address })
-    );
-    console.log(
-      "initial latest",
-      await gelatoClient.getBalance({ address: gelatoClient.account.address, blockTag: "latest" })
-    );
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -42,14 +30,8 @@ describe("Initial Delegation Test", () => {
       nonceKey: 0n
     });
 
-    const hash = await response.wait("execution", { confirmations: 10 });
+    const hash = await response.wait("execution", { confirmations: 3 });
     console.log(`Transaction included: ${hash}`);
-
-    console.log("after", await gelatoClient.getBalance({ address: gelatoClient.account.address }));
-    console.log(
-      "after latest",
-      await gelatoClient.getBalance({ address: gelatoClient.account.address, blockTag: "latest" })
-    );
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
@@ -59,15 +41,11 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
-    console.log("finished test 1");
-
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBeLessThan(balanceInitial);
   });
 
   test("Gelato SCW transaction with ERC20 payment", async () => {
-    console.log("starting test 2");
-
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -89,7 +67,7 @@ describe("Initial Delegation Test", () => {
       nonceKey: 1n
     });
 
-    const hash = await response.wait("execution", { confirmations: 10 });
+    const hash = await response.wait("execution", { confirmations: 3 });
     console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
@@ -107,16 +85,12 @@ describe("Initial Delegation Test", () => {
       args: [gelatoClient.account.address]
     });
 
-    console.log("finished test 2");
-
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);
     expect(erc20BalanceFinal).toBeLessThan(erc20BalanceInitial);
   });
 
   test("Gelato SCW transaction with sponsor payment", async () => {
-    console.log("starting test 3");
-
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -140,7 +114,7 @@ describe("Initial Delegation Test", () => {
       nonceKey: 2n
     });
 
-    const hash = await response.wait("execution", { confirmations: 10 });
+    const hash = await response.wait("execution", { confirmations: 3 });
     console.log(`Transaction included: ${hash}`);
 
     const code = await gelatoClient.getCode({
@@ -157,8 +131,6 @@ describe("Initial Delegation Test", () => {
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
     });
-
-    console.log("finished test 3");
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);

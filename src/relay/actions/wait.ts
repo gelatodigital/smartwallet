@@ -66,7 +66,6 @@ export const wait = async (
     }
 
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
-      console.log("IS_SUBMITTED");
       resolvePromise({
         hash: taskStatus.transactionHash as Hash,
         waitForReceipt: !submission
@@ -74,11 +73,8 @@ export const wait = async (
     }
 
     if (taskStatus.taskState === TaskState.ExecSuccess) {
-      console.log("ExecSuccess");
       taskStatus.transactionHash
-        ? resolvePromise({
-            hash: taskStatus.transactionHash as Hash,
-          })
+        ? resolvePromise({ hash: taskStatus.transactionHash as Hash })
         : rejectPromise(new InternalError(taskId));
     }
   };
@@ -105,7 +101,6 @@ export const wait = async (
     // `promise` will resolve with `waitForReceipt` set to true and Provider's TX receipt will race with
     // status API to fetch inclusion as quickly as possible
     const result = await promise;
-    console.log("RESULT", result);
     while (result.waitForReceipt || waitForConfirmations) {
       fallbackHash = result.hash;
       const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
@@ -139,16 +134,8 @@ export const wait = async (
             };
           });
 
-      console.log("RESOLVER", resolver);
-
       // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
       if (resolver === "statusApi" && client && confirmations !== undefined) {
-        console.log("waitForTransactionReceipt", {
-          hash: result.hash,
-          pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-          confirmations
-        });
-
         await waitForTransactionReceipt(client, {
           hash: result.hash,
           pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
@@ -157,8 +144,6 @@ export const wait = async (
       }
 
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
-        console.log("resubmission");
-
         // Resubmission occurred, race for new hash again
         result.hash = _result.hash;
         result.waitForReceipt = _result.waitForReceipt;
