@@ -68,13 +68,19 @@ export const wait = async (
 
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
       console.log("IS_SUBMITTED");
-      resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission || waitForConfirmations });
+      resolvePromise({
+        hash: taskStatus.transactionHash as Hash,
+        waitForReceipt: !submission || waitForConfirmations
+      });
     }
 
     if (taskStatus.taskState === TaskState.ExecSuccess) {
       console.log("ExecSuccess");
       taskStatus.transactionHash
-        ? resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: waitForConfirmations })
+        ? resolvePromise({
+            hash: taskStatus.transactionHash as Hash,
+            waitForReceipt: waitForConfirmations
+          })
         : rejectPromise(new InternalError(taskId));
     }
   };
