@@ -22,6 +22,16 @@ describe("Initial Delegation Test", () => {
       scw: { type: "gelato" }
     });
 
+    console.log("address", gelatoClient.account.address);
+    console.log(
+      "initial",
+      await gelatoClient.getBalance({ address: gelatoClient.account.address })
+    );
+    console.log(
+      "initial latest",
+      await gelatoClient.getBalance({ address: gelatoClient.account.address, blockTag: "latest" })
+    );
+
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
     });
@@ -34,6 +44,12 @@ describe("Initial Delegation Test", () => {
 
     const hash = await response.wait("execution", { confirmations: 3 });
     console.log(`Transaction included: ${hash}`);
+
+    console.log("after", await gelatoClient.getBalance({ address: gelatoClient.account.address }));
+    console.log(
+      "after latest",
+      await gelatoClient.getBalance({ address: gelatoClient.account.address, blockTag: "latest" })
+    );
 
     const code = await gelatoClient.getCode({
       address: gelatoClient.account.address
