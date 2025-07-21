@@ -74,7 +74,7 @@ const publicClient = createPublicClient({
   response.on("success", async (status: GelatoTaskStatus) => {
     console.log(`Transaction successful: ${status.transactionHash}`);
     const blockTimestamp = await publicClient
-      .getTransactionReceipt({ hash: status.transactionHash as `0x${string}` })
+      .waitForTransactionReceipt({ hash: status.transactionHash as `0x${string}` })
       .then(({ blockHash }) => publicClient.getBlock({ blockHash: blockHash }))
       .then((block) => Number(block.timestamp) * 1000);
     const latency = blockTimestamp - startTimestamp;
