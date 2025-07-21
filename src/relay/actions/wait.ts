@@ -37,6 +37,7 @@ export const wait = async (
   const { client, event, pollingInterval, maxRetries, confirmations } = parameters;
 
   const submission = event === "submission";
+  const waitForConfirmations = confirmations !== undefined ? confirmations > 0 : false;
 
   // Check with HTTP first
   const transactionHash = await waitHttp(taskId, submission);
@@ -64,13 +65,11 @@ export const wait = async (
       rejectPromise(new ExecutionCancelledError(taskId));
     }
 
-    const waitForConfirmations = confirmations ? confirmations > 0 : false;
-
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
       console.log("IS_SUBMITTED");
       resolvePromise({
         hash: taskStatus.transactionHash as Hash,
-        waitForReceipt: !submission || waitForConfirmations
+        waitForReceipt: !submission
       });
     }
 
@@ -79,7 +78,6 @@ export const wait = async (
       taskStatus.transactionHash
         ? resolvePromise({
             hash: taskStatus.transactionHash as Hash,
-            waitForReceipt: waitForConfirmations
           })
         : rejectPromise(new InternalError(taskId));
     }
@@ -108,7 +106,7 @@ export const wait = async (
     // status API to fetch inclusion as quickly as possible
     const result = await promise;
     console.log("RESULT", result);
-    while (result.waitForReceipt && !submission) {
+    while (result.waitForReceipt || waitForConfirmations) {
       fallbackHash = result.hash;
       const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
         resolvePromise = resolve;
@@ -149,7 +147,7 @@ export const wait = async (
           hash: result.hash,
           pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
           confirmations
-        })
+        });
 
         await waitForTransactionReceipt(client, {
           hash: result.hash,
