@@ -130,6 +130,8 @@ export const wait = async (
             };
           });
 
+      console.log("RESOLVER", resolver);
+
       // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
       if (resolver === "statusApi" && client && confirmations !== undefined) {
         await waitForTransactionReceipt(client, {
