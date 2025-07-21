@@ -66,10 +66,7 @@ export const wait = async (
     }
 
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
-      resolvePromise({
-        hash: taskStatus.transactionHash as Hash,
-        waitForReceipt: !submission
-      });
+      resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission });
     }
 
     if (taskStatus.taskState === TaskState.ExecSuccess) {
