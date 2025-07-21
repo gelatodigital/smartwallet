@@ -145,6 +145,12 @@ export const wait = async (
 
       // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
       if (resolver === "statusApi" && client && confirmations !== undefined) {
+        console.log("waitForTransactionReceipt", {
+          hash: result.hash,
+          pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+          confirmations
+        })
+
         await waitForTransactionReceipt(client, {
           hash: result.hash,
           pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
@@ -153,6 +159,8 @@ export const wait = async (
       }
 
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
+        console.log("resubmission");
+
         // Resubmission occurred, race for new hash again
         result.hash = _result.hash;
         result.waitForReceipt = _result.waitForReceipt;
