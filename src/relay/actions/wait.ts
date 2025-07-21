@@ -64,15 +64,17 @@ export const wait = async (
       rejectPromise(new ExecutionCancelledError(taskId));
     }
 
+    const waitForConfirmations = confirmations ? confirmations > 0 : false;
+
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
       console.log("IS_SUBMITTED");
-      resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission });
+      resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission || waitForConfirmations });
     }
 
     if (taskStatus.taskState === TaskState.ExecSuccess) {
       console.log("ExecSuccess");
       taskStatus.transactionHash
-        ? resolvePromise({ hash: taskStatus.transactionHash as Hash })
+        ? resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: waitForConfirmations })
         : rejectPromise(new InternalError(taskId));
     }
   };
