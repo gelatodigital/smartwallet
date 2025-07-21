@@ -96,7 +96,7 @@ const main = async () => {
 
   const hash = await response.wait();
   console.log(`Call executed and session voided! hash: ${hash}`);
-  process.exit(1);
+  process.exit(0);
 };
 
 main();

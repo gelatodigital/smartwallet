@@ -83,6 +83,23 @@ export async function gelato(
     return deployed;
   };
 
+  const getNonce = async (parameters?: { key?: bigint }) => {
+    return readContract(client, {
+      abi,
+      address,
+      functionName: "getNonce",
+      args: [parameters?.key ?? 0n],
+      stateOverride: (await isDeployed())
+        ? undefined
+        : [
+            {
+              address,
+              code: delegationCode(GELATO_V0_1_DELEGATION_ADDRESS)
+            }
+          ]
+    });
+  };
+
   const account = (await toSmartAccount({
     abi,
     client,
@@ -152,23 +169,6 @@ export async function gelato(
       return encodeCalls(calls, opData);
     },
 
-    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
-      return readContract(client, {
-        abi,
-        address,
-        functionName: "getNonce",
-        args: [parameters?.key],
-        stateOverride: (await isDeployed())
-          ? undefined
-          : [
-              {
-                address,
-                code: delegationCode(GELATO_V0_1_DELEGATION_ADDRESS)
-              }
-            ]
-      });
-    },
-
     async getAddress() {
       return address;
     },
@@ -227,6 +227,9 @@ export async function gelato(
 
   // Required since `toSmartAccount` overwrites any provided `isDeployed` implementation
   account.isDeployed = isDeployed;
+
+  // Required since `toSmartAccount` overwrites any provided `getNonce` implementation
+  account.getNonce = getNonce;
 
   return account;
 }

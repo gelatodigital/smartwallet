@@ -5,11 +5,11 @@ import { toValidatorRpc } from "../../accounts/gelato/index.js";
 import { api } from "../../constants/index.js";
 import type {
   Capabilities,
-  GelatoCapabilities,
+  CustomCapabilities,
   WalletPrepareCallsParams,
   WalletPrepareCallsResponse
 } from "./interfaces/index.js";
-import { serializeCalls, serializeNonceKey } from "./utils/serialize.js";
+import { serializeCalls } from "./utils/serialize.js";
 
 export const walletPrepareCalls = async <
   transport extends Transport = Transport,
@@ -21,11 +21,14 @@ export const walletPrepareCalls = async <
 ): Promise<WalletPrepareCallsResponse> => {
   const { payment, apiKey, scw, erc4337, validator } = params;
 
+  const nonce = typeof params.nonce !== "undefined" ? params.nonce.toString() : undefined;
+  const nonceKey = nonce ? undefined : params.nonceKey ? params.nonceKey.toString() : undefined;
+
   const calls = serializeCalls(params.calls);
 
   const isDeployed = await client.account.isDeployed();
 
-  const capabilities: Capabilities = <GelatoCapabilities>{
+  const capabilities: Capabilities = <CustomCapabilities>{
     wallet: scw,
     payment,
     validator: validator ? toValidatorRpc(validator) : undefined,
@@ -50,7 +53,8 @@ export const walletPrepareCalls = async <
             address: client.account.entryPoint.address
           }
         : undefined,
-    nonceKey: serializeNonceKey(params.nonceKey)
+    nonceKey,
+    nonce
   };
 
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;

@@ -73,25 +73,25 @@ export interface EntryPoint {
   address: Address;
 }
 
-export interface GelatoCapabilities {
+export interface CustomCapabilities {
   wallet: WalletDetails;
   payment: Payment;
   validator?: ValidatorRpc;
   authorization?: Authorization;
   nonceKey?: string;
+  nonce?: string;
 }
 
-export interface ERC4337Capabilities extends GelatoCapabilities {
+export interface ERC4337Capabilities extends CustomCapabilities {
   entryPoint: EntryPoint;
   factory?: Factory;
 }
 
-export type Capabilities = GelatoCapabilities | ERC4337Capabilities;
+export type Capabilities = CustomCapabilities | ERC4337Capabilities;
 
-export interface GelatoContext extends GelatoCapabilities, Partial<GatewaySignature> {
+export interface CustomContext extends CustomCapabilities, Partial<GatewaySignature> {
   calls: Call[];
   from: Address;
-  nonceKey: string;
   quote: Quote;
 }
 
@@ -100,7 +100,7 @@ export interface ERC4337Context extends ERC4337Capabilities, Partial<GatewaySign
   quote: Quote;
 }
 
-export type Context = GelatoContext | ERC4337Context;
+export type Context = CustomContext | ERC4337Context;
 
 export interface SingleNetworkCapabilities {
   feeCollector: Address;
@@ -125,6 +125,7 @@ export interface WalletPrepareCallsParams {
   scw: GelatoSmartAccountSCW;
   erc4337: boolean;
   nonceKey?: bigint;
+  nonce?: bigint;
   apiKey?: string;
   validator?: Validator;
 }
