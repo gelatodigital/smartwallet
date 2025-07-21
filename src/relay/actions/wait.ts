@@ -166,7 +166,8 @@ export const wait = async (
       client,
       submissionHash: fallbackHash,
       pollingInterval,
-      maxRetries
+      maxRetries,
+      confirmations
     });
   } finally {
     statusApiWebSocket.unsubscribe(taskId);
