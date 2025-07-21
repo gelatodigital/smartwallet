@@ -16,6 +16,8 @@ describe("Initial Delegation Test", () => {
   });
 
   test("Gelato SCW transaction with native payment", async () => {
+    console.log("starting test 1");
+
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -41,11 +43,15 @@ describe("Initial Delegation Test", () => {
       address: gelatoClient.account.address
     });
 
+    console.log("finished test 1");
+
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBeLessThan(balanceInitial);
   });
 
   test("Gelato SCW transaction with ERC20 payment", async () => {
+    console.log("starting test 2");
+
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -85,13 +91,16 @@ describe("Initial Delegation Test", () => {
       args: [gelatoClient.account.address]
     });
 
-    expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
+    console.log("finished test 2");
 
+    expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);
     expect(erc20BalanceFinal).toBeLessThan(erc20BalanceInitial);
   });
 
   test("Gelato SCW transaction with sponsor payment", async () => {
+    console.log("starting test 3");
+
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
       scw: { type: "gelato" }
     });
@@ -132,6 +141,8 @@ describe("Initial Delegation Test", () => {
       functionName: "balanceOf",
       args: [gelatoClient.account.address]
     });
+
+    console.log("finished test 3");
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
     expect(balanceFinal).toBe(balanceInitial);
