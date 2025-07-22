@@ -51,7 +51,7 @@ function YourComponent() {
     data: taskId,
     isPending
   } = useSendTransaction({
-    payment: sponsored(gelatoApiKey)
+    payment: sponsored()
   });
 
   const { data: receipt } = useWaitForTransactionReceipt({

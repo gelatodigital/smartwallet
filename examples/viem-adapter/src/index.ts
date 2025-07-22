@@ -37,7 +37,7 @@ const client = createPublicClient({
     transport: http()
   }).extend(
     gelatoBundlerActions({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       encoding: WalletEncoding.ERC7579
     })
   );
