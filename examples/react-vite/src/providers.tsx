@@ -65,7 +65,6 @@ const WalletInfoComponent = () => {
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { address: walletAddress } = useAccount();
-  const gelatoApiKey = import.meta.env.VITE_GELATO_API_KEY;
 
   const executeTransaction = async () => {
     if (!client) return;
@@ -74,7 +73,7 @@ const WalletInfoComponent = () => {
     try {
       const payment =
         paymentType === "sponsored"
-          ? sponsored(gelatoApiKey)
+          ? sponsored()
           : paymentType === "erc20"
             ? erc20(erc20TokenAddress)
             : native();
