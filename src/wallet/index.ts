@@ -8,7 +8,7 @@ export enum WalletType {
   Custom = "custom"
 }
 
-export enum WalletEncoding {
+export enum ERC4337Encoding {
   Safe = "safe",
   OKX = "okx",
   ERC7579 = "erc7579",
@@ -20,6 +20,6 @@ export enum WalletEncoding {
 
 export interface WalletDetails {
   readonly type?: WalletType;
-  readonly encoding: WalletEncoding;
+  readonly encoding: ERC4337Encoding;
   readonly version?: string;
 }

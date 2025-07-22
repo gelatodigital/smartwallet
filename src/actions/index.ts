@@ -12,15 +12,27 @@ import type {
 import type { GelatoSmartAccount } from "../accounts/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
-import { prepare } from "./prepare.js";
-import { send } from "./send.js";
+import { prepareCalls } from "./prepareCalls.js";
+import { sendPreparedCalls } from "./sendPreparedCalls.js";
 import { switchChain } from "./switchChain.js";
 
+export type GelatoActionArgs = {
+  payment: Payment;
+  calls: Call[];
+} & (
+  | {
+      nonce?: bigint;
+    }
+  | {
+      nonceKey?: bigint;
+    }
+);
+
 export type GelatoSmartWalletActions = {
-  execute: (args: { payment: Payment; calls: Call[] }) => Promise<GelatoResponse>;
-  estimate: (args: { payment: Payment; calls: Call[] }) => Promise<Quote>;
-  prepare: (args: { payment: Payment; calls: Call[] }) => Promise<WalletPrepareCallsResponse>;
-  send: (args: {
+  execute: (args: GelatoActionArgs) => Promise<GelatoResponse>;
+  estimate: (args: GelatoActionArgs) => Promise<Quote>;
+  prepareCalls: (args: GelatoActionArgs) => Promise<WalletPrepareCallsResponse>;
+  sendPreparedCalls: (args: {
     preparedCalls: WalletPrepareCallsResponse;
     signature?: Hex;
   }) => Promise<GelatoResponse>;
@@ -49,11 +61,11 @@ export function actions<
   account extends GelatoSmartAccount = GelatoSmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   return {
-    execute: (args: { payment: Payment; calls: Call[] }) => execute(client, args),
-    estimate: (args: { payment: Payment; calls: Call[] }) => estimate(client, args),
-    prepare: (args: { payment: Payment; calls: Call[] }) => prepare(client, args),
-    send: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
-      send(client, args),
+    execute: (args: GelatoActionArgs) => execute(client, args),
+    estimate: (args: GelatoActionArgs) => estimate(client, args),
+    prepareCalls: (args: GelatoActionArgs) => prepareCalls(client, args),
+    sendPreparedCalls: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
+      sendPreparedCalls(client, args),
     switchChain: (args: { id: number }) => switchChain(client, args)
   };
 }

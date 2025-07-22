@@ -5,7 +5,7 @@ import {
   formatUserOperation
 } from "viem/account-abstraction";
 import { type Payment, isSponsored } from "../payment/index.js";
-import type { WalletEncoding } from "../wallet/index.js";
+import type { ERC4337Encoding } from "../wallet/index.js";
 import {
   type GetUserOperationGasPriceReturnType,
   getUserOperationGasPrice as getUserOperationGasPriceAction
@@ -23,7 +23,7 @@ import {
 
 export interface GelatoBundlerConfig {
   payment: Payment;
-  encoding: WalletEncoding;
+  encoding: ERC4337Encoding;
   apiKey?: string;
 }
 
@@ -39,7 +39,7 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
   >(
     client: Client<transport, chain, account>
   ): BundlerActions<account> & GelatoUserOperationGasPriceAction => {
-    config.apiKey = (isSponsored(config.payment) && config.payment.sponsorApiKey) || config.apiKey;
+    config.apiKey = (isSponsored(config.payment) && config.payment.apiKey) || config.apiKey;
 
     if (isSponsored(config.payment) && !config.apiKey) {
       throw new Error("apiKey must be provided for sponsored payment");
@@ -82,6 +82,6 @@ export function gelatoUserOperationGasPriceAction() {
   };
 }
 
-export function getUserOperationGasPrice(chainId: number, sponsorApiKey?: string) {
-  return getUserOperationGasPriceAction(chainId, sponsorApiKey);
+export function getUserOperationGasPrice(chainId: number, apiKey?: string) {
+  return getUserOperationGasPriceAction(chainId, apiKey);
 }

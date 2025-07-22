@@ -34,13 +34,13 @@ const clientCache = new Map<
 
 function getOrCreateClient(
   chainId: number,
-  sponsorApiKey?: string
+  apiKey?: string
 ): Client<Transport, Chain | undefined, Account | undefined, RpcSchema> {
   if (!clientCache.has(chainId)) {
     const client = createClient<Transport, Chain | undefined, Account | undefined, RpcSchema>({
       transport: http(
-        sponsorApiKey
-          ? `https://api.gelato.digital/bundlers/${chainId}/rpc?sponsorApiKey=${sponsorApiKey}`
+        apiKey
+          ? `https://api.gelato.digital/bundlers/${chainId}/rpc?sponsorApiKey=${apiKey}`
           : `https://api.gelato.digital/bundlers/${chainId}/rpc`
       )
     });
@@ -55,6 +55,6 @@ function getOrCreateClient(
   return cachedClient;
 }
 
-export function getClient(chainId: number, sponsorApiKey?: string) {
-  return getOrCreateClient(chainId, sponsorApiKey);
+export function getClient(chainId: number, apiKey?: string) {
+  return getOrCreateClient(chainId, apiKey);
 }

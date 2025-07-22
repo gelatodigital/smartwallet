@@ -15,7 +15,7 @@ import { signSignatureRequest } from "./internal/signSignatureRequest.js";
  * @param parameters - Execution parameters.
  * @returns Send prepared calls.
  */
-export async function send<
+export async function sendPreparedCalls<
   transport extends Transport = Transport,
   chain extends Chain = Chain,
   account extends GelatoSmartAccount = GelatoSmartAccount
