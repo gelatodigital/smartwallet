@@ -5,15 +5,7 @@ import type {
 } from "@gelatonetwork/smartwallet/accounts";
 import type { Config, CreateConfigParameters } from "@wagmi/core";
 import type { ReactNode } from "react";
-import type {
-  Account,
-  Chain,
-  Client,
-  JsonRpcAccount,
-  LocalAccount,
-  Transport,
-  WalletClient
-} from "viem";
+import type { Chain, Transport } from "viem";
 
 export type ProviderType = "dynamic" | "privy";
 
@@ -40,9 +32,6 @@ export interface ProviderProps {
       appId: string;
     };
     defaultChain?: Chain;
-    // Supported chains for Privy component
-    // Check [Privy docs](https://docs.privy.io/basics/react/advanced/configuring-evm-networks) for more information
-    supportedChains?: Chain[];
     wagmi?: {
       config: CreateConfigParameters;
     };

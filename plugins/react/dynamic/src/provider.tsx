@@ -1,5 +1,10 @@
 import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethereum";
-import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {
+  DynamicContextProvider,
+  EvmNetwork,
+  useDynamicContext
+} from "@dynamic-labs/sdk-react-core";
+import type { GenericNetwork } from "@dynamic-labs/types";
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
 import {
@@ -38,7 +43,16 @@ export const useGelatoSmartWalletDynamicContext = () => {
   return context;
 };
 
-type GelatoSmartWalletDynamicContextProps = wallet.ProviderProps;
+interface DynamicContextSettings extends Omit<wallet.ProviderProps["settings"], "evmNetworks"> {
+  // Check [Dynamic docs](https://www.dynamic.xyz/docs/chains/evmNetwork#custom-evm-networks)
+  evmNetworks?: GenericNetwork[] | ((networks: GenericNetwork[]) => GenericNetwork[]);
+}
+
+interface DynamicContextProps extends Omit<wallet.ProviderProps, "settings"> {
+  settings: DynamicContextSettings;
+}
+
+type GelatoSmartWalletDynamicContextProps = DynamicContextProps;
 
 const GelatoSmartWalletDynamicInternal: FC<{
   children: ReactNode;
@@ -146,7 +160,10 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
     <DynamicContextProvider
       settings={{
         environmentId: settings.waas.appId,
-        walletConnectors: [EthereumWalletConnectors]
+        walletConnectors: [EthereumWalletConnectors],
+        overrides: {
+          evmNetworks: settings.evmNetworks
+        }
       }}
     >
       <GelatoSmartWalletDynamicInternal

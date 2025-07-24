@@ -42,7 +42,15 @@ export const useGelatoSmartWalletPrivyContext = () => {
   return context;
 };
 
-type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
+interface PrivyContextSettings extends Omit<wallet.ProviderProps["settings"], "supportedChains"> {
+  supportedChains?: Chain[];
+}
+
+interface PrivyContextProps extends Omit<wallet.ProviderProps, "settings"> {
+  settings: PrivyContextSettings;
+}
+
+type GelatoSmartWalletPrivyContextProps = PrivyContextProps;
 
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
