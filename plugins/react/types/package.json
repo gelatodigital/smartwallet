@@ -23,7 +23,8 @@
     "@gelatonetwork/smartwallet": "workspace:*",
     "@wagmi/core": "catalog:",
     "react": "catalog:",
-    "viem": "catalog:"
+    "viem": "catalog:",
+    "@dynamic-labs/types": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:"

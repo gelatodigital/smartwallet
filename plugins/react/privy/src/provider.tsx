@@ -42,15 +42,7 @@ export const useGelatoSmartWalletPrivyContext = () => {
   return context;
 };
 
-interface PrivyContextSettings extends Omit<wallet.ProviderProps["settings"], "supportedChains"> {
-  supportedChains?: Chain[];
-}
-
-interface PrivyContextProps extends Omit<wallet.ProviderProps, "settings"> {
-  settings: PrivyContextSettings;
-}
-
-type GelatoSmartWalletPrivyContextProps = PrivyContextProps;
+type GelatoSmartWalletPrivyContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletPrivyInternal: FC<{
   children: ReactNode;
@@ -177,7 +169,7 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
       config={{
         defaultChain:
           settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? chains.sepolia,
-        supportedChains: settings.supportedChains
+        supportedChains: settings.waas.customChains?.supportedChains
       }}
     >
       <GelatoSmartWalletPrivyInternal

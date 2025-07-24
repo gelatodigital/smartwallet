@@ -6,17 +6,23 @@ export {
 } from "./provider.js";
 export { GelatoSmartWalletConnectButton } from "./components/connect.js";
 
-export const dynamic = (appId: string) => {
+export const dynamic = (appId: string, options?: wallet.DynamicOptions) => {
   return {
     type: "dynamic" as wallet.ProviderType,
-    appId
+    appId,
+    customChains: {
+      evmNetworks: options?.evmNetworks
+    }
   };
 };
 
-export const privy = (appId: string) => {
+export const privy = (appId: string, options?: wallet.PrivyOptions) => {
   return {
     type: "privy" as wallet.ProviderType,
-    appId
+    appId,
+    customChains: {
+      supportedChains: options?.supportedChains
+    }
   };
 };
 

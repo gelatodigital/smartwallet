@@ -1,3 +1,4 @@
+import type { GenericNetwork } from "@dynamic-labs/types";
 import type { GelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
 import type {
   GelatoSmartAccount,
@@ -30,6 +31,10 @@ export interface ProviderProps {
     waas: {
       type: ProviderType;
       appId: string;
+      customChains?: {
+        evmNetworks?: GenericNetwork[] | ((networks: GenericNetwork[]) => GenericNetwork[]);
+        supportedChains?: Chain[];
+      };
     };
     defaultChain?: Chain;
     wagmi?: {

@@ -43,16 +43,7 @@ export const useGelatoSmartWalletDynamicContext = () => {
   return context;
 };
 
-interface DynamicContextSettings extends Omit<wallet.ProviderProps["settings"], "evmNetworks"> {
-  // Check [Dynamic docs](https://www.dynamic.xyz/docs/chains/evmNetwork#custom-evm-networks)
-  evmNetworks?: GenericNetwork[] | ((networks: GenericNetwork[]) => GenericNetwork[]);
-}
-
-interface DynamicContextProps extends Omit<wallet.ProviderProps, "settings"> {
-  settings: DynamicContextSettings;
-}
-
-type GelatoSmartWalletDynamicContextProps = DynamicContextProps;
+type GelatoSmartWalletDynamicContextProps = wallet.ProviderProps;
 
 const GelatoSmartWalletDynamicInternal: FC<{
   children: ReactNode;
@@ -162,7 +153,7 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
         environmentId: settings.waas.appId,
         walletConnectors: [EthereumWalletConnectors],
         overrides: {
-          evmNetworks: settings.evmNetworks
+          evmNetworks: settings.waas.customChains?.evmNetworks
         }
       }}
     >
