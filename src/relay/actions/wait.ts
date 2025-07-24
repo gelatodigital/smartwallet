@@ -1,4 +1,4 @@
-import type { Client, Hash, Transport } from "viem";
+import type { Client, Hash, TransactionReceipt, Transport } from "viem";
 
 import { waitHttp } from "./internal/waitHttp.js";
 import { waitPolling } from "./internal/waitPolling.js";
@@ -42,6 +42,14 @@ export const wait = async (
   const transactionHash = await waitHttp(taskId, submission);
 
   if (transactionHash) {
+    // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
+    if (confirmations !== undefined && confirmations > 0 && !submission && client) {
+      await waitForTransactionReceipt(client, {
+        hash: transactionHash,
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+        confirmations
+      });
+    }
     return transactionHash;
   }
 
@@ -65,6 +73,7 @@ export const wait = async (
     }
 
     if (isSubmitted(taskStatus.taskState) && taskStatus.transactionHash) {
+      // If we're waiting for execution and got submission event, we need to wait for the execution (receipt)
       resolvePromise({ hash: taskStatus.transactionHash as Hash, waitForReceipt: !submission });
     }
 
@@ -93,11 +102,14 @@ export const wait = async (
 
     await statusApiWebSocket.subscribe(taskId);
 
+    // We first check through status API
+    let statusResolver = "statusApi";
+
     // Listen for task status, when submission event is received but we're waiting for the executionn
     // `promise` will resolve with `waitForReceipt` set to true and Provider's TX receipt will race with
     // status API to fetch inclusion as quickly as possible
     const result = await promise;
-    while (result.waitForReceipt && !submission) {
+    while (result.waitForReceipt) {
       fallbackHash = result.hash;
       const promise = new Promise<TaskStatusReturn>((resolve, reject) => {
         resolvePromise = resolve;
@@ -130,23 +142,30 @@ export const wait = async (
             };
           });
 
-      // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
-      if (resolver === "statusApi" && client && confirmations !== undefined) {
-        await waitForTransactionReceipt(client, {
-          hash: result.hash,
-          pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-          confirmations
-        });
-      }
-
+      // We got submission event from API again, resubmission occurred, race for new hash again
       if ("waitForReceipt" in _result && _result.waitForReceipt) {
-        // Resubmission occurred, race for new hash again
         result.hash = _result.hash;
         result.waitForReceipt = _result.waitForReceipt;
       } else {
-        // Either transaction receipt succeeded or we got ExecSuccess event
+        statusResolver = resolver;
         break;
       }
+    }
+
+    // Confirmations are provided and above race resolved with status API, wait for receipt through client confirmations
+    // If client won the race, it already waits for confirmations
+    if (
+      statusResolver === "statusApi" &&
+      client &&
+      confirmations !== undefined &&
+      confirmations > 0 &&
+      !submission
+    ) {
+      await waitForTransactionReceipt(client, {
+        hash: result.hash,
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+        confirmations
+      });
     }
 
     return result.hash;
@@ -166,7 +185,8 @@ export const wait = async (
       client,
       submissionHash: fallbackHash,
       pollingInterval,
-      maxRetries
+      maxRetries,
+      confirmations
     });
   } finally {
     statusApiWebSocket.unsubscribe(taskId);

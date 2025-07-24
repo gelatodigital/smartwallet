@@ -169,7 +169,9 @@ class WebsocketHandler {
 
   private _disconnect(): void {
     if (this.#websocket) {
-      this.#websocket.close();
+      if (this.#websocket.readyState === WebSocket.OPEN) {
+        this.#websocket.close();
+      }
       this.#websocket = undefined;
     }
   }
