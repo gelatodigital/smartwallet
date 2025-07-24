@@ -67,7 +67,7 @@ export const waitPolling = async (
           };
         });
 
-    if (resolver === "statusApi" && client && confirmations !== undefined) {
+    if (resolver === "statusApi" && client && confirmations !== undefined && confirmations > 0) {
       await waitForTransactionReceipt(client, {
         hash: submissionHash,
         pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),

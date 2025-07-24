@@ -42,6 +42,14 @@ export const wait = async (
   const transactionHash = await waitHttp(taskId, submission);
 
   if (transactionHash) {
+    // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
+    if (confirmations !== undefined && confirmations > 0 && !submission && client) {
+      await waitForTransactionReceipt(client, {
+        hash: transactionHash,
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
+        confirmations
+      });
+    }
     return transactionHash;
   }
 
@@ -146,7 +154,13 @@ export const wait = async (
 
     // Confirmations are provided and above race resolved with status API, wait for receipt through client confirmations
     // If client won the race, it already waits for confirmations
-    if (statusResolver === "statusApi" && client && confirmations !== undefined && !submission) {
+    if (
+      statusResolver === "statusApi" &&
+      client &&
+      confirmations !== undefined &&
+      confirmations > 0 &&
+      !submission
+    ) {
       await waitForTransactionReceipt(client, {
         hash: result.hash,
         pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
