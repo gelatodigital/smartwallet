@@ -29,7 +29,8 @@
     "wagmi": "catalog:",
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
     "@gelatonetwork/smartwallet-react-dynamic": "workspace:*",
-    "@gelatonetwork/smartwallet-react-privy": "workspace:*"
+    "@gelatonetwork/smartwallet-react-privy": "workspace:*",
+    "@dynamic-labs/types": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:"

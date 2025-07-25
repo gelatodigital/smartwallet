@@ -169,7 +169,7 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
       config={{
         defaultChain:
           settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? chains.sepolia,
-        supportedChains: settings.supportedChains
+        supportedChains: settings.waas.customChains?.supportedChains
       }}
     >
       <GelatoSmartWalletPrivyInternal

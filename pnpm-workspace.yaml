@@ -17,3 +17,4 @@ catalog:
   "wagmi": "~2.15"
   "@wagmi/core": "~2.17"
   "@tanstack/react-query": "~5.74"
+  "@dynamic-labs/types": "~4.18.3"
