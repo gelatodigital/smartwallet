@@ -86,7 +86,6 @@ describe("Initial Delegation Test", () => {
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
-
     expect(balanceFinal).toBe(balanceInitial);
     expect(erc20BalanceFinal).toBeLessThan(erc20BalanceInitial);
   });
