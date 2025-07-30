@@ -15,7 +15,8 @@ export enum ERC4337Encoding {
   TrustWallet = "trustWallet",
   Gelato = "gelato",
   LightAccount = "lightAccount",
-  Uniswap = "uniswap"
+  Uniswap = "uniswap",
+  TokenPocket = "tokenPocket"
 }
 
 export interface WalletDetails {
