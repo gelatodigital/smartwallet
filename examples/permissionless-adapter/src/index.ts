@@ -41,7 +41,7 @@ const client = createPublicClient({
     }
   }).extend(
     gelatoBundlerActions({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       // payment: erc20(paymentToken),
       // payment: native(),
       encoding: WalletEncoding.Safe

@@ -11,8 +11,6 @@ export interface ERC20Payment {
 
 export interface SponsoredPayment {
   readonly type: "sponsored";
-  // Optional, if not provided, the apiKey MUST be provided when instantiating the client
-  readonly apiKey?: string;
 }
 
 export type Payment = NativePayment | ERC20Payment | SponsoredPayment;
@@ -24,9 +22,8 @@ export const erc20 = (token: Address): ERC20Payment => ({
   token
 });
 
-export const sponsored = (apiKey: string): SponsoredPayment => ({
-  type: "sponsored",
-  apiKey
+export const sponsored = (): SponsoredPayment => ({
+  type: "sponsored"
 });
 
 export const isSponsored = (payment: Payment): payment is SponsoredPayment =>

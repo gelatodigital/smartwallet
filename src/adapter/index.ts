@@ -39,8 +39,6 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
   >(
     client: Client<transport, chain, account>
   ): BundlerActions<account> & GelatoUserOperationGasPriceAction => {
-    config.apiKey = (isSponsored(config.payment) && config.payment.apiKey) || config.apiKey;
-
     if (isSponsored(config.payment) && !config.apiKey) {
       throw new Error("apiKey must be provided for sponsored payment");
     }
