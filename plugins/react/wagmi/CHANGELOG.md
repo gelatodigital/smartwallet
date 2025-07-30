@@ -1,5 +1,21 @@
 # @gelatonetwork/smartwallet-react-wagmi
 
+## 0.0.16
+
+### Patch Changes
+
+- 41fb5f7: refactor: rename sponsorApiKey to apiKey
+- Updated dependencies [4c94ad5]
+- Updated dependencies [1320278]
+- Updated dependencies [b13bb97]
+- Updated dependencies [41fb5f7]
+- Updated dependencies [76be45b]
+- Updated dependencies [0213d77]
+- Updated dependencies [0213d77]
+- Updated dependencies [bbc4a33]
+  - @gelatonetwork/smartwallet-react-types@0.0.21
+  - @gelatonetwork/smartwallet@0.0.21
+
 ## 0.0.15
 
 ### Patch Changes
