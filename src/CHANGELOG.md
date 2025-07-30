@@ -1,5 +1,17 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.21
+
+### Patch Changes
+
+- 1320278: feat: session validator
+- b13bb97: feat: support uniswap wallet
+- 41fb5f7: refactor: rename sponsorApiKey to apiKey
+- 76be45b: feat: nonce or key
+- 0213d77: refactor: rename prepare to prepareCalls
+- 0213d77: refactor: rename send to sendPreparedCalls
+- bbc4a33: feat: token pocket
+
 ## 0.0.20
 
 ### Patch Changes

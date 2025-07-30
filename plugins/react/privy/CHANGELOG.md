@@ -1,5 +1,21 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.21
+
+### Patch Changes
+
+- 4c94ad5: feat: custom network definition for waas providers
+- Updated dependencies [4c94ad5]
+- Updated dependencies [1320278]
+- Updated dependencies [b13bb97]
+- Updated dependencies [41fb5f7]
+- Updated dependencies [76be45b]
+- Updated dependencies [0213d77]
+- Updated dependencies [0213d77]
+- Updated dependencies [bbc4a33]
+  - @gelatonetwork/smartwallet-react-types@0.0.21
+  - @gelatonetwork/smartwallet@0.0.21
+
 ## 0.0.20
 
 ### Patch Changes
