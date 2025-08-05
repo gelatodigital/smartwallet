@@ -43,6 +43,7 @@ export type SignatureRequest =
 export interface Quote {
   fee: {
     amount: string;
+    revshare?: string;
     rate: number;
     decimals: number;
   };
