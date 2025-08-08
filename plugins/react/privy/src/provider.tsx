@@ -12,7 +12,15 @@ import { WagmiProvider, createConfig } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
 import type { FC, ReactNode } from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import {
   type Account,
   type Chain,
@@ -21,7 +29,12 @@ import {
   createWalletClient,
   custom
 } from "viem";
-import { prepareAuthorization } from "viem/actions";
+import type { SmartAccount } from "viem/account-abstraction";
+import {
+  type PrepareAuthorizationParameters,
+  SignAuthorizationReturnType,
+  prepareAuthorization
+} from "viem/actions";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 import type { Config as WagmiConfig } from "wagmi";
@@ -59,27 +72,37 @@ const GelatoSmartWalletPrivyInternal: FC<{
     Chain,
     GelatoSmartAccount
   > | null>(null);
+  const currentChainIdRef = useRef<string | null>(null);
 
-  const logoutWrapper = async () => {
+  const logoutWrapper = useCallback(async () => {
     if (!smartWalletClient) {
       return;
     }
 
     setSmartWalletClient(null);
     await logout();
-  };
+  }, [smartWalletClient, logout]);
 
-  const switchNetwork = async (chainId: number) => {
-    if (!smartWalletClient) {
-      return;
-    }
+  const switchNetwork = useCallback(
+    async (chainId: number) => {
+      if (!smartWalletClient || !wallets || wallets.length === 0) {
+        return;
+      }
 
-    const primaryWallet = wallets[0];
+      const primaryWallet = wallets[0];
 
-    await primaryWallet.switchChain(chainId);
-    smartWalletClient.switchChain({ id: chainId });
-  };
+      try {
+        await primaryWallet.switchChain(chainId);
+        // The useEffect will handle recreating the client with the new chain
+        // We don't need to manually call smartWalletClient.switchChain
+      } catch (error) {
+        console.error("Failed to switch network:", error);
+      }
+    },
+    [smartWalletClient, wallets]
+  );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: off
   useEffect(() => {
     if (!ready || !walletsReady) {
       return;
@@ -87,12 +110,19 @@ const GelatoSmartWalletPrivyInternal: FC<{
 
     if (!authenticated || !wallets || wallets.length === 0) {
       setSmartWalletClient(null);
+      currentChainIdRef.current = null;
+      return;
+    }
+
+    const primaryWallet = wallets[0];
+    const walletChainId = primaryWallet.chainId;
+
+    // Only recreate the client if the chain ID changes
+    if (currentChainIdRef.current === walletChainId && smartWalletClient) {
       return;
     }
 
     const fetchWalletClient = async () => {
-      const primaryWallet = wallets[0];
-
       try {
         // Privy wallet provides chainId in CAIP2 format
         const { reference: chainId } = ChainId.parse(primaryWallet.chainId);
@@ -113,7 +143,9 @@ const GelatoSmartWalletPrivyInternal: FC<{
           transport: custom(provider)
         });
 
-        client.signAuthorization = async (parameters) => {
+        (
+          client.account as SmartAccount & { signAuthorization: typeof client.signAuthorization }
+        ).signAuthorization = async (parameters: PrepareAuthorizationParameters<Account>) => {
           const preparedAuthorization = await prepareAuthorization(client, parameters);
 
           const signedAuthorization = await signAuthorization({
@@ -130,13 +162,14 @@ const GelatoSmartWalletPrivyInternal: FC<{
           { apiKey, scw }
         );
         setSmartWalletClient(walletClientGelato);
+        currentChainIdRef.current = walletChainId;
       } catch (error) {
         console.error("Failed to get wallet client:", error);
       }
     };
 
     fetchWalletClient();
-  }, [ready, wallets, walletsReady, authenticated, signAuthorization, apiKey, scw]);
+  }, [ready, walletsReady, authenticated, apiKey, scw, signAuthorization]);
 
   return (
     <GelatoSmartWalletPrivyProviderContext.Provider
