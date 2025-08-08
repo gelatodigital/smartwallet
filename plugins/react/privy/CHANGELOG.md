@@ -1,5 +1,14 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.22
+
+### Patch Changes
+
+- fa5b7b4: fix: privy network switch and login issues
+- 90c8314: feat: allow passing clientId for privy
+- Updated dependencies [90c8314]
+  - @gelatonetwork/smartwallet-react-types@0.0.22
+
 ## 0.0.21
 
 ### Patch Changes

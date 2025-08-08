@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [90c8314]
+  - @gelatonetwork/smartwallet-react-types@0.0.22
+
 ## 0.0.21
 
 ### Patch Changes
