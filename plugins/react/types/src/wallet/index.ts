@@ -9,4 +9,5 @@ export type DynamicOptions = {
 
 export type PrivyOptions = {
   supportedChains?: Chain[];
+  clientId?: string;
 };

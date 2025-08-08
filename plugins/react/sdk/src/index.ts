@@ -20,6 +20,7 @@ export const privy = (appId: string, options?: wallet.PrivyOptions) => {
   return {
     type: "privy" as wallet.ProviderType,
     appId,
+    clientId: options?.clientId,
     customChains: {
       supportedChains: options?.supportedChains
     }

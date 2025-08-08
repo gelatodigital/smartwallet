@@ -31,6 +31,7 @@ export interface ProviderProps {
     waas: {
       type: ProviderType;
       appId: string;
+      clientId?: string;
       customChains?: {
         evmNetworks?: GenericNetwork[] | ((networks: GenericNetwork[]) => GenericNetwork[]);
         supportedChains?: Chain[];
