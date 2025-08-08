@@ -39,6 +39,10 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
+compose-dev.yml
+.devcontainer/
+.pnpm-store/
+
 # Lockfiles (choose which one to keep based on package manager)
 # yarn.lock
 # package-lock.json
