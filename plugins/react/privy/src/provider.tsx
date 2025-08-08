@@ -21,7 +21,7 @@ import {
   createWalletClient,
   custom
 } from "viem";
-import { prepareAuthorization } from "viem/actions";
+import { prepareAuthorization, SignAuthorizationReturnType } from "viem/actions";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 import type { Config as WagmiConfig } from "wagmi";
@@ -113,7 +113,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
           transport: custom(provider)
         });
 
-        client.signAuthorization = async (parameters) => {
+        (client.account as any).signAuthorization = async (parameters) => {
           const preparedAuthorization = await prepareAuthorization(client, parameters);
 
           const signedAuthorization = await signAuthorization({
