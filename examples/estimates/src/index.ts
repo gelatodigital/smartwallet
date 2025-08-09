@@ -36,7 +36,7 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.estimate({
-    payment: sponsored(gelatoApiKey),
+    payment: sponsored(),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",

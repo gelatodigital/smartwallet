@@ -48,7 +48,7 @@ const main = async () => {
   // Regular `execute` call key without `nonce` or `nonceKey` specified.
   // This defaults to `nonceKey` zero.
   const response1 = await swc.execute({
-    payment: sponsored(gelatoApiKey),
+    payment: sponsored(),
     calls
   });
 
@@ -62,12 +62,12 @@ const main = async () => {
   // To execute transactions in parallel, a different `nonceKey` can be specified for each call.
   const responses2 = await Promise.all([
     swc.execute({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       calls,
       nonceKey: 10n
     }),
     swc.execute({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       calls,
       nonceKey: 20n
     })
@@ -85,12 +85,12 @@ const main = async () => {
 
   const responses3 = await Promise.all([
     swc.execute({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       calls,
       nonce
     }),
     swc.execute({
-      payment: sponsored(gelatoApiKey),
+      payment: sponsored(),
       calls,
       nonce: nonce + 1n // this transaction will execute after the first one
     })
