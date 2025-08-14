@@ -45,12 +45,18 @@ export interface Quote {
     amount: string;
     dappShare?: string;
     rate: number;
-    decimals: number;
+    token: {
+      decimals: number;
+      address: Address;
+      symbol?: string;
+      name?: string;
+    };
   };
-  gas: {
-    amount: string;
-    l1: string;
-  };
+  gasUsed: string;
+  gasUsedL1?: string;
+  gasPrice: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
 }
 
 export interface GatewaySignature {
