@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.22
+
+### Patch Changes
+
+- 7bd5914: feat: revshare
+
 ## 0.0.21
 
 ### Patch Changes

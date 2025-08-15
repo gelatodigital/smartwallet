@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet-react-types
 
+## 0.0.22
+
+### Patch Changes
+
+- 90c8314: feat: allow passing clientId for privy
+- Updated dependencies [7bd5914]
+  - @gelatonetwork/smartwallet@0.0.22
+
 ## 0.0.21
 
 ### Patch Changes

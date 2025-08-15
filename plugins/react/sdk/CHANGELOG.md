@@ -1,5 +1,18 @@
 # @gelatonetwork/smartwallet-react-sdk
 
+## 0.0.22
+
+### Patch Changes
+
+- 90c8314: feat: allow passing clientId for privy
+- Updated dependencies [fa5b7b4]
+- Updated dependencies [90c8314]
+- Updated dependencies [7bd5914]
+  - @gelatonetwork/smartwallet-react-privy@0.0.22
+  - @gelatonetwork/smartwallet-react-types@0.0.22
+  - @gelatonetwork/smartwallet@0.0.22
+  - @gelatonetwork/smartwallet-react-dynamic@0.0.22
+
 ## 0.0.21
 
 ### Patch Changes
