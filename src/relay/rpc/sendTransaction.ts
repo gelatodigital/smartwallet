@@ -18,10 +18,7 @@ export const walletSendTransaction = async (
   const capabilities = {
     payment
   };
-  console.log("APIKEY of walletSendTransaction: ", apiKey);
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
-
-  console.log(payment);
 
   const raw = await fetch(url, {
     method: "POST",
