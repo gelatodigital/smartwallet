@@ -3,8 +3,7 @@ import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";
 
 import type { CustomSmartAccountParameters } from "./accounts/custom/index.js";
-import type { GelatoSmartAccount } from "./accounts/index.js";
-import type { GelatoSmartAccountSCW } from "./accounts/index.js";
+import type { GelatoSmartAccount, GelatoSmartAccountSCW } from "./accounts/index.js";
 import type { GelatoWalletClient } from "./actions/index.js";
 import { type GelatoSmartWalletActions, actions, internal, merge } from "./actions/index.js";
 import { transformIntoGelatoSmartAccount } from "./utils/index.js";
@@ -52,8 +51,10 @@ export const createGelatoSmartWalletClient = async <
   >;
 };
 
-export { ERC4337Encoding as WalletEncoding } from "./wallet/index.js";
-export { erc20, native, sponsored, Payment } from "./payment/index.js";
-export { track } from "./relay/status/index.js";
 export * as accounts from "./accounts/index.js";
+export { getQuote } from "./actions/getQuote.js";
+export { sendTransaction } from "./actions/sendTransaction.js";
+export { Payment, erc20, native, sponsored } from "./payment/index.js";
+export { track } from "./relay/status/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
+export { ERC4337Encoding as WalletEncoding } from "./wallet/index.js";
