@@ -42,7 +42,7 @@ const publicClient = createPublicClient({
   console.log("Preparing transaction...");
   const startPrepare = performance.now();
   const preparedCalls = await swc.prepareCalls({
-    payment: sponsored(gelatoApiKey),
+    payment: sponsored(),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",

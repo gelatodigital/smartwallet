@@ -1,9 +1,9 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { addSession, gelato, removeSession, session } from "@gelatonetwork/smartwallet/accounts";
+import "dotenv/config";
 import { http, type Address, type Hex, createPublicClient, createWalletClient } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import "dotenv/config";
 
 const gelatoApiKey = process.env.GELATO_API_KEY;
 
@@ -39,7 +39,7 @@ const createSession = async (signer: Address, expiry: number) => {
   });
 
   const response = await swc.execute({
-    payment: sponsored(gelatoApiKey),
+    payment: sponsored(),
     calls: [
       // This call creates the session
       // You can execute other calls before or after this
@@ -81,7 +81,7 @@ const main = async () => {
   });
 
   const response = await swc.execute({
-    payment: sponsored(gelatoApiKey),
+    payment: sponsored(),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",

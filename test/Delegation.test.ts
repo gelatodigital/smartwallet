@@ -92,10 +92,9 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with sponsor payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" }
+      scw: { type: "gelato" },
+      apiKey: getApiKeyStaging()
     });
-
-    const apiKey = getApiKeyStaging();
 
     const balanceInitial = await gelatoClient.getBalance({
       address: gelatoClient.account.address
@@ -109,7 +108,7 @@ describe("Initial Delegation Test", () => {
     });
 
     const response = await gelatoClient.execute({
-      payment: sponsored(apiKey),
+      payment: sponsored(),
       calls: constants.testCalls,
       nonceKey: 2n
     });
