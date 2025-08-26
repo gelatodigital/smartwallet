@@ -7,13 +7,13 @@
   },
   "dependencies": {
     "@gelatonetwork/smartwallet": "workspace:*",
-    "permissionless": "^0.2.47",
+    "permissionless": "^0.2.54",
     "viem": "catalog:"
   },
   "devDependencies": {
     "@types/node": "latest",
-    "dotenv": "16.5.0",
-    "tsx": "4.19.4",
+    "dotenv": "17.2.1",
+    "tsx": "4.20.5",
     "typescript": "catalog:"
   }
 }
