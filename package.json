@@ -33,7 +33,7 @@
   "simple-git-hooks": {
     "pre-commit": "pnpm format && pnpm lint"
   },
-  "packageManager": "pnpm@10.12.0",
+  "packageManager": "pnpm@10.15.0",
   "pnpm": {
     "overrides": {
       "smartwallet": "workspace:*"
