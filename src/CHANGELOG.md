@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.24
+
+### Patch Changes
+
+- 6d5a518: chore: bump dependencies
+
 ## 0.0.23
 
 ### Patch Changes
