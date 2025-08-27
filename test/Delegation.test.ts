@@ -17,7 +17,8 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with native payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" }
+      scw: { type: "gelato" },
+      apiKey: getApiKeyStaging()
     });
 
     const balanceInitial = await gelatoClient.getBalance({
@@ -47,7 +48,8 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with ERC20 payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" }
+      scw: { type: "gelato" },
+      apiKey: getApiKeyStaging()
     });
 
     const balanceInitial = await gelatoClient.getBalance({
