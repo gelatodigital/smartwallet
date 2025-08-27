@@ -9,6 +9,7 @@ import { http, type Hex, createPublicClient, createWalletClient } from "viem";
 import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
+import { ERC4337Encoding } from "../../../src/_dist/wallet";
 
 const gelatoApiKey = process.env.GELATO_API_KEY;
 
@@ -40,7 +41,7 @@ const publicClient = createPublicClient({
       version: "0.8"
     },
     scw: {
-      encoding: "gelato"
+      encoding: ERC4337Encoding.Gelato
     },
     eip7702: true
   });
