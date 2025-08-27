@@ -26,6 +26,7 @@
     "permissionless-adapter",
     "viem-adapter",
     "light-account-sponsored-payment",
+    "simple-account-sponsored-payment",
     "nonces-example",
     "session-key"
   ]

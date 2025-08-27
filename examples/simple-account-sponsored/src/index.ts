@@ -31,12 +31,7 @@ const publicClient = createPublicClient({
     client: publicClient,
     authorization: {
       account: owner,
-      // the delegation is only officially deployed on Mainnet
-      // we've also deployed it on Base Sepolia and Sepolia
-      // - mainnet: 0xcc0c946EecF01A4Bc76Bc333Ea74CEb04756f17b
-      // - sepolia: 0xB13dEe0EFFBdDd11C300dfcF4e847e22e2E300e4
-      // - base sepolia: 0xA65Ce868f4d417284d5a15a24963BB089A9665E9
-      address: "0xA65Ce868f4d417284d5a15a24963BB089A9665E9"
+      address: "0xe6Cae83BdE06E4c305530e199D7217f42808555B"
     },
     entryPoint: {
       abi: entryPoint08Abi,
@@ -44,7 +39,7 @@ const publicClient = createPublicClient({
       version: "0.8"
     },
     scw: {
-      encoding: ERC4337Encoding.TokenPocket
+      encoding: ERC4337Encoding.SimpleAccount
     },
     eip7702: true
   });
