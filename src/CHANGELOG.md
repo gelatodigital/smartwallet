@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.23
+
+### Patch Changes
+
+- 9b9badd: feat: support simple account encoding
+
 ## 0.0.22
 
 ### Patch Changes

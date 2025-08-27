@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "author": "Gelato",
   "description": "Gelato SmartWallet: A Modern Account Abstraction SDK",
   "main": "./_dist/index.js",
