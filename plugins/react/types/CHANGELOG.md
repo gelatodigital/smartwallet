@@ -1,5 +1,12 @@
 # @gelatonetwork/smartwallet-react-types
 
+## 0.0.23
+
+### Patch Changes
+
+- Updated dependencies [9b9badd]
+  - @gelatonetwork/smartwallet@0.0.23
+
 ## 0.0.22
 
 ### Patch Changes
