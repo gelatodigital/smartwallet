@@ -1,20 +1,20 @@
 packages:
-  - "examples/*"
-  - "plugins/**"
-  - "src"
-  - "docs"
-
-onlyBuiltDependencies:
-  - "@biomejs/biome"
+  - examples/*
+  - plugins/**
+  - src
+  - docs
 
 catalog:
-  "typescript": "^5.3"
-  "viem": "~2.29"
-  "react": "^18.3"
-  "react-dom": "^18.3"
-  "@types/react": "^18.3"
-  "@types/react-dom": "^18.3"
-  "wagmi": "~2.15"
-  "@wagmi/core": "~2.17"
-  "@tanstack/react-query": "~5.74"
-  "@dynamic-labs/types": "~4.18.3"
+  '@dynamic-labs/types': ~4.29.4
+  '@tanstack/react-query': ~5.85.5
+  '@types/react': ^18.3.1
+  '@types/react-dom': ^18.3.1
+  '@wagmi/core': ~2.20.1
+  react: ^18.3.1
+  react-dom: ^18.3.1
+  typescript: ^5.9.2
+  viem: ~2.36.0
+  wagmi: ~2.16.8
+
+onlyBuiltDependencies:
+  - '@biomejs/biome'

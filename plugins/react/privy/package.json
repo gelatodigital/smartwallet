@@ -28,7 +28,7 @@
   "dependencies": {
     "@gelatonetwork/smartwallet": "workspace:*",
     "@gelatonetwork/smartwallet-react-types": "workspace:*",
-    "@privy-io/react-auth": "2.21.2",
+    "@privy-io/react-auth": "2.22.0",
     "@privy-io/wagmi": "1.0.6",
     "@tanstack/react-query": "catalog:",
     "caip": "1.1.1",
@@ -36,7 +36,7 @@
     "react-dom": "catalog:",
     "viem": "catalog:",
     "wagmi": "catalog:",
-    "zod": "3.24.4"
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@types/react": "catalog:",
