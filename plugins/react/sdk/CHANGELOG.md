@@ -1,5 +1,16 @@
 # @gelatonetwork/smartwallet-react-sdk
 
+## 0.0.24
+
+### Patch Changes
+
+- 6d5a518: chore: bump dependencies
+- Updated dependencies [6d5a518]
+  - @gelatonetwork/smartwallet-react-dynamic@0.0.24
+  - @gelatonetwork/smartwallet-react-privy@0.0.24
+  - @gelatonetwork/smartwallet@0.0.24
+  - @gelatonetwork/smartwallet-react-types@0.0.24
+
 ## 0.0.23
 
 ### Patch Changes
