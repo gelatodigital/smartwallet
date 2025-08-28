@@ -42,7 +42,7 @@ const client = createWalletClient({
 const swc = await createGelatoSmartWalletClient(client, { apiKey });
 
 const response = await swc.execute({
-    payment: sponsored(apiKey),
+    payment: sponsored(),
     calls: [
       {
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
