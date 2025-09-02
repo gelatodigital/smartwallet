@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.25
+
+### Patch Changes
+
+- 5deab72: feat: metamask
+
 ## 0.0.24
 
 ### Patch Changes
