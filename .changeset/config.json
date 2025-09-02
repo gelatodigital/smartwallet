@@ -22,6 +22,7 @@
     "okx-native-payment",
     "trust-wallet-sponsored-payment",
     "token-pocket-sponsored-payment",
+    "metamask-sponsored-payment",
     "uniswap-sponsored-payment",
     "permissionless-adapter",
     "viem-adapter",

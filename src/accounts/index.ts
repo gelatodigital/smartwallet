@@ -14,6 +14,7 @@ export {
   session
 } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
+export { metamask } from "./metamask/index.js";
 export { okx } from "./okx/index.js";
 export { safe } from "./safe/index.js";
 export { trustWallet } from "./trustWallet/index.js";
