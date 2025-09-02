@@ -1,4 +1,4 @@
-import type { Address, Hex } from "viem";
+import type { Address, Hex, TypedData } from "viem";
 
 const GELATO_API = "https://api.gelato.digital";
 const GELATO_API_WS = "wss://api.gelato.digital";
@@ -16,6 +16,22 @@ const EXECUTION_MODE: { [mode in Mode]: Address } = {
 const GELATO_STATUS_API_POLLING_INTERVAL = 3000;
 const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
 const DEFAULT_PROVIDER_POLLING_INTERVAL = 1000;
+
+export const METAMASK_DELEGATION = {"address": "0x63c0c19a282a1B52b07dD5a65b58948A07DAE32B", "type": "EIP7702StatelessDeleGator", "version": "1"} as const;
+
+export const METAMASK_SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
+  PackedUserOperation: [
+    { name: "sender", type: "address" },
+    { name: "nonce", type: "uint256" },
+    { name: "initCode", type: "bytes" },
+    { name: "callData", type: "bytes" },
+    { name: "accountGasLimits", type: "bytes32" },
+    { name: "preVerificationGas", type: "uint256" },
+    { name: "gasFees", type: "bytes32" },
+    { name: "paymasterAndData", type: "bytes" },
+    { name: "entryPoint", type: "address" },
+  ],
+} as const;
 
 export const api = (t: "http" | "ws" = "http") => (t === "http" ? GELATO_API : GELATO_API_WS);
 
