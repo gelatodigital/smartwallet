@@ -17,7 +17,7 @@ const GELATO_STATUS_API_POLLING_INTERVAL = 3000;
 const GELATO_STATUS_API_POLLING_MAX_RETRIES = 10;
 const DEFAULT_PROVIDER_POLLING_INTERVAL = 1000;
 
-export const METAMASK_DELEGATION = {"address": "0x63c0c19a282a1B52b07dD5a65b58948A07DAE32B", "type": "EIP7702StatelessDeleGator", "version": "1"} as const;
+export const METAMASK_DELEGATION = {address: "0x63c0c19a282a1B52b07dD5a65b58948A07DAE32B", type: "EIP7702StatelessDeleGator", version: "1"} as const;
 
 export const METAMASK_SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
   PackedUserOperation: [
