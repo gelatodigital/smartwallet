@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet-react-dynamic
 
+## 0.0.26
+
+### Patch Changes
+
+- 670b3c3: fix: dynamic connector
+
 ## 0.0.25
 
 ### Patch Changes
