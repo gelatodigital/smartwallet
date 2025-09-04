@@ -1,12 +1,7 @@
 import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethereum";
-import {
-  DynamicContextProvider,
-  EvmNetwork,
-  useDynamicContext
-} from "@dynamic-labs/sdk-react-core";
-import type { GenericNetwork } from "@dynamic-labs/types";
+import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
-import { isTurnkeyWalletConnector } from "@dynamic-labs/wallet-connector-core";
+import { isDynamicWaasConnector } from "@dynamic-labs/wallet-connector-core";
 import {
   type GelatoSmartWalletClient,
   createGelatoSmartWalletClient
@@ -19,7 +14,7 @@ import type {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Chain, Transport } from "viem";
+import type { Account, Chain, PrepareAuthorizationParameters, Transport } from "viem";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 import { prepareAuthorization } from "viem/actions";
 import { sepolia } from "viem/chains";
@@ -82,7 +77,7 @@ const GelatoSmartWalletDynamicInternal: FC<{
 
       const connector = primaryWallet.connector;
 
-      if (!connector || !isTurnkeyWalletConnector(connector)) {
+      if (!connector || !isDynamicWaasConnector(connector)) {
         return;
       }
 
@@ -96,7 +91,13 @@ const GelatoSmartWalletDynamicInternal: FC<{
         client.account.signAuthorization = async (parameters) => {
           const preparedAuthorization = await prepareAuthorization(client, parameters);
 
-          const signedAuthorization = await connector.signAuthorization(preparedAuthorization);
+          const signedAuthorization = await (
+            connector as unknown as {
+              signAuthorization: (
+                parameters: PrepareAuthorizationParameters<Account>
+              ) => Promise<SignAuthorizationReturnType>;
+            }
+          ).signAuthorization(preparedAuthorization);
 
           return {
             address: preparedAuthorization.address,
@@ -113,9 +114,11 @@ const GelatoSmartWalletDynamicInternal: FC<{
           apiKey,
           scw
         });
+
         setSmartWalletClient(smartWalletClient);
       } catch (error) {
         console.error("Failed to get wallet client:", error);
+        console.log(`Make sure you have enabled ${chainId} on your Dynamic account.`);
       }
     };
 
