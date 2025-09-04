@@ -103,48 +103,11 @@ export async function okx<eip7702 extends boolean = true>(
 
   const account = (await toSmartAccount({
     abi,
-    client,
-    extend: {
-      abi,
-      owner,
-      eip7702,
-      erc4337,
-      scw: { type: "okx", encoding: "okx", version: "1.0" } as const
-    },
-    entryPoint,
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
     },
-    async signAuthorization() {
-      const _isDeployed = await isDeployed();
-
-      if (!_isDeployed) {
-        if (!isAddressEqual(authorization.address, OKX_V1_0_DELEGATION_ADDRESS)) {
-          throw new Error(
-            "EIP-7702 authorization delegation address does not match account implementation address"
-          );
-        }
-
-        const auth = await viem_signAuthorization(client, {
-          ...authorization,
-          chainId: await getMemoizedChainId()
-        });
-
-        const verified = await verifyAuthorization({
-          authorization: auth,
-          address: owner.address
-        });
-
-        if (!verified) {
-          throw new Error("Authorization verification failed");
-        }
-
-        return auth;
-      }
-
-      return undefined;
-    },
+    client,
     async decodeCalls() {
       // TODO
       throw new BaseError("Decoding calls is not implemented");
@@ -152,6 +115,21 @@ export async function okx<eip7702 extends boolean = true>(
 
     async encodeCalls(calls, opData?: Hex) {
       return encodeCalls(calls, opData);
+    },
+    entryPoint,
+    extend: {
+      abi,
+      eip7702,
+      erc4337,
+      owner,
+      scw: { encoding: "okx", type: "okx", version: "1.0" } as const
+    },
+    async getAddress() {
+      return owner.address;
+    },
+
+    async getFactoryArgs() {
+      return { factory: "0x7702", factoryData: "0x" };
     },
 
     async getNonce(): Promise<bigint> {
@@ -169,12 +147,38 @@ export async function okx<eip7702 extends boolean = true>(
             ]
       });
     },
-    async getAddress() {
-      return owner.address;
-    },
 
-    async getFactoryArgs() {
-      return { factory: "0x7702", factoryData: "0x" };
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+    },
+    async signAuthorization() {
+      const _isDeployed = await isDeployed();
+
+      if (!_isDeployed) {
+        if (!isAddressEqual(authorization.address, OKX_V1_0_DELEGATION_ADDRESS)) {
+          throw new Error(
+            "EIP-7702 authorization delegation address does not match account implementation address"
+          );
+        }
+
+        const auth = await viem_signAuthorization(client, {
+          ...authorization,
+          chainId: await getMemoizedChainId()
+        });
+
+        const verified = await verifyAuthorization({
+          address: owner.address,
+          authorization: auth
+        });
+
+        if (!verified) {
+          throw new Error("Authorization verification failed");
+        }
+
+        return auth;
+      }
+
+      return undefined;
     },
 
     async signMessage(parameters) {
@@ -193,30 +197,26 @@ export async function okx<eip7702 extends boolean = true>(
       >;
 
       return viem_signTypedData(client, {
+        account: owner,
         domain,
         message,
         primaryType,
-        types,
-        account: owner
+        types
       });
-    },
-
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
 
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
 
       const hash = getUserOperationHash({
+        chainId,
+        entryPointAddress: entryPoint.address,
+        entryPointVersion: entryPoint.version,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
-        },
-        entryPointAddress: entryPoint.address,
-        entryPointVersion: entryPoint.version,
-        chainId
+        }
       });
 
       const signature = await viem_signMessage(client, {

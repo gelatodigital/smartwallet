@@ -8,7 +8,7 @@ import {
 } from "@gelatonetwork/smartwallet-react-privy";
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type React from "react";
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 
 import { isDynamic } from "./utils/index.js";
 

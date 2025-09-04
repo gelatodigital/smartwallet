@@ -1,8 +1,7 @@
-import type { Chain, Transport, WalletActions, WalletClient } from "viem";
+import type { Chain, Transport, WalletClient } from "viem";
+import type { SmartAccount } from "viem/account-abstraction";
 import type { SignAuthorizationReturnType } from "viem/accounts";
 import { signAuthorization as viem_signAuthorization } from "viem/actions";
-
-import type { SmartAccount } from "viem/account-abstraction";
 
 /**
  *

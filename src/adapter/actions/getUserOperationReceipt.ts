@@ -2,21 +2,21 @@ import {
   type Address,
   type Client,
   type Hex,
-  type Transport,
   parseEventLogs,
+  type Transport,
   zeroAddress
 } from "viem";
 import {
+  entryPoint07Abi,
   type GetUserOperationReceiptParameters,
   type GetUserOperationReceiptReturnType,
-  UserOperationNotFoundError,
-  entryPoint07Abi
+  UserOperationNotFoundError
 } from "viem/account-abstraction";
 import { getTransactionReceipt, waitForTransactionReceipt } from "viem/actions";
 import {
+  getTaskStatus,
   TaskState,
-  type TransactionStatusResponse,
-  getTaskStatus
+  type TransactionStatusResponse
 } from "../../relay/status/index.js";
 import { isFinalTaskState } from "../../relay/status/utils.js";
 
@@ -72,8 +72,8 @@ export async function getUserOperationReceipt(
     !status.transactionHash
   ) {
     return {
-      success: false,
       reason: status.lastCheckMessage,
+      success: false,
       userOpHash: hash
     } as GetUserOperationReceiptReturnType;
   }

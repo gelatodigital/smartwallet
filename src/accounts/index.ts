@@ -5,13 +5,13 @@ import type { Validator } from "./gelato/index.js";
 
 export { custom } from "./custom/index.js";
 export {
-  gelato,
   addSession,
+  gelato,
   removeSession,
-  Validator,
-  ValidatorType,
   SessionValidator,
-  session
+  session,
+  Validator,
+  ValidatorType
 } from "./gelato/index.js";
 export { kernel } from "./kernel/index.js";
 export { metamask } from "./metamask/index.js";

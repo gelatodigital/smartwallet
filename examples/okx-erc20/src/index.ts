@@ -1,8 +1,11 @@
-import { erc20 } from "@gelatonetwork/smartwallet";
-import { type GelatoTaskStatus, createGelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
+import {
+  createGelatoSmartWalletClient,
+  erc20,
+  type GelatoTaskStatus
+} from "@gelatonetwork/smartwallet";
 import { okx } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Hex, createPublicClient, createWalletClient } from "viem";
+import { createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -24,8 +27,8 @@ const publicClient = createPublicClient({
 
 (async () => {
   const account = await okx({
-    owner,
-    client: publicClient
+    client: publicClient,
+    owner
   });
 
   console.log("Account address:", account.address);
@@ -41,14 +44,14 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.execute({
-    payment: erc20(token),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
-    ]
+    ],
+    payment: erc20(token)
   });
 
   console.log(`Your Gelato id is: ${response.id}`);

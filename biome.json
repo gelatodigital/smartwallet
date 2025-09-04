@@ -9,10 +9,10 @@
         "useSortedProperties": "on"
       }
     },
-    "includes": ["src", "plugins", "examples", "docs", "test"]
+    "includes": ["**"]
   },
   "files": {
-    "includes": ["src", "plugins", "examples", "docs", "test"]
+    "includes": ["**", "!**/dist", "!**/_dist", "!**/node_modules"]
   },
   "formatter": {
     "enabled": true,
@@ -46,5 +46,26 @@
         "noExplicitAny": "warn"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["**/tsconfig.json", "**/*tsconfig.*.json"],
+      "json": {
+        "parser": {
+          "allowComments": true,
+          "allowTrailingCommas": true
+        }
+      }
+    },
+    {
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off"
+          }
+        }
+      },
+      "includes": ["**/*tsconfig.json", "**/*tsconfig.*.json", "**/*package.json"]
+    }
+  ]
 }

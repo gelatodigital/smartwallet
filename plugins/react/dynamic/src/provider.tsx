@@ -3,14 +3,14 @@ import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-rea
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isDynamicWaasConnector } from "@dynamic-labs/wallet-connector-core";
 import {
-  type GelatoSmartWalletClient,
-  createGelatoSmartWalletClient
+  createGelatoSmartWalletClient,
+  type GelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
-import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type {
   GelatoSmartAccount,
   GelatoSmartAccountSCW
 } from "@gelatonetwork/smartwallet/accounts";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import type { Account, Chain, PrepareAuthorizationParameters, Transport } from "
 import type { SignAuthorizationReturnType } from "viem/accounts";
 import { prepareAuthorization } from "viem/actions";
 import { sepolia } from "viem/chains";
-import { type Config as WagmiConfig, WagmiProvider, createConfig } from "wagmi";
+import { createConfig, type Config as WagmiConfig, WagmiProvider } from "wagmi";
 
 type GelatoSmartWalletDynamicContextType = wallet.ProviderContext;
 
@@ -131,11 +131,11 @@ const GelatoSmartWalletDynamicInternal: FC<{
         gelato: {
           client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>
         },
+        logout: logoutHandler,
+        switchNetwork,
         wagmi: {
           config: wagmi.config
-        },
-        logout: logoutHandler,
-        switchNetwork
+        }
       }}
     >
       {children}
@@ -154,19 +154,19 @@ export const GelatoSmartWalletDynamicContextProvider: FC<GelatoSmartWalletDynami
     <DynamicContextProvider
       settings={{
         environmentId: settings.waas.appId,
-        walletConnectors: [EthereumWalletConnectors],
         overrides: {
           evmNetworks: settings.waas.customChains?.evmNetworks
-        }
+        },
+        walletConnectors: [EthereumWalletConnectors]
       }}
     >
       <GelatoSmartWalletDynamicInternal
+        apiKey={settings.apiKey}
         defaultChain={settings.defaultChain ?? settings.wagmi?.config?.chains?.[0] ?? sepolia}
+        scw={settings.scw}
         wagmi={{
           config: wagmiConfig
         }}
-        apiKey={settings.apiKey}
-        scw={settings.scw}
       >
         {wagmiConfig ? (
           <WagmiProvider config={wagmiConfig}>

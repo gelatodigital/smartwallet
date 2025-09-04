@@ -4,6 +4,14 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    include: [
+      "@gelatonetwork/smartwallet",
+      "@gelatonetwork/smartwallet-react-dynamic",
+      "@gelatonetwork/smartwallet-react-privy",
+      "@gelatonetwork/smartwallet-react-sdk"
+    ]
+  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -21,13 +29,5 @@ export default defineConfig({
         "../../plugins/react/sdk/src/index.ts"
       )
     }
-  },
-  optimizeDeps: {
-    include: [
-      "@gelatonetwork/smartwallet",
-      "@gelatonetwork/smartwallet-react-dynamic",
-      "@gelatonetwork/smartwallet-react-privy",
-      "@gelatonetwork/smartwallet-react-sdk"
-    ]
   }
 });

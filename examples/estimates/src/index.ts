@@ -1,7 +1,7 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Hex, createPublicClient, createWalletClient, formatEther } from "viem";
+import { createPublicClient, createWalletClient, formatEther, type Hex, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -21,8 +21,8 @@ const publicClient = createPublicClient({
 
 (async () => {
   const account = await gelato({
-    owner,
-    client: publicClient
+    client: publicClient,
+    owner
   });
 
   const client = createWalletClient({
@@ -36,14 +36,14 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.estimate({
-    payment: sponsored(),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
-    ]
+    ],
+    payment: sponsored()
   });
 
   console.log(`Estimated fee: ${formatEther(BigInt(response.fee.amount))} ETH`);

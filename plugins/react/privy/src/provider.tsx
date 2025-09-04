@@ -1,40 +1,28 @@
 import {
-  type GelatoSmartWalletClient,
-  createGelatoSmartWalletClient
+  createGelatoSmartWalletClient,
+  type GelatoSmartWalletClient
 } from "@gelatonetwork/smartwallet";
-import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import type {
   GelatoSmartAccount,
   GelatoSmartAccountSCW
 } from "@gelatonetwork/smartwallet/accounts";
+import type { wallet } from "@gelatonetwork/smartwallet-react-types";
 import { PrivyProvider, usePrivy, useSignAuthorization, useWallets } from "@privy-io/react-auth";
-import { WagmiProvider, createConfig } from "@privy-io/wagmi";
+import { createConfig, WagmiProvider } from "@privy-io/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChainId } from "caip";
 import type { FC, ReactNode } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   type Account,
   type Chain,
-  type Hex,
-  type Transport,
   createWalletClient,
-  custom
+  custom,
+  type Hex,
+  type Transport
 } from "viem";
 import type { SmartAccount } from "viem/account-abstraction";
-import {
-  type PrepareAuthorizationParameters,
-  SignAuthorizationReturnType,
-  prepareAuthorization
-} from "viem/actions";
+import { type PrepareAuthorizationParameters, prepareAuthorization } from "viem/actions";
 import * as chains from "viem/chains";
 import { extractChain } from "viem/utils";
 import type { Config as WagmiConfig } from "wagmi";
@@ -102,7 +90,6 @@ const GelatoSmartWalletPrivyInternal: FC<{
     [smartWalletClient, wallets]
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: off
   useEffect(() => {
     if (!ready || !walletsReady) {
       return;
@@ -128,7 +115,7 @@ const GelatoSmartWalletPrivyInternal: FC<{
         const { reference: chainId } = ChainId.parse(primaryWallet.chainId);
         const chain = extractChain({
           chains: Object.values(chains),
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          // biome-ignore lint/suspicious/noExplicitAny: chainId type override
           id: Number(chainId) as any
         });
 
@@ -149,8 +136,8 @@ const GelatoSmartWalletPrivyInternal: FC<{
           const preparedAuthorization = await prepareAuthorization(client, parameters);
 
           const signedAuthorization = await signAuthorization({
-            contractAddress: preparedAuthorization.address,
             chainId: preparedAuthorization.chainId,
+            contractAddress: preparedAuthorization.address,
             nonce: preparedAuthorization.nonce
           });
 
@@ -177,11 +164,11 @@ const GelatoSmartWalletPrivyInternal: FC<{
         gelato: {
           client: smartWalletClient as GelatoSmartWalletClient<Transport, Chain, GelatoSmartAccount>
         },
+        logout: logoutWrapper,
+        switchNetwork,
         wagmi: {
           config: wagmi.config
-        },
-        logout: logoutWrapper,
-        switchNetwork
+        }
       }}
     >
       {children}
@@ -207,9 +194,9 @@ export const GelatoSmartWalletPrivyContextProvider: FC<GelatoSmartWalletPrivyCon
       }}
     >
       <GelatoSmartWalletPrivyInternal
-        wagmi={{ config: wagmiConfig }}
         apiKey={settings.apiKey}
         scw={settings.scw}
+        wagmi={{ config: wagmiConfig }}
       >
         {wagmiConfig ? (
           <QueryClientProvider client={queryClient}>

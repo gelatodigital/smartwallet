@@ -1,8 +1,8 @@
-import { type GelatoTaskStatus, erc20, native, sponsored } from "@gelatonetwork/smartwallet";
+import { erc20, type GelatoTaskStatus, native, sponsored } from "@gelatonetwork/smartwallet";
 import {
+  dynamic,
   GelatoSmartWalletConnectButton,
   GelatoSmartWalletContextProvider,
-  dynamic,
   useGelatoSmartWalletProviderContext,
   wagmi
 } from "@gelatonetwork/smartwallet-react-sdk";
@@ -24,21 +24,21 @@ interface ChainConfig {
 // Chain configurations
 const CHAIN_CONFIGS: Record<number, ChainConfig> = {
   [sepolia.id]: {
+    explorer: "https://sepolia.etherscan.io",
     id: sepolia.id,
     name: "Sepolia",
-    explorer: "https://sepolia.etherscan.io",
     tokens: {
-      WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
-      USDC: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+      USDC: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
     }
   },
   [baseSepolia.id]: {
+    explorer: "https://sepolia.basescan.org",
     id: baseSepolia.id,
     name: "Base Sepolia",
-    explorer: "https://sepolia.basescan.org",
     tokens: {
-      WETH: "0x4200000000000000000000000000000000000006",
-      USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+      USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      WETH: "0x4200000000000000000000000000000000000006"
     }
   }
 };
@@ -79,26 +79,26 @@ const WalletInfoComponent = () => {
             : native();
       // Example transaction - sending a simple call
       const response = await client.execute({
-        payment,
         calls: [
           {
-            to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
             data: "0xd09de08a",
+            to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
             value: 0n
           }
-        ]
+        ],
+        payment
       });
 
       response.on("submitted", (status: GelatoTaskStatus) => {
         console.log("Transaction submitted:", status.transactionHash);
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        // biome-ignore lint/style/noNonNullAssertion: example
         setTransactionHash(status.transactionHash!);
         setTransactionStatus(TransactionStatus.Submitted);
         setIsLoading(false);
       });
       response.on("success", (status: GelatoTaskStatus) => {
         console.log("Transaction successful:", status.transactionHash);
-        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+        // biome-ignore lint/style/noNonNullAssertion: example
         setTransactionHash(status.transactionHash!);
         setTransactionStatus(TransactionStatus.Executed);
         setIsLoading(false);
@@ -134,8 +134,8 @@ const WalletInfoComponent = () => {
             Wallet Address:{" "}
             <a
               href={`${CHAIN_CONFIGS[chainId].explorer}/address/${walletAddress}`}
-              target="_blank"
               rel="noopener noreferrer"
+              target="_blank"
             >
               {walletAddress}
             </a>
@@ -149,11 +149,11 @@ const WalletInfoComponent = () => {
                 </label>
                 <select
                   id="network"
-                  value={chainId}
                   onChange={(e) => {
-                    setChainId(Number.parseInt(e.target.value));
+                    setChainId(Number.parseInt(e.target.value, 10));
                   }}
-                  style={{ padding: "5px", borderRadius: "4px" }}
+                  style={{ borderRadius: "4px", padding: "5px" }}
+                  value={chainId}
                 >
                   {Object.values(CHAIN_CONFIGS).map((chain) => (
                     <option key={chain.id} value={chain.id}>
@@ -171,7 +171,7 @@ const WalletInfoComponent = () => {
                   onChange={(e) => {
                     setPaymentType(e.target.value);
                   }}
-                  style={{ padding: "5px", borderRadius: "4px" }}
+                  style={{ borderRadius: "4px", padding: "5px" }}
                 >
                   <option value="sponsored">Sponsored</option>
                   <option value="erc20">ERC20</option>
@@ -188,7 +188,7 @@ const WalletInfoComponent = () => {
                     onChange={(e) => {
                       setErc20TokenAddress(e.target.value as `0x${string}`);
                     }}
-                    style={{ padding: "5px", borderRadius: "4px" }}
+                    style={{ borderRadius: "4px", padding: "5px" }}
                   >
                     <option value={CHAIN_CONFIGS[chainId].tokens.WETH}>WETH</option>
                     <option value={CHAIN_CONFIGS[chainId].tokens.USDC}>USDC</option>
@@ -196,13 +196,13 @@ const WalletInfoComponent = () => {
                 </div>
               )}
               <button
-                type="button"
-                onClick={executeTransaction}
                 disabled={isLoading}
+                onClick={executeTransaction}
                 style={{
-                  opacity: isLoading ? 0.7 : 1,
-                  cursor: isLoading ? "not-allowed" : "pointer"
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  opacity: isLoading ? 0.7 : 1
                 }}
+                type="button"
               >
                 {isLoading ? "Processing..." : "Execute Transaction"}
               </button>
@@ -213,8 +213,8 @@ const WalletInfoComponent = () => {
                     Transaction Hash:{" "}
                     <a
                       href={`${CHAIN_CONFIGS[chainId].explorer}/tx/${transactionHash}`}
-                      target="_blank"
                       rel="noopener noreferrer"
+                      target="_blank"
                     >
                       {transactionHash}
                     </a>
@@ -224,7 +224,7 @@ const WalletInfoComponent = () => {
             </div>
           </div>
           <p />
-          <button type="button" onClick={logout}>
+          <button onClick={logout} type="button">
             Logout
           </button>
         </div>

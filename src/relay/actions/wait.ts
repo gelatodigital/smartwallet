@@ -1,8 +1,4 @@
-import type { Client, Hash, TransactionReceipt, Transport } from "viem";
-
-import { waitHttp } from "./internal/waitHttp.js";
-import { waitPolling } from "./internal/waitPolling.js";
-
+import type { Client, Hash, Transport } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { defaultProviderPollingInterval } from "../../constants/index.js";
 import type { WaitParams } from "../index.js";
@@ -17,6 +13,8 @@ import {
 } from "../status/types.js";
 import { isSubmitted } from "../status/utils.js";
 import { statusApiWebSocket } from "../status/ws.js";
+import { waitHttp } from "./internal/waitHttp.js";
+import { waitPolling } from "./internal/waitPolling.js";
 
 type TaskStatusReturn = { hash: Hash; waitForReceipt?: boolean };
 
@@ -45,9 +43,9 @@ export const wait = async (
     // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
     if (confirmations !== undefined && confirmations > 0 && !submission && client) {
       await waitForTransactionReceipt(client, {
+        confirmations,
         hash: transactionHash,
-        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-        confirmations
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
       });
     }
     return transactionHash;
@@ -125,9 +123,9 @@ export const wait = async (
               };
             }),
             waitForTransactionReceipt(client, {
+              confirmations,
               hash: result.hash,
-              pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-              confirmations
+              pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
             }).then((result) => {
               return {
                 resolver: "provider",
@@ -162,9 +160,9 @@ export const wait = async (
       !submission
     ) {
       await waitForTransactionReceipt(client, {
+        confirmations,
         hash: result.hash,
-        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-        confirmations
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
       });
     }
 
@@ -181,12 +179,12 @@ export const wait = async (
     // Websocket error happened fallback to HTTP polling
     console.warn("WebSocket connection failed, falling back to HTTP polling");
     return await waitPolling(taskId, {
-      submission,
       client,
-      submissionHash: fallbackHash,
-      pollingInterval,
+      confirmations,
       maxRetries,
-      confirmations
+      pollingInterval,
+      submission,
+      submissionHash: fallbackHash
     });
   } finally {
     statusApiWebSocket.unsubscribe(taskId);

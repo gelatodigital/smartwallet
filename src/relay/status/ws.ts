@@ -1,5 +1,5 @@
-import WebSocket from "isomorphic-ws";
 import type { ClientOptions, ErrorEvent, MessageEvent } from "isomorphic-ws";
+import WebSocket from "isomorphic-ws";
 
 import { api } from "../../constants/index.js";
 import type {

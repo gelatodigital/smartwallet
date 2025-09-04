@@ -1,7 +1,7 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { addSession, gelato, removeSession, session } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Address, type Hex, createPublicClient, createWalletClient } from "viem";
+import { type Address, createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -22,8 +22,8 @@ const publicClient = createPublicClient({
 // This uses the accounts owner to create a session given the desired signer and expiry
 const createSession = async (signer: Address, expiry: number) => {
   const account = await gelato({
-    owner,
-    client: publicClient
+    client: publicClient,
+    owner
   });
 
   console.log("Account address:", account.address);
@@ -39,12 +39,12 @@ const createSession = async (signer: Address, expiry: number) => {
   });
 
   const response = await swc.execute({
-    payment: sponsored(),
     calls: [
       // This call creates the session
       // You can execute other calls before or after this
       ...addSession(signer, expiry)
-    ]
+    ],
+    payment: sponsored()
   });
 
   const hash = await response.wait();
@@ -64,8 +64,8 @@ const main = async () => {
   await new Promise((r) => setTimeout(r, 2000));
 
   const account = await gelato({
-    validator: session(owner.address, signer),
-    client: publicClient
+    client: publicClient,
+    validator: session(owner.address, signer)
   });
 
   console.log("Signer address:", signer.address);
@@ -81,17 +81,17 @@ const main = async () => {
   });
 
   const response = await swc.execute({
-    payment: sponsored(),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       },
       // This removes the session right in the same transaction
       // The order of this doesn't matter, it could also come first
       removeSession(signer.address)
-    ]
+    ],
+    payment: sponsored()
   });
 
   const hash = await response.wait();

@@ -52,14 +52,14 @@ export const prepareUserOperation = async <
   })();
 
   const response = await walletPrepareCalls(client as Client<Transport, Chain, SmartAccount>, {
-    calls,
-    payment: config.payment,
     apiKey: config.apiKey,
+    calls,
+    erc4337: true,
+    payment: config.payment,
     scw: {
-      type: WalletType.Custom,
-      encoding: config.encoding
-    },
-    erc4337: true
+      encoding: config.encoding,
+      type: WalletType.Custom
+    }
   });
 
   return response as WalletPrepareCallsResponse<ERC4337Context>;

@@ -4,12 +4,12 @@ import {
   type Address,
   BaseError,
   type Client,
-  type Hex,
-  type OneOf,
-  type Prettify,
   concat,
   decodeAbiParameters,
-  encodeDeployData
+  encodeDeployData,
+  type Hex,
+  type OneOf,
+  type Prettify
 } from "viem";
 
 import { call } from "viem/actions";
@@ -90,8 +90,8 @@ export const getSenderAddress = async (
   )({
     data: encodeDeployData({
       abi: GetSenderAddressHelperAbi,
-      bytecode: GetSenderAddressHelperByteCode,
-      args: [entryPointAddress, formattedInitCode]
+      args: [entryPointAddress, formattedInitCode],
+      bytecode: GetSenderAddressHelperByteCode
     })
   });
 

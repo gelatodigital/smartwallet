@@ -24,24 +24,24 @@ export const walletSendPreparedCalls = async <
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
 
   const response = await fetch(url, {
-    method: "POST",
+    body: JSON.stringify({
+      id: 1,
+      jsonrpc: "2.0",
+      method: "wallet_sendPreparedCalls",
+      params: [
+        {
+          authorizationList,
+          chainId: client.chain.id,
+          context,
+          signature
+        }
+      ]
+    }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "wallet_sendPreparedCalls",
-      params: [
-        {
-          chainId: client.chain.id,
-          context,
-          signature,
-          authorizationList
-        }
-      ]
-    })
+    method: "POST"
   });
   const data = await response.json();
 

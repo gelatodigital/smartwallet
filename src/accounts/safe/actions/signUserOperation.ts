@@ -4,17 +4,17 @@ import {
   type Account,
   type Address,
   type Chain,
+  concat,
+  concatHex,
+  decodeAbiParameters,
+  encodeAbiParameters,
+  encodePacked,
   type Hex,
   type LocalAccount,
   type OneOf,
   type Transport,
   type UnionPartialBy,
-  type WalletClient,
-  concat,
-  concatHex,
-  decodeAbiParameters,
-  encodeAbiParameters,
-  encodePacked
+  type WalletClient
 } from "viem";
 import type { UserOperation } from "viem/account-abstraction";
 import {
@@ -61,19 +61,19 @@ export async function signUserOperation(
   });
 
   const message = {
-    safe: userOperation.sender,
     callData: userOperation.callData,
-    nonce: userOperation.nonce,
+    callGasLimit: userOperation.callGasLimit,
+    entryPoint: entryPoint.address,
     initCode: userOperation.initCode ?? "0x",
     maxFeePerGas: userOperation.maxFeePerGas,
     maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas,
-    preVerificationGas: userOperation.preVerificationGas,
-    verificationGasLimit: userOperation.verificationGasLimit,
-    callGasLimit: userOperation.callGasLimit,
+    nonce: userOperation.nonce,
     paymasterAndData: userOperation.paymasterAndData ?? "0x",
+    preVerificationGas: userOperation.preVerificationGas,
+    safe: userOperation.sender,
     validAfter: validAfter,
     validUntil: validUntil,
-    entryPoint: entryPoint.address
+    verificationGasLimit: userOperation.verificationGasLimit
   };
 
   if ("initCode" in userOperation) {
@@ -106,8 +106,8 @@ export async function signUserOperation(
       [
         {
           components: [
-            { type: "address", name: "signer" },
-            { type: "bytes", name: "data" }
+            { name: "signer", type: "address" },
+            { name: "data", type: "bytes" }
           ],
           name: "signatures",
           type: "tuple[]"
@@ -123,16 +123,16 @@ export async function signUserOperation(
     ...unPackedSignatures,
     ...(await Promise.all(
       localOwners.map(async (localOwner) => ({
-        signer: localOwner.address,
         data: await localOwner.signTypedData({
           domain: {
             chainId,
             verifyingContract: safe4337ModuleAddress
           },
-          types: EIP712_SAFE_OPERATION_TYPE_V07,
+          message: message,
           primaryType: "SafeOp",
-          message: message
-        })
+          types: EIP712_SAFE_OPERATION_TYPE_V07
+        }),
+        signer: localOwner.address
       }))
     ))
   ];
@@ -142,8 +142,8 @@ export async function signUserOperation(
       [
         {
           components: [
-            { type: "address", name: "signer" },
-            { type: "bytes", name: "data" }
+            { name: "signer", type: "address" },
+            { name: "data", type: "bytes" }
           ],
           name: "signatures",
           type: "tuple[]"

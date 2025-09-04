@@ -48,10 +48,10 @@ export async function sendUserOperation<
   );
 
   const { id } = await walletSendPreparedCalls(client as Client<Transport, Chain, SmartAccount>, {
-    context,
-    signature,
+    apiKey: config.apiKey,
     authorizationList,
-    apiKey: config.apiKey
+    context,
+    signature
   });
 
   return id as Hex;

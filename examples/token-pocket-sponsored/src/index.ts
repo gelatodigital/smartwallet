@@ -1,11 +1,11 @@
 import {
-  type GelatoTaskStatus,
   createGelatoSmartWalletClient,
+  type GelatoTaskStatus,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { type GelatoSmartAccountExtension, custom } from "@gelatonetwork/smartwallet/accounts";
+import { custom, type GelatoSmartAccountExtension } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Hex, createPublicClient, createWalletClient } from "viem";
+import { createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -27,8 +27,6 @@ const publicClient = createPublicClient({
 
 (async () => {
   const account = await custom<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, true>({
-    owner,
-    client: publicClient,
     authorization: {
       account: owner,
       // the delegation is only officially deployed on Mainnet
@@ -38,15 +36,17 @@ const publicClient = createPublicClient({
       // - base sepolia: 0xA65Ce868f4d417284d5a15a24963BB089A9665E9
       address: "0xA65Ce868f4d417284d5a15a24963BB089A9665E9"
     },
+    client: publicClient,
+    eip7702: true,
     entryPoint: {
       abi: entryPoint08Abi,
       address: entryPoint08Address,
       version: "0.8"
     },
+    owner,
     scw: {
       encoding: ERC4337Encoding.TokenPocket
-    },
-    eip7702: true
+    }
   });
 
   console.log("Account address:", account.address);
@@ -62,14 +62,14 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.execute({
-    payment: sponsored(gelatoApiKey),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
-    ]
+    ],
+    payment: sponsored(gelatoApiKey)
   });
 
   console.log(`Your Gelato id is: ${response.id}`);

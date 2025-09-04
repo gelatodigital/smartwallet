@@ -1,12 +1,12 @@
-import { type Address, type Client, type Hex, type Transport, decodeFunctionData } from "viem";
+import { type Address, type Client, decodeFunctionData, type Hex, type Transport } from "viem";
 import {
+  entryPoint07Abi,
   type GetUserOperationParameters,
   type GetUserOperationReturnType,
-  UserOperationNotFoundError,
-  entryPoint07Abi
+  UserOperationNotFoundError
 } from "viem/account-abstraction";
 import { getTransaction } from "viem/actions";
-import { TaskState, getTaskStatus } from "../../relay/status/index.js";
+import { getTaskStatus, TaskState } from "../../relay/status/index.js";
 import { toUnpackedUserOperation } from "../utils/index.js";
 
 export async function getUserOperation(

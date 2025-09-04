@@ -1,8 +1,8 @@
-import { WalletEncoding, sponsored } from "@gelatonetwork/smartwallet";
+import { sponsored, WalletEncoding } from "@gelatonetwork/smartwallet";
 import { kernel } from "@gelatonetwork/smartwallet/accounts";
 import { gelatoBundlerActions } from "@gelatonetwork/smartwallet/adapter";
 import "dotenv/config";
-import { http, type Hex, createPublicClient } from "viem";
+import { createPublicClient, type Hex, http } from "viem";
 import { createBundlerClient } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -24,9 +24,9 @@ const client = createPublicClient({
 (async () => {
   // You can also use any permissionless adapter here
   const account = await kernel({
-    owner,
     client,
-    eip7702: true
+    eip7702: true,
+    owner
   });
 
   // You can also use permissionless `createSmartAccountClient` instead of viem
@@ -37,16 +37,16 @@ const client = createPublicClient({
     transport: http()
   }).extend(
     gelatoBundlerActions({
-      payment: sponsored(),
-      encoding: WalletEncoding.ERC7579
+      encoding: WalletEncoding.ERC7579,
+      payment: sponsored()
     })
   );
 
   const taskId = await bundler.sendUserOperation({
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
     ]

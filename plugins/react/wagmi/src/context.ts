@@ -1,12 +1,11 @@
-import type React from "react";
-import { createContext, createElement, useEffect, useState } from "react";
-
 import {
+  createGelatoSmartWalletClient,
   type GelatoSmartWalletClient,
-  type GelatoSmartWalletParams,
-  createGelatoSmartWalletClient
+  type GelatoSmartWalletParams
 } from "@gelatonetwork/smartwallet";
 import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
+import type React from "react";
+import { createContext, createElement, useEffect, useState } from "react";
 import type { Chain, Transport } from "viem";
 import { useWalletClient } from "wagmi";
 

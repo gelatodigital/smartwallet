@@ -29,11 +29,11 @@ import {
 } from "viem";
 import {
   type EntryPointVersion,
-  type SmartAccount,
-  type SmartAccountImplementation,
   entryPoint07Abi,
   entryPoint07Address,
   getUserOperationHash,
+  type SmartAccount,
+  type SmartAccountImplementation,
   toSmartAccount
 } from "viem/account-abstraction";
 import {
@@ -97,8 +97,8 @@ export type KernelSmartAccountReturnType = Prettify<SmartAccount<KernelSmartAcco
 const getInitializationData = ({ validatorData }: { validatorData: Hex }) => {
   return encodeFunctionData({
     abi: KernelV3AccountAbi,
-    functionName: "initialize",
-    args: [kernelV3_3_EcdsaRootIdentifier(), zeroAddress, validatorData, "0x", []]
+    args: [kernelV3_3_EcdsaRootIdentifier(), zeroAddress, validatorData, "0x", []],
+    functionName: "initialize"
   });
 };
 
@@ -115,8 +115,8 @@ const getAccountInitCode = async ({
 
   return encodeFunctionData({
     abi: KernelV3FactoryAbi,
-    functionName: "createAccount",
-    args: [initializationData, toHex(index, { size: 32 })]
+    args: [initializationData, toHex(index, { size: 32 })],
+    functionName: "createAccount"
   });
 };
 
@@ -157,8 +157,8 @@ export async function kernel<
 
   const generateInitCode = async () => {
     return getAccountInitCode({
-      validatorData: owner.address,
-      index
+      index,
+      validatorData: owner.address
     });
   };
 
@@ -188,10 +188,10 @@ export async function kernel<
 
     const _domainSeparator = domainSeparator({
       domain: {
-        name: "Kernel",
-        version: "0.3.3",
         chainId,
-        verifyingContract: accountAddress
+        name: "Kernel",
+        verifyingContract: accountAddress,
+        version: "0.3.3"
       }
     });
 
@@ -235,9 +235,9 @@ export async function kernel<
     const { factory, factoryData } = await getFactoryArgsFunc();
 
     const accountAddress = await getSenderAddress(client, {
+      entryPointAddress: entryPoint.address,
       factory,
-      factoryData,
-      entryPointAddress: entryPoint.address
+      factoryData
     });
 
     if (address !== accountAddress && address !== undefined) {
@@ -266,21 +266,77 @@ export async function kernel<
   };
 
   const account = (await toSmartAccount({
+    abi,
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
     },
-    getFactoryArgs,
-    abi,
     client,
-    extend: {
-      abi,
-      owner,
-      eip7702,
-      erc4337,
-      scw: { type: "kernel", encoding: "erc7579", version: "3.3" } as const
+    async decodeCalls(data) {
+      const result = decodeFunctionData({
+        abi,
+        data
+      });
+
+      if (result.functionName === "execute") {
+        // First argument is the opMode
+        const [_, executionData] = result.args as [Hex, Hex];
+
+        const [decodedCalls] = decodeAbiParameters(
+          [
+            {
+              components: [
+                { name: "to", type: "address" },
+                { name: "value", type: "uint256" },
+                { name: "data", type: "bytes" }
+              ],
+              type: "tuple[]"
+            }
+          ],
+          executionData
+        ) as [Call[]];
+
+        const calls: Call[] = decodedCalls;
+
+        return calls;
+      }
+
+      throw new BaseError(`unable to decode calls for "${result.functionName}"`);
+    },
+
+    async encodeCalls(calls, opData?: Hex) {
+      return encodeCalls(calls, opData);
     },
     entryPoint,
+    extend: {
+      abi,
+      eip7702,
+      erc4337,
+      owner,
+      scw: { encoding: "erc7579", type: "kernel", version: "3.3" } as const
+    },
+
+    async getAddress() {
+      return accountAddress;
+    },
+    getFactoryArgs,
+
+    async getNonce(_parameters?: { key?: bigint }): Promise<bigint> {
+      return readContract(client, {
+        abi: entryPoint.abi,
+        address: entryPoint.address,
+        args: [accountAddress, KERNEL_V3_3_ECDSA_VALIDATOR_KEY],
+        functionName: "getNonce"
+      }) as unknown as bigint;
+    },
+
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+    },
+
+    async sign({ hash }) {
+      return this.signMessage({ message: hash });
+    },
     async signAuthorization() {
       if (!authorization) {
         return undefined;
@@ -301,8 +357,8 @@ export async function kernel<
         });
 
         const verified = await verifyAuthorization({
-          authorization: auth,
-          address: owner.address
+          address: owner.address,
+          authorization: auth
         });
 
         if (!verified) {
@@ -313,62 +369,6 @@ export async function kernel<
       }
 
       return undefined;
-    },
-    async decodeCalls(data) {
-      const result = decodeFunctionData({
-        abi,
-        data
-      });
-
-      if (result.functionName === "execute") {
-        // First argument is the opMode
-        const [_, executionData] = result.args as [Hex, Hex];
-
-        const [decodedCalls] = decodeAbiParameters(
-          [
-            {
-              type: "tuple[]",
-              components: [
-                { type: "address", name: "to" },
-                { type: "uint256", name: "value" },
-                { type: "bytes", name: "data" }
-              ]
-            }
-          ],
-          executionData
-        ) as [Call[]];
-
-        const calls: Call[] = decodedCalls;
-
-        return calls;
-      }
-
-      throw new BaseError(`unable to decode calls for "${result.functionName}"`);
-    },
-
-    async encodeCalls(calls, opData?: Hex) {
-      return encodeCalls(calls, opData);
-    },
-
-    async getNonce(_parameters?: { key?: bigint }): Promise<bigint> {
-      return readContract(client, {
-        abi: entryPoint.abi,
-        address: entryPoint.address,
-        functionName: "getNonce",
-        args: [accountAddress, KERNEL_V3_3_ECDSA_VALIDATOR_KEY]
-      }) as unknown as bigint;
-    },
-
-    async getAddress() {
-      return accountAddress;
-    },
-
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
-    },
-
-    async sign({ hash }) {
-      return this.signMessage({ message: hash });
     },
 
     async signMessage({ message }) {
@@ -404,7 +404,7 @@ export async function kernel<
         types
       });
 
-      const typedHash = hashTypedData({ message, primaryType, types, domain });
+      const typedHash = hashTypedData({ domain, message, primaryType, types });
 
       const wrapped = await wrappedMessage(typedHash);
 
@@ -420,14 +420,14 @@ export async function kernel<
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
 
       const hash = getUserOperationHash({
+        chainId,
+        entryPointAddress: entryPoint.address,
+        entryPointVersion: entryPoint.version,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
-        },
-        entryPointAddress: entryPoint.address,
-        entryPointVersion: entryPoint.version,
-        chainId
+        }
       });
 
       const signature = await viem_signMessage(client, {

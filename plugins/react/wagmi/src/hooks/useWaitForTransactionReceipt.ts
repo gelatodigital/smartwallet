@@ -1,24 +1,23 @@
 import { type GelatoSmartWalletClient, track } from "@gelatonetwork/smartwallet";
+import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
 import type { DefaultError, QueryKey, QueryOptions } from "@tanstack/react-query";
 import {
   ConnectorNotConnectedError,
   type WaitForTransactionReceiptErrorType,
   waitForTransactionReceipt
 } from "@wagmi/core";
-import { type Account, type Chain, type Hash, type Prettify, type Transport, isHash } from "viem";
+import React from "react";
+import { type Chain, type Hash, isHash, type Prettify, type Transport } from "viem";
 import type { ShowCallsStatusErrorType } from "viem/actions";
 import { type Config, type ResolvedRegister, useChainId, useConfig } from "wagmi";
 import {
   type UseQueryParameters,
   type UseQueryReturnType,
+  useQuery,
   type WaitForTransactionReceiptData,
   type WaitForTransactionReceiptOptions,
-  type WaitForTransactionReceiptQueryFnData,
-  useQuery
+  type WaitForTransactionReceiptQueryFnData
 } from "wagmi/query";
-
-import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
-import React from "react";
 import { useGelatoSmartWalletClient } from "./useGelatoSmartWalletClient.js";
 import type { ConfigParameter } from "./useSendTransaction.js";
 

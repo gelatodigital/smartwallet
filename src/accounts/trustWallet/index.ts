@@ -105,18 +105,46 @@ export async function trustWallet<eip7702 extends boolean = true>(
 
   const account = (await toSmartAccount({
     abi,
-    client,
-    extend: {
-      abi,
-      owner,
-      eip7702,
-      erc4337,
-      scw: { type: "trustWallet", encoding: "trustWallet", version: "1.0" } as const
-    },
-    entryPoint,
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
+    },
+    client,
+    async decodeCalls() {
+      // TODO
+      throw new BaseError("Decoding calls is not implemented");
+    },
+
+    async encodeCalls(calls, opData?: Hex) {
+      return encodeCalls(calls, opData);
+    },
+    entryPoint,
+    extend: {
+      abi,
+      eip7702,
+      erc4337,
+      owner,
+      scw: { encoding: "trustWallet", type: "trustWallet", version: "1.0" } as const
+    },
+    async getAddress() {
+      return owner.address;
+    },
+
+    async getFactoryArgs() {
+      return { factory: "0x7702", factoryData: "0x" };
+    },
+
+    async getNonce(): Promise<bigint> {
+      return readContract(client, {
+        abi,
+        address: trustWalletBizGuardAddress(await getMemoizedChainId()),
+        args: [owner.address],
+        functionName: "accountNonce"
+      });
+    },
+
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
     async signAuthorization() {
       const _isDeployed = await isDeployed();
@@ -139,8 +167,8 @@ export async function trustWallet<eip7702 extends boolean = true>(
         });
 
         const verified = await verifyAuthorization({
-          authorization: auth,
-          address: owner.address
+          address: owner.address,
+          authorization: auth
         });
 
         if (!verified) {
@@ -151,30 +179,6 @@ export async function trustWallet<eip7702 extends boolean = true>(
       }
 
       return undefined;
-    },
-    async decodeCalls() {
-      // TODO
-      throw new BaseError("Decoding calls is not implemented");
-    },
-
-    async encodeCalls(calls, opData?: Hex) {
-      return encodeCalls(calls, opData);
-    },
-
-    async getNonce(): Promise<bigint> {
-      return readContract(client, {
-        abi,
-        address: trustWalletBizGuardAddress(await getMemoizedChainId()),
-        functionName: "accountNonce",
-        args: [owner.address]
-      });
-    },
-    async getAddress() {
-      return owner.address;
-    },
-
-    async getFactoryArgs() {
-      return { factory: "0x7702", factoryData: "0x" };
     },
 
     async signMessage(parameters) {
@@ -193,30 +197,26 @@ export async function trustWallet<eip7702 extends boolean = true>(
       >;
 
       return viem_signTypedData(client, {
+        account: owner,
         domain,
         message,
         primaryType,
-        types,
-        account: owner
+        types
       });
-    },
-
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
 
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
 
       const hash = getUserOperationHash({
+        chainId,
+        entryPointAddress: entryPoint.address,
+        entryPointVersion: entryPoint.version,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
-        },
-        entryPointAddress: entryPoint.address,
-        entryPointVersion: entryPoint.version,
-        chainId
+        }
       });
 
       const signature = await viem_signMessage(client, {

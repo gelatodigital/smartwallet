@@ -25,8 +25,8 @@ export async function estimateUserOperationGas<
   const { preVerificationGas, verificationGasLimit, callGasLimit } = preparedCalls.context.userOp;
 
   return {
+    callGasLimit,
     preVerificationGas,
-    verificationGasLimit,
-    callGasLimit
+    verificationGasLimit
   } as EstimateUserOperationGasReturnType<account, accountOverride>;
 }

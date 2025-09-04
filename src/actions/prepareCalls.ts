@@ -24,13 +24,13 @@ export async function prepareCalls<
   const nonceKey = "nonceKey" in parameters ? parameters.nonceKey : undefined;
 
   return await walletPrepareCalls(client, {
+    apiKey: client._internal.apiKey(),
     calls,
-    payment,
-    nonceKey,
-    nonce,
-    scw: client.account.scw,
-    validator: client.account.validator,
     erc4337: client.account.erc4337,
-    apiKey: client._internal.apiKey()
+    nonce,
+    nonceKey,
+    payment,
+    scw: client.account.scw,
+    validator: client.account.validator
   });
 }

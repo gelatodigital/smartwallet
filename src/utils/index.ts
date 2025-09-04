@@ -1,9 +1,9 @@
 import type { Account, PublicClient } from "viem";
 import type { CustomSmartAccountParameters } from "../accounts/custom/index.js";
 import {
+  custom,
   type GelatoSmartAccount,
   type GelatoSmartAccountSCW,
-  custom,
   gelato,
   kernel,
   safe
