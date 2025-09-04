@@ -1,8 +1,5 @@
 import { EthereumWalletConnectors, isEthereumWallet } from "@dynamic-labs/ethereum";
-import {
-  DynamicContextProvider,
-  useDynamicContext
-} from "@dynamic-labs/sdk-react-core";
+import { DynamicContextProvider, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { isDynamicWaasConnector } from "@dynamic-labs/wallet-connector-core";
 import {
@@ -94,7 +91,13 @@ const GelatoSmartWalletDynamicInternal: FC<{
         client.account.signAuthorization = async (parameters) => {
           const preparedAuthorization = await prepareAuthorization(client, parameters);
 
-          const signedAuthorization = await (connector as unknown as {signAuthorization: (parameters: PrepareAuthorizationParameters<Account>) => Promise<SignAuthorizationReturnType>}).signAuthorization(preparedAuthorization);
+          const signedAuthorization = await (
+            connector as unknown as {
+              signAuthorization: (
+                parameters: PrepareAuthorizationParameters<Account>
+              ) => Promise<SignAuthorizationReturnType>;
+            }
+          ).signAuthorization(preparedAuthorization);
 
           return {
             address: preparedAuthorization.address,
