@@ -26,7 +26,7 @@ export const on = (
   const { update, callback, client, confirmations, pollingInterval } = parameters;
 
   if (update === "error") {
-    return onError(taskId, { update, callback: callback as ErrorCallback });
+    return onError(taskId, { callback: callback as ErrorCallback, update });
   }
 
   const successCallback = callback as SuccessCallback;
@@ -76,9 +76,9 @@ export const on = (
               };
             }),
             waitForTransactionReceipt(client, {
+              confirmations,
               hash: result.taskStatus.transactionHash as Hash,
-              pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-              confirmations
+              pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
             }).then((result) => {
               return {
                 resolver: "provider",
@@ -96,9 +96,9 @@ export const on = (
       // If confirmations are provided, we need to wait for the transaction receipt and respect the confirmations
       if (resolver === "statusApi" && client && confirmations !== undefined) {
         await waitForTransactionReceipt(client, {
+          confirmations,
           hash: result.taskStatus.transactionHash as Hash,
-          pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-          confirmations
+          pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
         });
       }
 

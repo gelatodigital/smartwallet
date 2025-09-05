@@ -14,7 +14,7 @@ export const GelatoSmartWalletPrivyConnectButton: FC<GelatoSmartWalletPrivyConne
   const disableLogin = !ready || (ready && authenticated);
 
   return (
-    <button type="button" disabled={disableLogin} onClick={login}>
+    <button disabled={disableLogin} onClick={login} type="button">
       {children}
     </button>
   );

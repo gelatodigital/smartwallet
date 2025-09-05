@@ -29,15 +29,19 @@ export const walletPrepareCalls = async <
   const isDeployed = await client.account.isDeployed();
 
   const capabilities: Capabilities = <CustomCapabilities>{
-    wallet: scw,
-    payment,
-    validator: validator ? toValidatorRpc(validator) : undefined,
     authorization: client.account.authorization
       ? {
           address: client.account.authorization.address,
           authorized: isDeployed
         }
       : undefined,
+    entryPoint:
+      client.account.entryPoint && erc4337
+        ? {
+            address: client.account.entryPoint.address,
+            version: client.account.entryPoint.version
+          }
+        : undefined,
     // Only define factory if the account is not deployed and is non 7702
     factory:
       isDeployed || client.account.authorization
@@ -46,38 +50,34 @@ export const walletPrepareCalls = async <
             address: factory,
             data: factoryData
           })),
-    entryPoint:
-      client.account.entryPoint && erc4337
-        ? {
-            version: client.account.entryPoint.version,
-            address: client.account.entryPoint.address
-          }
-        : undefined,
+    nonce,
     nonceKey,
-    nonce
+    payment,
+    validator: validator ? toValidatorRpc(validator) : undefined,
+    wallet: scw
   };
 
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
 
   const raw = await fetch(url, {
-    method: "POST",
+    body: JSON.stringify({
+      id: 1,
+      jsonrpc: "2.0",
+      method: "wallet_prepareCalls",
+      params: [
+        {
+          calls,
+          capabilities,
+          chainId: client.chain.id,
+          from: client.account.address
+        }
+      ]
+    }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "wallet_prepareCalls",
-      params: [
-        {
-          chainId: client.chain.id,
-          from: client.account.address,
-          calls,
-          capabilities
-        }
-      ]
-    })
+    method: "POST"
   });
 
   const data = await raw.json();

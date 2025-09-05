@@ -50,9 +50,9 @@ export const waitPolling = async (
             };
           }),
           waitForTransactionReceipt(client, {
+            confirmations,
             hash: submissionHash,
-            pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-            confirmations
+            pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
           }).then((result) => {
             return {
               resolver: "provider",
@@ -69,9 +69,9 @@ export const waitPolling = async (
 
     if (resolver === "statusApi" && client && confirmations !== undefined && confirmations > 0) {
       await waitForTransactionReceipt(client, {
+        confirmations,
         hash: submissionHash,
-        pollingInterval: pollingInterval ?? defaultProviderPollingInterval(),
-        confirmations
+        pollingInterval: pollingInterval ?? defaultProviderPollingInterval()
       });
     }
 

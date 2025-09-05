@@ -47,15 +47,15 @@ export async function getUserOperationGasPrice(
   });
 
   return {
+    fast: {
+      maxFeePerGas: BigInt(gasPrice.maxFeePerGas),
+      maxPriorityFeePerGas: BigInt(gasPrice.maxPriorityFeePerGas)
+    },
     slow: {
       maxFeePerGas: BigInt(gasPrice.maxFeePerGas),
       maxPriorityFeePerGas: BigInt(gasPrice.maxPriorityFeePerGas)
     },
     standard: {
-      maxFeePerGas: BigInt(gasPrice.maxFeePerGas),
-      maxPriorityFeePerGas: BigInt(gasPrice.maxPriorityFeePerGas)
-    },
-    fast: {
       maxFeePerGas: BigInt(gasPrice.maxFeePerGas),
       maxPriorityFeePerGas: BigInt(gasPrice.maxPriorityFeePerGas)
     }

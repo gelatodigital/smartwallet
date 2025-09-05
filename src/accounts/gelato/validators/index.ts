@@ -29,12 +29,12 @@ export type Validator = SessionValidator;
 export type ValidatorRpc = SessionValidatorRpc;
 
 export const session = (account: Address, signer: Account): SessionValidator => ({
-  type: ValidatorType.Session,
   account,
-  signer
+  signer,
+  type: ValidatorType.Session
 });
 
 export const toValidatorRpc = (validator: Validator): ValidatorRpc => ({
-  type: validator.type,
-  signer: validator.signer.address
+  signer: validator.signer.address,
+  type: validator.type
 });

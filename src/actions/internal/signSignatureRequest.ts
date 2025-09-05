@@ -1,5 +1,5 @@
 import type { Chain, Hex, Transport, WalletClient } from "viem";
-import { type SmartAccount, formatUserOperation } from "viem/account-abstraction";
+import { formatUserOperation, type SmartAccount } from "viem/account-abstraction";
 
 import { SignatureRequestType, type WalletPrepareCallsResponse } from "../../relay/rpc/index.js";
 

@@ -1,4 +1,4 @@
-import { type GelatoSmartWalletClient, type Payment, native } from "@gelatonetwork/smartwallet";
+import { type GelatoSmartWalletClient, native, type Payment } from "@gelatonetwork/smartwallet";
 import type { GelatoSmartAccount } from "@gelatonetwork/smartwallet/accounts";
 import { type MutateOptions, type MutationOptions, useMutation } from "@tanstack/react-query";
 import { sendTransaction } from "@wagmi/core";
@@ -31,13 +31,13 @@ const sendTransactionMutationOptions = <config extends Config>(
         const client = parameters.client;
 
         const result = await client.execute({
-          payment: parameters.payment ?? native(),
           calls: [
             {
               // biome-ignore lint/suspicious/noExplicitAny: variables will include to & data/value
               ...(variables as any)
             }
-          ]
+          ],
+          payment: parameters.payment ?? native()
         });
 
         return result.id;

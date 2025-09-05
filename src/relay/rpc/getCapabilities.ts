@@ -13,21 +13,21 @@ export const walletGetCapabilities = async <
   client: GelatoWalletClient<transport, chain, account>
 ): Promise<NetworkCapabilities> => {
   const raw = await fetch(`${api()}/smartwallet`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
-      jsonrpc: "2.0",
       id: 1,
+      jsonrpc: "2.0",
       method: "wallet_getCapabilities",
       params: [
         {
           chainIds: [client.chain.id]
         }
       ]
-    })
+    }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    method: "POST"
   });
 
   const data = await raw.json();

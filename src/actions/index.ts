@@ -1,6 +1,7 @@
 import type { Call, Chain, Client, Hex, PublicActions, Transport, WalletClient } from "viem";
 
 import type { PublicActionsL2 } from "viem/op-stack";
+import type { GelatoSmartAccount } from "../accounts/index.js";
 import type { Payment } from "../payment/index.js";
 import type { GelatoResponse } from "../relay/index.js";
 import type {
@@ -8,8 +9,6 @@ import type {
   Quote,
   WalletPrepareCallsResponse
 } from "../relay/rpc/interfaces/index.js";
-
-import type { GelatoSmartAccount } from "../accounts/index.js";
 import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
 import { prepareCalls } from "./prepareCalls.js";
@@ -61,8 +60,8 @@ export function actions<
   account extends GelatoSmartAccount = GelatoSmartAccount
 >(client: GelatoWalletClient<transport, chain, account>) {
   return {
-    execute: (args: GelatoActionArgs) => execute(client, args),
     estimate: (args: GelatoActionArgs) => estimate(client, args),
+    execute: (args: GelatoActionArgs) => execute(client, args),
     prepareCalls: (args: GelatoActionArgs) => prepareCalls(client, args),
     sendPreparedCalls: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
       sendPreparedCalls(client, args),
@@ -81,9 +80,9 @@ export function internal({
 }): GelatoSmartWalletInternals {
   return {
     _internal: {
-      networkCapabilities,
       apiKey: () => apiKey,
-      innerSwitchChain
+      innerSwitchChain,
+      networkCapabilities
     }
   };
 }

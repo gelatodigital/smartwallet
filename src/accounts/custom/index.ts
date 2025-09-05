@@ -104,12 +104,17 @@ export async function custom<
   };
 
   return toSmartAccount({
+    authorization,
     client,
+    async encodeCalls() {
+      throw new Error("encodeCalls is not implemented for custom accounts");
+    },
+    entryPoint,
     extend: {
-      owner,
       eip7702,
       erc4337,
-      scw: { type: "custom", encoding: scw.encoding, version: "unknown" } as const,
+      owner,
+      scw: { encoding: scw.encoding, type: "custom", version: "unknown" } as const,
       async signAuthorization() {
         if (!eip7702) {
           throw new Error("EIP-7702 must be enabled. No support for non-EIP-7702 accounts.");
@@ -133,8 +138,8 @@ export async function custom<
           });
 
           const verified = await verifyAuthorization({
-            authorization: auth,
-            address: owner.address
+            address: owner.address,
+            authorization: auth
           });
 
           if (!verified) {
@@ -147,13 +152,8 @@ export async function custom<
         return undefined;
       }
     },
-    entryPoint,
-    authorization,
     async getAddress() {
       return owner.address;
-    },
-    async encodeCalls() {
-      throw new Error("encodeCalls is not implemented for custom accounts");
     },
     async getFactoryArgs() {
       if (eip7702) {
@@ -178,6 +178,9 @@ export async function custom<
 
       throw new Error("Factory args are not set");
     },
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+    },
     async signMessage(parameters) {
       const { message } = parameters;
 
@@ -193,15 +196,12 @@ export async function custom<
       >;
 
       return viem_signTypedData(client, {
+        account: owner,
         domain,
         message,
         primaryType,
-        types,
-        account: owner
+        types
       });
-    },
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
     async signUserOperation(parameters) {
       const { chainId = await getMemoizedChainId(), ...userOperation } = parameters;
@@ -226,14 +226,14 @@ export async function custom<
       }
 
       const hash = getUserOperationHash({
+        chainId,
+        entryPointAddress: entryPoint.address,
+        entryPointVersion: entryPoint.version,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
-        },
-        entryPointAddress: entryPoint.address,
-        entryPointVersion: entryPoint.version,
-        chainId
+        }
       });
 
       const signature = await viem_signMessage(client, {

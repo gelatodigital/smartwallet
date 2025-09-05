@@ -1,7 +1,7 @@
 import { createGelatoSmartWalletClient, sponsored } from "@gelatonetwork/smartwallet";
 import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Call, type Hex, createPublicClient, createWalletClient } from "viem";
+import { type Call, createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 
@@ -21,8 +21,8 @@ const publicClient = createPublicClient({
 
 const main = async () => {
   const account = await gelato({
-    owner,
-    client: publicClient
+    client: publicClient,
+    owner
   });
 
   console.log("Account address:", account.address);
@@ -39,8 +39,8 @@ const main = async () => {
 
   const calls: Call[] = [
     {
-      to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
       data: "0xd09de08a",
+      to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
       value: 0n
     }
   ];
@@ -48,8 +48,8 @@ const main = async () => {
   // Regular `execute` call key without `nonce` or `nonceKey` specified.
   // This defaults to `nonceKey` zero.
   const response1 = await swc.execute({
-    payment: sponsored(),
-    calls
+    calls,
+    payment: sponsored()
   });
 
   const hash1 = await response1.wait();
@@ -62,14 +62,14 @@ const main = async () => {
   // To execute transactions in parallel, a different `nonceKey` can be specified for each call.
   const responses2 = await Promise.all([
     swc.execute({
-      payment: sponsored(),
       calls,
-      nonceKey: 10n
+      nonceKey: 10n,
+      payment: sponsored()
     }),
     swc.execute({
-      payment: sponsored(),
       calls,
-      nonceKey: 20n
+      nonceKey: 20n,
+      payment: sponsored()
     })
   ]);
 
@@ -85,14 +85,14 @@ const main = async () => {
 
   const responses3 = await Promise.all([
     swc.execute({
-      payment: sponsored(),
       calls,
-      nonce
+      nonce,
+      payment: sponsored()
     }),
     swc.execute({
-      payment: sponsored(),
       calls,
-      nonce: nonce + 1n // this transaction will execute after the first one
+      nonce: nonce + 1n, // this transaction will execute after the first one
+      payment: sponsored()
     })
   ]);
 

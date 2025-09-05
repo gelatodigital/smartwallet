@@ -17,8 +17,8 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with native payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" },
-      apiKey: getApiKeyStaging()
+      apiKey: getApiKeyStaging(),
+      scw: { type: "gelato" }
     });
 
     const balanceInitial = await gelatoClient.getBalance({
@@ -26,9 +26,9 @@ describe("Initial Delegation Test", () => {
     });
 
     const response = await gelatoClient.execute({
-      payment: native(),
       calls: constants.testCalls,
-      nonceKey: 0n
+      nonceKey: 0n,
+      payment: native()
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
@@ -48,8 +48,8 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with ERC20 payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" },
-      apiKey: getApiKeyStaging()
+      apiKey: getApiKeyStaging(),
+      scw: { type: "gelato" }
     });
 
     const balanceInitial = await gelatoClient.getBalance({
@@ -57,16 +57,16 @@ describe("Initial Delegation Test", () => {
     });
 
     const erc20BalanceInitial = await gelatoClient.readContract({
-      address: constants.erc20Address(),
       abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      address: constants.erc20Address(),
+      args: [gelatoClient.account.address],
+      functionName: "balanceOf"
     });
 
     const response = await gelatoClient.execute({
-      payment: erc20(constants.erc20Address()),
       calls: constants.testCalls,
-      nonceKey: 1n
+      nonceKey: 1n,
+      payment: erc20(constants.erc20Address())
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
@@ -81,10 +81,10 @@ describe("Initial Delegation Test", () => {
     });
 
     const erc20BalanceFinal = await gelatoClient.readContract({
-      address: constants.erc20Address(),
       abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      address: constants.erc20Address(),
+      args: [gelatoClient.account.address],
+      functionName: "balanceOf"
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());
@@ -94,8 +94,8 @@ describe("Initial Delegation Test", () => {
 
   test("Gelato SCW transaction with sponsor payment", async () => {
     const gelatoClient = await createGelatoSmartWalletClient(walletClient, {
-      scw: { type: "gelato" },
-      apiKey: getApiKeyStaging()
+      apiKey: getApiKeyStaging(),
+      scw: { type: "gelato" }
     });
 
     const balanceInitial = await gelatoClient.getBalance({
@@ -103,16 +103,16 @@ describe("Initial Delegation Test", () => {
     });
 
     const erc20BalanceInitial = await gelatoClient.readContract({
-      address: constants.erc20Address(),
       abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      address: constants.erc20Address(),
+      args: [gelatoClient.account.address],
+      functionName: "balanceOf"
     });
 
     const response = await gelatoClient.execute({
-      payment: sponsored(),
       calls: constants.testCalls,
-      nonceKey: 2n
+      nonceKey: 2n,
+      payment: sponsored()
     });
 
     const hash = await response.wait("execution", { confirmations: 3 });
@@ -127,10 +127,10 @@ describe("Initial Delegation Test", () => {
     });
 
     const erc20BalanceFinal = await gelatoClient.readContract({
-      address: constants.erc20Address(),
       abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [gelatoClient.account.address]
+      address: constants.erc20Address(),
+      args: [gelatoClient.account.address],
+      functionName: "balanceOf"
     });
 
     expect(code).toBe(delegationCode(delegationAddress).toLowerCase());

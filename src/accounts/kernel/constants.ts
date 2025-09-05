@@ -1,4 +1,4 @@
-import { type Address, type Hex, concatHex } from "viem";
+import { type Address, concatHex, type Hex } from "viem";
 
 /// Constants
 
@@ -14,51 +14,51 @@ export const kernelV3_3_EcdsaRootIdentifier = () =>
 
 export const KernelV3AccountAbi = [
   {
-    type: "function",
-    name: "initialize",
     inputs: [
       {
+        internalType: "ValidationId",
         name: "_rootValidator",
-        type: "bytes21",
-        internalType: "ValidationId"
+        type: "bytes21"
       },
-      { name: "hook", type: "address", internalType: "contract IHook" },
-      { name: "validatorData", type: "bytes", internalType: "bytes" },
-      { name: "hookData", type: "bytes", internalType: "bytes" },
-      { name: "initConfig", type: "bytes[]", internalType: "bytes[]" }
+      { internalType: "contract IHook", name: "hook", type: "address" },
+      { internalType: "bytes", name: "validatorData", type: "bytes" },
+      { internalType: "bytes", name: "hookData", type: "bytes" },
+      { internalType: "bytes[]", name: "initConfig", type: "bytes[]" }
     ],
+    name: "initialize",
     outputs: [],
-    stateMutability: "nonpayable"
+    stateMutability: "nonpayable",
+    type: "function"
   }
 ] as const;
 
 export const KernelV3FactoryAbi = [
   {
-    type: "function",
-    name: "createAccount",
     inputs: [
-      { name: "data", type: "bytes", internalType: "bytes" },
-      { name: "salt", type: "bytes32", internalType: "bytes32" }
+      { internalType: "bytes", name: "data", type: "bytes" },
+      { internalType: "bytes32", name: "salt", type: "bytes32" }
     ],
-    outputs: [{ name: "", type: "address", internalType: "address" }],
-    stateMutability: "payable"
+    name: "createAccount",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "payable",
+    type: "function"
   }
 ] as const;
 
 export const KernelV3MetaFactoryDeployWithFactoryAbi = [
   {
-    type: "function",
-    name: "deployWithFactory",
     inputs: [
       {
+        internalType: "contract KernelFactory",
         name: "factory",
-        type: "address",
-        internalType: "contract KernelFactory"
+        type: "address"
       },
-      { name: "createData", type: "bytes", internalType: "bytes" },
-      { name: "salt", type: "bytes32", internalType: "bytes32" }
+      { internalType: "bytes", name: "createData", type: "bytes" },
+      { internalType: "bytes32", name: "salt", type: "bytes32" }
     ],
-    outputs: [{ name: "", type: "address", internalType: "address" }],
-    stateMutability: "payable"
+    name: "deployWithFactory",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "payable",
+    type: "function"
   }
 ] as const;

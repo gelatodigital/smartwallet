@@ -43,9 +43,9 @@ export async function sendPreparedCalls<
   const authorizationList = _authorizationList ?? (await signAuthorizationList(client));
 
   return await walletSendPreparedCalls(client, {
-    context,
-    signature,
+    apiKey: client._internal.apiKey(),
     authorizationList,
-    apiKey: client._internal.apiKey()
+    context,
+    signature
   });
 }

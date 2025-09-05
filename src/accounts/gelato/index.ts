@@ -87,8 +87,8 @@ export async function gelato(
     return readContract(client, {
       abi,
       address,
-      functionName: "getNonce",
       args: [parameters?.key ?? 0n],
+      functionName: "getNonce",
       stateOverride: (await isDeployed())
         ? undefined
         : [
@@ -102,19 +102,66 @@ export async function gelato(
 
   const account = (await toSmartAccount({
     abi,
+    authorization: {
+      // biome-ignore lint/suspicious/noExplicitAny:  account type override
+      account: undefined as any,
+      address: GELATO_V0_1_DELEGATION_ADDRESS
+    },
     client,
+    async decodeCalls(data) {
+      const result = decodeFunctionData({
+        abi,
+        data
+      });
+
+      if (result.functionName === "execute") {
+        // First argument is the opMode
+        const [_, executionData] = result.args as [Hex, Hex];
+
+        const [decodedCalls] = decodeAbiParameters(
+          [
+            {
+              components: [
+                { name: "to", type: "address" },
+                { name: "value", type: "uint256" },
+                { name: "data", type: "bytes" }
+              ],
+              type: "tuple[]"
+            }
+          ],
+          executionData
+        ) as [Call[]];
+
+        const calls: Call[] = decodedCalls;
+
+        return calls;
+      }
+
+      throw new BaseError(`unable to decode calls for "${result.functionName}"`);
+    },
+
+    async encodeCalls(calls, opData?: Hex) {
+      return encodeCalls(calls, opData);
+    },
+    entryPoint,
     extend: {
       abi,
       eip7702: true,
       erc4337: false,
-      validator,
-      scw: { type: "gelato", encoding: "gelato", version: "0.1" } as const
+      scw: { encoding: "gelato", type: "gelato", version: "0.1" } as const,
+      validator
     },
-    entryPoint,
-    authorization: {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      account: undefined as any,
-      address: GELATO_V0_1_DELEGATION_ADDRESS
+
+    async getAddress() {
+      return address;
+    },
+
+    async getFactoryArgs() {
+      return { factory: "0x7702", factoryData: "0x" };
+    },
+
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
     async signAuthorization() {
       const _isDeployed = await isDeployed();
@@ -133,49 +180,6 @@ export async function gelato(
 
       return undefined;
     },
-    async decodeCalls(data) {
-      const result = decodeFunctionData({
-        abi,
-        data
-      });
-
-      if (result.functionName === "execute") {
-        // First argument is the opMode
-        const [_, executionData] = result.args as [Hex, Hex];
-
-        const [decodedCalls] = decodeAbiParameters(
-          [
-            {
-              type: "tuple[]",
-              components: [
-                { type: "address", name: "to" },
-                { type: "uint256", name: "value" },
-                { type: "bytes", name: "data" }
-              ]
-            }
-          ],
-          executionData
-        ) as [Call[]];
-
-        const calls: Call[] = decodedCalls;
-
-        return calls;
-      }
-
-      throw new BaseError(`unable to decode calls for "${result.functionName}"`);
-    },
-
-    async encodeCalls(calls, opData?: Hex) {
-      return encodeCalls(calls, opData);
-    },
-
-    async getAddress() {
-      return address;
-    },
-
-    async getFactoryArgs() {
-      return { factory: "0x7702", factoryData: "0x" };
-    },
 
     async signMessage(parameters) {
       const { message } = parameters;
@@ -193,16 +197,12 @@ export async function gelato(
       >;
 
       return viem_signTypedData(client, {
+        account: signer,
         domain,
         message,
         primaryType,
-        types,
-        account: signer
+        types
       });
-    },
-
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
 
     async signUserOperation(parameters) {

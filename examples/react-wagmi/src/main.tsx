@@ -22,8 +22,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           params={{
             apiKey: gelatoApiKey,
             scw: {
-              type: "kernel",
-              eip7702: false
+              eip7702: false,
+              type: "kernel"
             }
           }}
         >

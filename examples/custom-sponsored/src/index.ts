@@ -1,11 +1,11 @@
 import {
-  type GelatoTaskStatus,
   createGelatoSmartWalletClient,
+  type GelatoTaskStatus,
   sponsored
 } from "@gelatonetwork/smartwallet";
-import { type GelatoSmartAccountExtension, custom } from "@gelatonetwork/smartwallet/accounts";
+import { custom, type GelatoSmartAccountExtension } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Hex, createPublicClient, createWalletClient } from "viem";
+import { createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { entryPoint08Abi, entryPoint08Address } from "viem/account-abstraction";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
@@ -29,21 +29,21 @@ const publicClient = createPublicClient({
   // Defining an EIP7702 account using as delegation address "0x11923b4c785d87bb34da4d4e34e9feea09179289"
   // Using ERC4337 and entry point v0.8
   const account = await custom<typeof entryPoint08Abi, "0.8", GelatoSmartAccountExtension, true>({
-    owner,
-    client: publicClient,
     authorization: {
       account: owner,
       address: "0x5aF42746a8Af42d8a4708dF238C53F1F71abF0E0"
     },
+    client: publicClient,
+    eip7702: true,
     entryPoint: {
       abi: entryPoint08Abi,
       address: entryPoint08Address,
       version: "0.8"
     },
+    owner,
     scw: {
       encoding: ERC4337Encoding.Gelato
-    },
-    eip7702: true
+    }
   });
 
   console.log("Account address:", account.address);
@@ -59,14 +59,14 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.execute({
-    payment: sponsored(),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
-    ]
+    ],
+    payment: sponsored()
   });
 
   console.log(`Your Gelato id is: ${response.id}`);

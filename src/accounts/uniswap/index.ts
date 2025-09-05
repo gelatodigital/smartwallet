@@ -9,11 +9,11 @@ import type {
 } from "viem";
 import { BaseError, isAddressEqual } from "viem";
 import {
-  type SmartAccount,
-  type SmartAccountImplementation,
   entryPoint08Abi,
   entryPoint08Address,
   getUserOperationTypedData,
+  type SmartAccount,
+  type SmartAccountImplementation,
   toSmartAccount
 } from "viem/account-abstraction";
 import {
@@ -106,18 +106,54 @@ export async function uniswap<eip7702 extends boolean = true>(
 
   const account = (await toSmartAccount({
     abi,
-    client,
-    extend: {
-      abi,
-      owner,
-      eip7702,
-      erc4337,
-      scw: { type: "uniswap", encoding: "uniswap", version: "1.0" } as const
-    },
-    entryPoint,
     authorization: authorization as {
       account: PrivateKeyAccount;
       address: Address;
+    },
+    client,
+    async decodeCalls() {
+      // TODO
+      throw new BaseError("Decoding calls is not implemented");
+    },
+
+    async encodeCalls(calls, opData?: Hex) {
+      return encodeCalls(calls, opData);
+    },
+    entryPoint,
+    extend: {
+      abi,
+      eip7702,
+      erc4337,
+      owner,
+      scw: { encoding: "uniswap", type: "uniswap", version: "1.0" } as const
+    },
+    async getAddress() {
+      return owner.address;
+    },
+
+    async getFactoryArgs() {
+      return { factory: "0x7702", factoryData: "0x" };
+    },
+
+    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
+      return readContract(client, {
+        abi,
+        address: owner.address,
+        args: [parameters?.key ?? 0n],
+        functionName: "getSeq",
+        stateOverride: (await isDeployed())
+          ? undefined
+          : [
+              {
+                address: owner.address,
+                code: delegationCode(this.authorization.address)
+              }
+            ]
+      });
+    },
+
+    async getStubSignature() {
+      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
     async signAuthorization() {
       const _isDeployed = await isDeployed();
@@ -135,8 +171,8 @@ export async function uniswap<eip7702 extends boolean = true>(
         });
 
         const verified = await verifyAuthorization({
-          authorization: auth,
-          address: owner.address
+          address: owner.address,
+          authorization: auth
         });
 
         if (!verified) {
@@ -147,38 +183,6 @@ export async function uniswap<eip7702 extends boolean = true>(
       }
 
       return undefined;
-    },
-    async decodeCalls() {
-      // TODO
-      throw new BaseError("Decoding calls is not implemented");
-    },
-
-    async encodeCalls(calls, opData?: Hex) {
-      return encodeCalls(calls, opData);
-    },
-
-    async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
-      return readContract(client, {
-        abi,
-        address: owner.address,
-        functionName: "getSeq",
-        args: [parameters?.key ?? 0n],
-        stateOverride: (await isDeployed())
-          ? undefined
-          : [
-              {
-                address: owner.address,
-                code: delegationCode(this.authorization.address)
-              }
-            ]
-      });
-    },
-    async getAddress() {
-      return owner.address;
-    },
-
-    async getFactoryArgs() {
-      return { factory: "0x7702", factoryData: "0x" };
     },
 
     async signMessage(parameters) {
@@ -197,16 +201,12 @@ export async function uniswap<eip7702 extends boolean = true>(
       >;
 
       return viem_signTypedData(client, {
+        account: owner,
         domain,
         message,
         primaryType,
-        types,
-        account: owner
+        types
       });
-    },
-
-    async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
     },
 
     async signUserOperation(parameters) {

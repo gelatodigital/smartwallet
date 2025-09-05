@@ -4,13 +4,13 @@ import {
   type Account,
   type Address,
   type Chain,
+  createWalletClient,
+  custom,
   type EIP1193Provider,
   type LocalAccount,
   type OneOf,
   type Transport,
-  type WalletClient,
-  createWalletClient,
-  custom
+  type WalletClient
 } from "viem";
 import { toAccount } from "viem/accounts";
 
@@ -18,7 +18,7 @@ import { signTypedData } from "viem/actions";
 import { getAction } from "viem/utils";
 
 export type EthereumProvider = OneOf<
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: any type override
   { request(...args: any): Promise<any> } | EIP1193Provider
 >;
 
@@ -33,7 +33,7 @@ export async function toOwner<provider extends EthereumProvider>({
     return owner as LocalAccount;
   }
 
-  let walletClient: WalletClient<Transport, Chain | undefined, Account> | undefined = undefined;
+  let walletClient: WalletClient<Transport, Chain | undefined, Account> | undefined;
 
   if ("request" in owner) {
     if (!address) {
@@ -66,16 +66,16 @@ export async function toOwner<provider extends EthereumProvider>({
     async signMessage({ message }) {
       return walletClient.signMessage({ message });
     },
+    async signTransaction(_) {
+      throw new Error("Smart account signer doesn't need to sign transactions");
+    },
     async signTypedData(typedData) {
       return getAction(
         walletClient,
         signTypedData,
         "signTypedData"
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        // biome-ignore lint/suspicious/noExplicitAny: any type override
       )(typedData as any);
-    },
-    async signTransaction(_) {
-      throw new Error("Smart account signer doesn't need to sign transactions");
     }
   });
 }

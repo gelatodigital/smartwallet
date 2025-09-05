@@ -19,8 +19,8 @@ export async function waitForUserOperationReceipt(
     });
     response.on("error", (error) => {
       reject({
-        success: false,
         reason: error.message,
+        success: false,
         userOpHash: hash
       });
     });

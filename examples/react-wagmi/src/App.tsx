@@ -29,8 +29,8 @@ function App() {
     setTxError(undefined);
     try {
       await sendTransactionAsync({
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       });
       // biome-ignore lint/suspicious/noExplicitAny: example any error
@@ -54,7 +54,7 @@ function App() {
 
         {account.status === "connected" && (
           <div style={{ marginTop: 60 }}>
-            <button type="button" onClick={() => disconnect()}>
+            <button onClick={() => disconnect()} type="button">
               Disconnect
             </button>
             <h2>Send test transaction</h2>

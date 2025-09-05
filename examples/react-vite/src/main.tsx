@@ -3,7 +3,7 @@ import "./index.css";
 import { createRoot } from "react-dom/client";
 import Providers from "./providers";
 
-// biome-ignore lint/style/noNonNullAssertion: <explanation>
+// biome-ignore lint/style/noNonNullAssertion: example
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Providers />

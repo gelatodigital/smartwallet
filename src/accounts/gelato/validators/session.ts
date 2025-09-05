@@ -11,32 +11,32 @@ const ABI = parseAbi([
 export function addSession(signer: Address, expiry: number): Call[] {
   return [
     {
-      // TODO: only do this if validator not already added
-      to: zeroAddress,
       data: encodeFunctionData({
         abi: delegationAbi,
-        functionName: "addValidator",
-        args: [VALIDATOR_ADDRESS]
-      })
+        args: [VALIDATOR_ADDRESS],
+        functionName: "addValidator"
+      }),
+      // TODO: only do this if validator not already added
+      to: zeroAddress
     },
     {
-      to: VALIDATOR_ADDRESS,
       data: encodeFunctionData({
         abi: ABI,
-        functionName: "addSession",
-        args: [signer, BigInt(expiry)]
-      })
+        args: [signer, BigInt(expiry)],
+        functionName: "addSession"
+      }),
+      to: VALIDATOR_ADDRESS
     }
   ];
 }
 
 export function removeSession(signer: Address): Call {
   return {
-    to: VALIDATOR_ADDRESS,
     data: encodeFunctionData({
       abi: ABI,
-      functionName: "removeSession",
-      args: [signer]
-    })
+      args: [signer],
+      functionName: "removeSession"
+    }),
+    to: VALIDATOR_ADDRESS
   };
 }

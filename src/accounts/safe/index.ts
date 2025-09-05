@@ -8,35 +8,35 @@ import {
   BaseError,
   type Chain,
   type Client,
-  type Hex,
-  type JsonRpcAccount,
-  type LocalAccount,
-  type OneOf,
-  type SignableMessage,
-  type Transport,
-  type TypedData,
-  type TypedDataDefinition,
-  type WalletClient,
   concat,
   encodeFunctionData,
   encodePacked,
   getContractAddress,
+  type Hex,
   hashMessage,
   hashTypedData,
   hexToBigInt,
+  type JsonRpcAccount,
   keccak256,
+  type LocalAccount,
+  type OneOf,
   pad,
+  type SignableMessage,
+  type Transport,
+  type TypedData,
+  type TypedDataDefinition,
   toBytes,
   toHex,
+  type WalletClient,
   zeroAddress
 } from "viem";
 import {
-  type SmartAccount,
-  type SmartAccountImplementation,
-  type UserOperation,
   entryPoint07Abi,
   entryPoint07Address,
-  toSmartAccount
+  type SmartAccount,
+  type SmartAccountImplementation,
+  toSmartAccount,
+  type UserOperation
 } from "viem/account-abstraction";
 import { getChainId, readContract } from "viem/actions";
 import { getAction } from "viem/utils";
@@ -44,13 +44,13 @@ import type { GelatoSmartAccountExtension } from "../index.js";
 import { signUserOperation } from "./actions/signUserOperation.js";
 import { type EthereumProvider, toOwner } from "./actions/toOwner.js";
 import {
-  SAFE_VERSION_TO_ADDRESSES_MAP,
-  type SafeVersion,
-  type SupportedEntryPointVersions,
   createProxyWithNonceAbi,
   enableModulesAbi,
   multiSendAbi,
   proxyCreationCodeAbi,
+  SAFE_VERSION_TO_ADDRESSES_MAP,
+  type SafeVersion,
+  type SupportedEntryPointVersions,
   setupAbi
 } from "./constants.js";
 
@@ -123,8 +123,8 @@ const encodeMultiSend = (
 
   return encodeFunctionData({
     abi: multiSendAbi,
-    functionName: "multiSend",
-    args: [data]
+    args: [data],
+    functionName: "multiSend"
   });
 };
 
@@ -167,21 +167,20 @@ const getInitializerCode = async ({
 }) => {
   const multiSendCallData = encodeMultiSend([
     {
-      to: safeModuleSetupAddress,
       data: encodeFunctionData({
         abi: enableModulesAbi,
-        functionName: "enableModules",
-        args: [[safe4337ModuleAddress, ...safeModules]]
+        args: [[safe4337ModuleAddress, ...safeModules]],
+        functionName: "enableModules"
       }),
-      value: BigInt(0),
-      operation: 1
+      operation: 1,
+      to: safeModuleSetupAddress,
+      value: BigInt(0)
     },
     ...setupTransactions.map((tx) => ({ ...tx, operation: 0 as 0 | 1 }))
   ]);
 
   return encodeFunctionData({
     abi: setupAbi,
-    functionName: "setup",
     args: [
       owners,
       threshold,
@@ -191,7 +190,8 @@ const getInitializerCode = async ({
       paymentToken,
       payment,
       paymentReceiver
-    ]
+    ],
+    functionName: "setup"
   });
 };
 
@@ -257,29 +257,29 @@ const getAccountInitCode = async ({
   paymentReceiver?: Address;
 }): Promise<Hex> => {
   const initializer = await getInitializerCode({
-    owners,
-    threshold,
-    safeModuleSetupAddress,
-    safe4337ModuleAddress,
-    multiSendAddress,
-    setupTransactions,
-    safeModules,
-    safeSingletonAddress,
-    validators,
+    attesters,
+    attestersThreshold,
     executors,
     fallbacks,
     hooks,
-    attesters,
-    attestersThreshold,
-    paymentToken,
+    multiSendAddress,
+    owners,
     payment,
-    paymentReceiver
+    paymentReceiver,
+    paymentToken,
+    safe4337ModuleAddress,
+    safeModuleSetupAddress,
+    safeModules,
+    safeSingletonAddress,
+    setupTransactions,
+    threshold,
+    validators
   });
 
   const initCodeCallData = encodeFunctionData({
     abi: createProxyWithNonceAbi,
-    functionName: "createProxyWithNonce",
-    args: [safeSingletonAddress, initializer, saltNonce]
+    args: [safeSingletonAddress, initializer, saltNonce],
+    functionName: "createProxyWithNonce"
   });
 
   return initCodeCallData;
@@ -328,12 +328,12 @@ export const getDefaultAddresses = (
     SAFE_VERSION_TO_ADDRESSES_MAP[safeVersion][entryPointVersion].MULTI_SEND_CALL_ONLY_ADDRESS;
 
   return {
-    safeModuleSetupAddress,
-    safe4337ModuleAddress,
-    safeProxyFactoryAddress,
-    safeSingletonAddress,
     multiSendAddress,
-    multiSendCallOnlyAddress
+    multiSendCallOnlyAddress,
+    safe4337ModuleAddress,
+    safeModuleSetupAddress,
+    safeProxyFactoryAddress,
+    safeSingletonAddress
   };
 };
 
@@ -421,23 +421,23 @@ const getAccountAddress = async ({
   });
 
   const initializer = await getInitializerCode({
-    owners,
-    threshold,
-    safeModuleSetupAddress,
-    safe4337ModuleAddress,
-    multiSendAddress,
-    setupTransactions,
-    safeSingletonAddress,
-    safeModules,
-    validators,
+    attesters,
+    attestersThreshold,
     executors,
     fallbacks,
     hooks,
-    attesters,
-    attestersThreshold,
-    paymentToken,
+    multiSendAddress,
+    owners,
     payment,
-    paymentReceiver
+    paymentReceiver,
+    paymentToken,
+    safe4337ModuleAddress,
+    safeModuleSetupAddress,
+    safeModules,
+    safeSingletonAddress,
+    setupTransactions,
+    threshold,
+    validators
   });
 
   const deploymentCode = encodePacked(
@@ -453,10 +453,10 @@ const getAccountAddress = async ({
   );
 
   return getContractAddress({
-    from: safeProxyFactoryAddress,
-    salt,
     bytecode: deploymentCode,
-    opcode: "CREATE2"
+    from: safeProxyFactoryAddress,
+    opcode: "CREATE2",
+    salt
   });
 };
 
@@ -544,8 +544,8 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
   const entryPoint =
     _entryPoint ??
     ({
-      address: entryPoint07Address,
       abi: entryPoint07Abi,
+      address: entryPoint07Address,
       version: "0.7"
     } as const);
 
@@ -565,11 +565,11 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
     safeSingletonAddress,
     multiSendAddress
   } = getDefaultAddresses(version, entryPoint.version, {
-    safeModuleSetupAddress: _safeModuleSetupAddress,
+    multiSendAddress: _multiSendAddress,
     safe4337ModuleAddress: _safe4337ModuleAddress,
+    safeModuleSetupAddress: _safeModuleSetupAddress,
     safeProxyFactoryAddress: _safeProxyFactoryAddress,
-    safeSingletonAddress: _safeSingletonAddress,
-    multiSendAddress: _multiSendAddress
+    safeSingletonAddress: _safeSingletonAddress
   });
 
   let accountAddress: Address | undefined = address;
@@ -588,18 +588,18 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
     return {
       factory: safeProxyFactoryAddress,
       factoryData: await getAccountInitCode({
-        owners: owners.map((owner) => owner.address),
-        threshold,
-        safeModuleSetupAddress,
-        safe4337ModuleAddress,
-        safeSingletonAddress,
         multiSendAddress,
+        owners: owners.map((owner) => owner.address),
+        payment,
+        paymentReceiver,
+        paymentToken,
+        safe4337ModuleAddress,
+        safeModuleSetupAddress,
+        safeModules,
+        safeSingletonAddress,
         saltNonce,
         setupTransactions,
-        safeModules,
-        paymentToken,
-        payment,
-        paymentReceiver
+        threshold
       })
     };
   };
@@ -607,47 +607,47 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
   if (!accountAddress) {
     accountAddress = await getAccountAddress({
       client,
+      multiSendAddress,
       owners: owners.map((owner) => owner.address),
-      threshold,
-      safeModuleSetupAddress,
+      payment,
+      paymentReceiver,
+      paymentToken,
       safe4337ModuleAddress,
+      safeModuleSetupAddress,
+      safeModules,
       safeProxyFactoryAddress,
       safeSingletonAddress,
-      multiSendAddress,
       saltNonce,
       setupTransactions,
-      safeModules,
-      paymentToken,
-      payment,
-      paymentReceiver
+      threshold
     });
   }
 
   return toSmartAccount({
     client,
+    async decodeCalls(_callData) {
+      throw new BaseError("decodeCalls is not implemented for Safe accounts");
+    },
+    async encodeCalls(_calls) {
+      throw new BaseError("encodeCalls is not implemented for Safe accounts");
+    },
     entryPoint,
-    getFactoryArgs,
     extend: {
       eip7702,
       erc4337,
-      scw: { type: "safe", encoding: "safe" } as const
+      scw: { encoding: "safe", type: "safe" } as const
     },
     async getAddress() {
       if (accountAddress) return accountAddress;
       return accountAddress;
     },
-    async encodeCalls(_calls) {
-      throw new BaseError("encodeCalls is not implemented for Safe accounts");
-    },
-    async decodeCalls(_callData) {
-      throw new BaseError("decodeCalls is not implemented for Safe accounts");
-    },
+    getFactoryArgs,
     async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
       return readContract(client, {
         abi: entryPoint.abi,
         address: entryPoint.address,
-        functionName: "getNonce",
-        args: [await this.getAddress(), nonceKey ?? parameters?.key ?? 0n]
+        args: [await this.getAddress(), nonceKey ?? parameters?.key ?? 0n],
+        functionName: "getNonce"
       }) as unknown as bigint;
     },
     async getStubSignature() {
@@ -678,18 +678,17 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
           chainId: await getMemoizedChainId(),
           verifyingContract: await this.getAddress()
         },
-        types: {
-          SafeMessage: [{ name: "message", type: "bytes" }]
-        },
-        primaryType: "SafeMessage",
         message: {
           message: generateSafeMessageMessage(message)
+        },
+        primaryType: "SafeMessage",
+        types: {
+          SafeMessage: [{ name: "message", type: "bytes" }]
         }
       });
 
       const signatures = await Promise.all(
         localOwners.map(async (localOwner) => ({
-          signer: localOwner.address,
           data: adjustVInSignature(
             "eth_sign",
             await localOwner.signMessage({
@@ -697,7 +696,8 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
                 raw: toBytes(messageHash)
               }
             })
-          )
+          ),
+          signer: localOwner.address
         }))
       );
 
@@ -716,7 +716,6 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
 
       const signatures = await Promise.all(
         localOwners.map(async (localOwner) => ({
-          signer: localOwner.address,
           data: adjustVInSignature(
             "eth_signTypedData",
             await localOwner.signTypedData({
@@ -724,15 +723,16 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
                 chainId: await getMemoizedChainId(),
                 verifyingContract: await this.getAddress()
               },
-              types: {
-                SafeMessage: [{ name: "message", type: "bytes" }]
-              },
-              primaryType: "SafeMessage",
               message: {
                 message: generateSafeMessageMessage(typedData)
+              },
+              primaryType: "SafeMessage",
+              types: {
+                SafeMessage: [{ name: "message", type: "bytes" }]
               }
             })
-          )
+          ),
+          signer: localOwner.address
         }))
       );
 
@@ -751,22 +751,22 @@ export async function safe<entryPointVersion extends SupportedEntryPointVersions
         throw new Error("Owners length mismatch use safe.signUserOperation");
       }
 
-      let signatures: Hex | undefined = undefined;
+      let signatures: Hex | undefined;
 
       for (const owner of localOwners) {
         signatures = await signUserOperation({
           ...userOperation,
-          version,
-          entryPoint,
-          owners: localOwners,
           account: owner as OneOf<
             EthereumProvider | WalletClient<Transport, Chain | undefined, Account> | LocalAccount
           >,
-          chainId: await getMemoizedChainId(),
+          chainId,
+          entryPoint,
+          owners: localOwners,
+          safe4337ModuleAddress,
           signatures,
           validAfter,
           validUntil,
-          safe4337ModuleAddress
+          version
         });
       }
 

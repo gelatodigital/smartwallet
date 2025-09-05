@@ -1,4 +1,4 @@
-import { http, createWalletClient } from "viem";
+import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 import { getPrivateKey } from "./env.js";

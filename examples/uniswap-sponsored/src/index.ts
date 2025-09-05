@@ -1,11 +1,11 @@
 import {
-  type GelatoTaskStatus,
   createGelatoSmartWalletClient,
+  type GelatoTaskStatus,
   sponsored
 } from "@gelatonetwork/smartwallet";
 import { uniswap } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
-import { http, type Hex, createPublicClient, createWalletClient } from "viem";
+import { createPublicClient, createWalletClient, type Hex, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 
@@ -25,8 +25,8 @@ const publicClient = createPublicClient({
 
 (async () => {
   const account = await uniswap({
-    owner,
-    client: publicClient
+    client: publicClient,
+    owner
   });
 
   console.log("Account address:", account.address);
@@ -42,14 +42,14 @@ const publicClient = createPublicClient({
   });
 
   const response = await swc.execute({
-    payment: sponsored(gelatoApiKey),
     calls: [
       {
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         data: "0xd09de08a",
+        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
         value: 0n
       }
-    ]
+    ],
+    payment: sponsored(gelatoApiKey)
   });
 
   console.log(`Your Gelato id is: ${response.id}`);

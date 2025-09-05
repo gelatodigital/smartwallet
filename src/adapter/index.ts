@@ -1,10 +1,10 @@
 import type { Chain, Client, Transport } from "viem";
 import {
   type BundlerActions,
-  type SmartAccount,
-  formatUserOperation
+  formatUserOperation,
+  type SmartAccount
 } from "viem/account-abstraction";
-import { type Payment, isSponsored } from "../payment/index.js";
+import { isSponsored, type Payment } from "../payment/index.js";
 import type { ERC4337Encoding } from "../wallet/index.js";
 import {
   type GetUserOperationGasPriceReturnType,
@@ -49,6 +49,7 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
       getChainId: () => getChainId(client),
       getSupportedEntryPoints: () => getSupportedEntryPoints(),
       getUserOperation: (parameters) => getUserOperation(client, parameters),
+      getUserOperationGasPrice: () => getUserOperationGasPriceAction(client, config.apiKey),
       getUserOperationReceipt: (parameters) => getUserOperationReceipt(client, parameters),
       prepareUserOperation: async (parameters) => {
         const response = await prepareUserOperation(client, parameters, config);
@@ -56,12 +57,11 @@ export function gelatoBundlerActions(config: GelatoBundlerConfig) {
         return {
           ...formatUserOperation(response.context.userOp),
           preparedCalls: response
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          // biome-ignore lint/suspicious/noExplicitAny: any type override
         } as any;
       },
       sendUserOperation: (parameters) => sendUserOperation(client, parameters, config),
-      waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters),
-      getUserOperationGasPrice: () => getUserOperationGasPriceAction(client, config.apiKey)
+      waitForUserOperationReceipt: (parameters) => waitForUserOperationReceipt(client, parameters)
     };
   };
 }
