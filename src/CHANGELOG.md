@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.26
+
+### Patch Changes
+
+- bee90b2: fix: peer dependencies
+
 ## 0.0.25
 
 ### Patch Changes
