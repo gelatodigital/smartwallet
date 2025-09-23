@@ -37,10 +37,11 @@
   },
   "dependencies": {
     "isomorphic-ws": "5.0.0",
-    "viem": "catalog:",
     "ws": "8.18.3"
   },
   "devDependencies": {
-    "@types/ws": "8.18.1"
+    "typescript": "catalog:",
+    "@types/ws": "8.18.1",
+    "viem": "catalog:"
   }
 }

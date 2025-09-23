@@ -797,12 +797,6 @@ importers:
       isomorphic-ws:
         specifier: 5.0.0
         version: 5.0.0(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.2
-      viem:
-        specifier: 'catalog:'
-        version: 2.36.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       ws:
         specifier: 8.18.3
         version: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -810,6 +804,12 @@ importers:
       '@types/ws':
         specifier: 8.18.1
         version: 8.18.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.2
+      viem:
+        specifier: 'catalog:'
+        version: 2.36.0(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
 
 packages:
 
