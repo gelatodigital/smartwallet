@@ -12,7 +12,7 @@
     "includes": ["**"]
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/_dist", "!**/node_modules"]
+    "includes": ["**", "!**/dist", "!**/_dist", "!**/node_modules", "!**/contracts"]
   },
   "formatter": {
     "enabled": true,
