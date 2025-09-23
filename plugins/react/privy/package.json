@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-privy",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "author": "Gelato",
   "type": "module",
   "description": "Context provider supporting Privy WaaS",
