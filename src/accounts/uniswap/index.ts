@@ -7,11 +7,18 @@ import type {
   TypedData,
   TypedDataDefinition
 } from "viem";
-import { BaseError, isAddressEqual } from "viem";
+import {
+  BaseError,
+  encodeAbiParameters,
+  encodePacked,
+  getAbiItem,
+  isAddressEqual,
+  toFunctionSelector
+} from "viem";
 import {
   entryPoint08Abi,
   entryPoint08Address,
-  getUserOperationTypedData,
+  getUserOperationHash,
   type SmartAccount,
   type SmartAccountImplementation,
   toSmartAccount
@@ -24,11 +31,10 @@ import {
   signMessage as viem_signMessage,
   signTypedData as viem_signTypedData
 } from "viem/actions";
-import { encodeCalls } from "viem/experimental/erc7821";
 import { verifyAuthorization } from "viem/utils";
 
 import { uniswapAbi as abi } from "../../abis/uniswap.js";
-import { delegationCode } from "../../constants/index.js";
+import { delegationCode, UNISWAP_PARAMS } from "../../constants/index.js";
 import { lowercase } from "../../utils/index.js";
 import type { GelatoSmartAccountExtension } from "../index.js";
 
@@ -117,7 +123,46 @@ export async function uniswap<eip7702 extends boolean = true>(
     },
 
     async encodeCalls(calls, opData?: Hex) {
-      return encodeCalls(calls, opData);
+      const encodedCalls = calls.map((call) => {
+        if (!call.to) {
+          throw new Error("Call 'to' address is required");
+        }
+        return {
+          data: call.data ?? "0x",
+          to: call.to,
+          value: typeof call.value === "bigint" ? call.value : BigInt(call.value ?? 0)
+        };
+      });
+
+      const batchedCallData = {
+        calls: encodedCalls,
+        revertOnFailure: true
+      };
+
+      const encodedBatchedCall = encodeAbiParameters(
+        [
+          {
+            components: [
+              {
+                components: [
+                  { name: "to", type: "address" },
+                  { name: "value", type: "uint256" },
+                  { name: "data", type: "bytes" }
+                ],
+                name: "calls",
+                type: "tuple[]"
+              },
+              { name: "revertOnFailure", type: "bool" }
+            ],
+            type: "tuple"
+          }
+        ],
+        [batchedCallData]
+      );
+
+      const executeUserOpSelector = toFunctionSelector(getAbiItem({ abi, name: "executeUserOp" }));
+
+      return encodePacked(["bytes4", "bytes"], [executeUserOpSelector, encodedBatchedCall]);
     },
     entryPoint,
     extend: {
@@ -137,10 +182,10 @@ export async function uniswap<eip7702 extends boolean = true>(
 
     async getNonce(parameters?: { key?: bigint }): Promise<bigint> {
       return readContract(client, {
-        abi,
-        address: owner.address,
-        args: [parameters?.key ?? 0n],
-        functionName: "getSeq",
+        abi: entryPoint.abi,
+        address: entryPoint.address,
+        args: [owner.address, parameters?.key ?? 0n],
+        functionName: "getNonce",
         stateOverride: (await isDeployed())
           ? undefined
           : [
@@ -153,7 +198,18 @@ export async function uniswap<eip7702 extends boolean = true>(
     },
 
     async getStubSignature() {
-      return "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+      const signature =
+        "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c";
+
+      const encodedSignature = encodeAbiParameters(
+        [
+          { name: "keyHash", type: "bytes32" },
+          { name: "signature", type: "bytes" },
+          { name: "hookData", type: "bytes" }
+        ],
+        [UNISWAP_PARAMS.keyHash, signature, UNISWAP_PARAMS.hookData]
+      );
+      return encodedSignature;
     },
     async signAuthorization() {
       const _isDeployed = await isDeployed();
@@ -216,21 +272,28 @@ export async function uniswap<eip7702 extends boolean = true>(
         throw new Error("Only EntryPoint version 0.8 is supported for Uniswap accounts");
       }
 
-      const typedData = getUserOperationTypedData({
+      const hash = getUserOperationHash({
         chainId,
         entryPointAddress: entryPoint.address,
+        entryPointVersion: entryPoint.version,
         userOperation: {
           ...userOperation,
           sender: userOperation.sender ?? (await this.getAddress()),
           signature: "0x"
         }
       });
-      const signature = await viem_signTypedData(client, {
-        ...typedData,
-        account: owner
-      });
+      const signature = await (owner as PrivateKeyAccount).sign({ hash });
 
-      return signature;
+      const encodedSignature = encodeAbiParameters(
+        [
+          { name: "keyHash", type: "bytes32" },
+          { name: "signature", type: "bytes" },
+          { name: "hookData", type: "bytes" }
+        ],
+        [UNISWAP_PARAMS.keyHash, signature, UNISWAP_PARAMS.hookData]
+      );
+
+      return encodedSignature;
     }
   })) as unknown as UniswapSmartAccountReturnType;
 

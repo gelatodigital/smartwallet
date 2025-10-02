@@ -37,6 +37,11 @@ export const METAMASK_SIGNABLE_USER_OP_TYPED_DATA: TypedData = {
   ]
 } as const;
 
+export const UNISWAP_PARAMS = {
+  hookData: "0x" as Hex,
+  keyHash: "0x0000000000000000000000000000000000000000000000000000000000000000" as Hex
+};
+
 export const api = (t: "http" | "ws" = "http") => (t === "http" ? GELATO_API : GELATO_API_WS);
 
 export const mode = (mode: Mode) => EXECUTION_MODE[mode] as Hex;
