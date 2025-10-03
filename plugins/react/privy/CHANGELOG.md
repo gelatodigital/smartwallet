@@ -1,5 +1,13 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 0.0.27
+
+### Patch Changes
+
+- Updated dependencies [df67749]
+  - @gelatonetwork/smartwallet@0.0.27
+  - @gelatonetwork/smartwallet-react-types@0.0.27
+
 ## 0.0.26
 
 ### Patch Changes
