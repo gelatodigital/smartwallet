@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.27
+
+### Patch Changes
+
+- df67749: feat: uniswap 4337
+
 ## 0.0.26
 
 ### Patch Changes

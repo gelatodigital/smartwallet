@@ -28,27 +28,22 @@ const publicClient = createPublicClient({
 (async () => {
   // Defining an EIP7702 account using as delegation address "0x00000000383e8cBe298514674Ea60Ee1d1de50ac" (Nexus v1.2.0)
   // Using ERC4337 and entry point v0.7
-  const account = await custom<
-    typeof entryPoint07Abi,
-    "0.7",
-    GelatoSmartAccountExtension,
-    true
-  >({
+  const account = await custom<typeof entryPoint07Abi, "0.7", GelatoSmartAccountExtension, true>({
     authorization: {
       account: owner,
-      address: "0x00000000383e8cBe298514674Ea60Ee1d1de50ac", // Nexus v1.2.0
+      address: "0x00000000383e8cBe298514674Ea60Ee1d1de50ac" // Nexus v1.2.0
     },
     client: publicClient,
     eip7702: true,
     entryPoint: {
       abi: entryPoint07Abi,
       address: entryPoint07Address,
-      version: "0.7",
+      version: "0.7"
     },
     owner,
     scw: {
-      encoding: ERC4337Encoding.ERC7579,
-    },
+      encoding: ERC4337Encoding.ERC7579
+    }
   });
 
   console.log("Account address:", account.address);
@@ -56,11 +51,11 @@ const publicClient = createPublicClient({
   const client = createWalletClient({
     account,
     chain: baseSepolia,
-    transport: http(),
+    transport: http()
   });
 
   const swc = await createGelatoSmartWalletClient(client, {
-    apiKey: gelatoApiKey,
+    apiKey: gelatoApiKey
   });
 
   const response = await swc.execute({
@@ -68,10 +63,10 @@ const publicClient = createPublicClient({
       {
         data: "0xd09de08a",
         to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
-        value: 0n,
-      },
+        value: 0n
+      }
     ],
-    payment: sponsored(),
+    payment: sponsored()
   });
 
   console.log(`Your Gelato id is: ${response.id}`);
