@@ -22,7 +22,6 @@
     "token-pocket-sponsored-payment",
     "metamask-sponsored-payment",
     "uniswap-sponsored-payment",
-    "uniswap-4337-sponsored-payment",
     "permissionless-adapter",
     "viem-adapter",
     "light-account-sponsored-payment",
