@@ -7,37 +7,37 @@ export const walletGetQuote = async (
   let args = {};
   if ("gasUsed" in params) {
     args = {
-      chainId: params.chainId,
-      gasUsed: params.gasUsed,
-      gasUsedL1: params.gasUsedL1,
-      capabilities: {
-        payment: params.payment
-      }
-    };
-  } else {
-    args = {
-      chainId: params.chainId,
-      to: params.to,
-      data: params.data,
       capabilities: {
         payment: params.payment
       },
-      authorizationList: params.authorizationList
+      chainId: params.chainId,
+      gasUsed: params.gasUsed,
+      gasUsedL1: params.gasUsedL1
+    };
+  } else {
+    args = {
+      authorizationList: params.authorizationList,
+      capabilities: {
+        payment: params.payment
+      },
+      chainId: params.chainId,
+      data: params.data,
+      to: params.to
     };
   }
 
   const raw = await fetch(`${api()}/smartwallet`, {
-    method: "POST",
+    body: JSON.stringify({
+      id: 1,
+      jsonrpc: "2.0",
+      method: "wallet_getQuote",
+      params: [args]
+    }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "wallet_getQuote",
-      params: [args]
-    })
+    method: "POST"
   });
 
   const data = await raw.json();

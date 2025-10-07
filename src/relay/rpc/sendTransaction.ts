@@ -21,25 +21,25 @@ export const walletSendTransaction = async (
   const url = `${api()}/smartwallet${apiKey !== undefined ? `?apiKey=${apiKey}` : ""}`;
 
   const raw = await fetch(url, {
-    method: "POST",
+    body: JSON.stringify({
+      id: 1,
+      jsonrpc: "2.0",
+      method: "wallet_sendTransaction",
+      params: [
+        {
+          authorizationList,
+          capabilities,
+          chainId,
+          data,
+          to
+        }
+      ]
+    }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "wallet_sendTransaction",
-      params: [
-        {
-          chainId,
-          to,
-          data,
-          capabilities,
-          authorizationList
-        }
-      ]
-    })
+    method: "POST"
   });
 
   const response = await raw.json();

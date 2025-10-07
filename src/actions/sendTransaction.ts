@@ -28,11 +28,11 @@ export async function sendTransaction<P extends Payment>(
   }
 
   return await walletSendTransaction({
+    apiKey,
+    authorizationList,
     chainId,
-    to,
     data,
     payment,
-    apiKey,
-    authorizationList
+    to
   });
 }

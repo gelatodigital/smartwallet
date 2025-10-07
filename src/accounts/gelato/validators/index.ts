@@ -5,12 +5,15 @@ export {
   removeSession
 } from "./session.js";
 
+import { VALIDATOR_ADDRESS } from "./session.js";
+
 export enum ValidatorType {
   // TODO: add support for passkey
   Session = "session"
 }
 
 export interface BaseValidator {
+  address: string;
   type: ValidatorType;
   account: Address;
 }
@@ -30,6 +33,7 @@ export type ValidatorRpc = SessionValidatorRpc;
 
 export const session = (account: Address, signer: Account): SessionValidator => ({
   account,
+  address: VALIDATOR_ADDRESS,
   signer,
   type: ValidatorType.Session
 });
