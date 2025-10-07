@@ -1,5 +1,11 @@
 # @gelatonetwork/smartwallet
 
+## 0.0.28
+
+### Patch Changes
+
+- 2166cc0: feat: single send transaction request
+
 ## 0.0.27
 
 ### Patch Changes
