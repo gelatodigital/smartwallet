@@ -53,16 +53,16 @@ function encodeNonce(key: bigint, seq: bigint): bigint {
   });
 
   console.log("Sending sponsored transaction for first time...");
-  let before = Date.now();
+  const before = Date.now();
   const attempt1 = await swc.sendSponsoredTransaction({
     authorizationList: attempt1Signed.authorizationList,
     data: attempt1Signed.data
   });
   console.log(`[Attempt 1] Gelato id: ${attempt1.id}`);
 
-  let sent = Date.now();
+  const sent = Date.now();
   const attempt1Included = await attempt1.wait();
-  let included = Date.now();
+  const included = Date.now();
   console.log(`[Attempt 1] Transaction included: ${attempt1Included}`);
   console.log(
     `[Attempt 1] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`
