@@ -1,6 +1,4 @@
-import {
-  createGelatoSmartWalletClient,
-} from "@gelatonetwork/smartwallet";
+import { createGelatoSmartWalletClient } from "@gelatonetwork/smartwallet";
 import { gelato } from "@gelatonetwork/smartwallet/accounts";
 import "dotenv/config";
 import { createPublicClient, createWalletClient, type Hex, http } from "viem";
@@ -66,7 +64,9 @@ function encodeNonce(key: bigint, seq: bigint): bigint {
   const attempt1Included = await attempt1.wait();
   let included = Date.now();
   console.log(`[Attempt 1] Transaction included: ${attempt1Included}`);
-  console.log(`[Attempt 1] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`);
+  console.log(
+    `[Attempt 1] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`
+  );
   console.log(
     `[Attempt 1] Time after sending to onchain inclusion: ${(included - sent).toFixed(2)}ms`
   );
@@ -95,12 +95,15 @@ function encodeNonce(key: bigint, seq: bigint): bigint {
   });
   console.log(`[Attempt 2] Gelato id: ${attempt2.id}`);
 
-
   sent = Date.now();
   const attempt2Included = await attempt2.wait();
   included = Date.now();
   console.log(`[Attempt 2] Transaction included: ${attempt2Included}`);
-  console.log(`[Attempt 2] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`);
-  console.log(`[Attempt 2] Time after sending to onchain inclusion: ${(included - sent).toFixed(2)}ms`);
+  console.log(
+    `[Attempt 2] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`
+  );
+  console.log(
+    `[Attempt 2] Time after sending to onchain inclusion: ${(included - sent).toFixed(2)}ms`
+  );
   process.exit(0);
 })();
