@@ -71,39 +71,5 @@ function encodeNonce(key: bigint, seq: bigint): bigint {
     `[Attempt 1] Time after sending to onchain inclusion: ${(included - sent).toFixed(2)}ms`
   );
 
-  console.log("Waiting 5 seconds...");
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
-  /* ------------------------------------------------------------------------------------------------- */
-
-  const attempt2Signed = await swc.signCalls({
-    calls: [
-      {
-        data: "0xd09de08a",
-        to: "0xEEeBe2F778AA186e88dCf2FEb8f8231565769C27",
-        value: 0n
-      }
-    ],
-    nonce: encodeNonce(BigInt(Date.now()), 0n)
-  });
-
-  console.log("Sending sponsored transaction for second time...");
-  before = Date.now();
-  const attempt2 = await swc.sendSponsoredTransaction({
-    authorizationList: attempt2Signed.authorizationList,
-    data: attempt2Signed.data
-  });
-  console.log(`[Attempt 2] Gelato id: ${attempt2.id}`);
-
-  sent = Date.now();
-  const attempt2Included = await attempt2.wait();
-  included = Date.now();
-  console.log(`[Attempt 2] Transaction included: ${attempt2Included}`);
-  console.log(
-    `[Attempt 2] Time before sending to onchain inclusion: ${(included - before).toFixed(2)}ms`
-  );
-  console.log(
-    `[Attempt 2] Time after sending to onchain inclusion: ${(included - sent).toFixed(2)}ms`
-  );
   process.exit(0);
 })();
