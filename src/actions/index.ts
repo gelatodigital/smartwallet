@@ -1,4 +1,14 @@
-import type { Call, Chain, Client, Hex, PublicActions, Transport, WalletClient } from "viem";
+import type {
+  Address,
+  Call,
+  Chain,
+  Client,
+  Hex,
+  PublicActions,
+  SignAuthorizationReturnType,
+  Transport,
+  WalletClient
+} from "viem";
 
 import type { PublicActionsL2 } from "viem/op-stack";
 import type { GelatoSmartAccount } from "../accounts/index.js";
@@ -13,19 +23,17 @@ import { estimate } from "./estimate.js";
 import { execute } from "./execute.js";
 import { prepareCalls } from "./prepareCalls.js";
 import { sendPreparedCalls } from "./sendPreparedCalls.js";
+import { sendSponsoredCalls } from "./sendSponsoredCalls.js";
+import { sendSponsoredTransaction } from "./sendSponsoredTransaction.js";
+import { signCalls } from "./signCalls.js";
 import { switchChain } from "./switchChain.js";
 
 export type GelatoActionArgs = {
   payment: Payment;
   calls: Call[];
-} & (
-  | {
-      nonce?: bigint;
-    }
-  | {
-      nonceKey?: bigint;
-    }
-);
+  nonce?: bigint;
+  nonceKey?: bigint;
+};
 
 export type GelatoSmartWalletActions = {
   execute: (args: GelatoActionArgs) => Promise<GelatoResponse>;
@@ -35,6 +43,15 @@ export type GelatoSmartWalletActions = {
     preparedCalls: WalletPrepareCallsResponse;
     signature?: Hex;
   }) => Promise<GelatoResponse>;
+  sendSponsoredCalls: (args: Omit<GelatoActionArgs, "payment">) => Promise<GelatoResponse>;
+  sendSponsoredTransaction: (args: {
+    to?: Address;
+    data: Hex;
+    authorizationList?: SignAuthorizationReturnType[];
+  }) => Promise<GelatoResponse>;
+  signCalls: (
+    args: Omit<GelatoActionArgs, "payment">
+  ) => Promise<{ authorizationList?: SignAuthorizationReturnType[]; data: Hex }>;
 };
 
 export type GelatoSmartWalletInternals = {
@@ -65,6 +82,14 @@ export function actions<
     prepareCalls: (args: GelatoActionArgs) => prepareCalls(client, args),
     sendPreparedCalls: (args: { preparedCalls: WalletPrepareCallsResponse; signature?: Hex }) =>
       sendPreparedCalls(client, args),
+    sendSponsoredCalls: (args: Omit<GelatoActionArgs, "payment">) =>
+      sendSponsoredCalls(client, args),
+    sendSponsoredTransaction: (args: {
+      to?: Address;
+      data: Hex;
+      authorizationList?: SignAuthorizationReturnType[];
+    }) => sendSponsoredTransaction(client, args),
+    signCalls: (args: Omit<GelatoActionArgs, "payment">) => signCalls(client, args),
     switchChain: (args: { id: number }) => switchChain(client, args)
   };
 }

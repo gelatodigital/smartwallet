@@ -154,6 +154,38 @@ export interface WalletSendPreparedCallsResponse {
   id: string;
 }
 
+export interface WalletSendTransactionParams {
+  chainId: number;
+  to: Address;
+  data: Hex;
+  payment: Payment;
+  authorizationList?: SignedAuthorizationList;
+  apiKey?: string;
+}
+
+export interface WalletSendTransactionResponse {
+  id: string;
+}
+
 export interface WalletGetCapabilitiesResponse {
   [chainId: number]: SingleNetworkCapabilities;
+}
+
+export type WalletGetQuoteParams =
+  | {
+      chainId: number;
+      to: Address;
+      data: Hex;
+      payment: Payment;
+      authorizationList?: SignedAuthorizationList;
+    }
+  | {
+      chainId: number;
+      gasUsed: string;
+      payment: Payment;
+      gasUsedL1?: string;
+    };
+
+export interface WalletGetQuoteResponse {
+  quote: Quote;
 }

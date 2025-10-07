@@ -28,7 +28,8 @@
     "simple-account-sponsored-payment",
     "biconomy-sponsored-payment",
     "nonces-example",
-    "session-key"
+    "session-key",
+    "sponsored-gelato-single-call"
   ],
   "linked": [],
   "updateInternalDependencies": "patch"

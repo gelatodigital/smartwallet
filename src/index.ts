@@ -52,7 +52,10 @@ export const createGelatoSmartWalletClient = async <
 };
 
 export * as accounts from "./accounts/index.js";
+export { getQuote } from "./actions/getQuote.js";
+export { sendTransaction } from "./actions/sendTransaction.js";
 export { erc20, native, Payment, sponsored } from "./payment/index.js";
+export type { GelatoResponse } from "./relay/index.js";
 export type { TransactionStatusResponse as GelatoTaskStatus } from "./relay/status/index.js";
 export { track } from "./relay/status/index.js";
 export { ERC4337Encoding as WalletEncoding } from "./wallet/index.js";
