@@ -41,6 +41,7 @@ const publicClient = createPublicClient({
 
   console.log("Preparing transaction...");
   const startPrepare = performance.now();
+
   const preparedCalls = await swc.prepareCalls({
     calls: [
       {
@@ -51,15 +52,18 @@ const publicClient = createPublicClient({
     ],
     payment: sponsored()
   });
+
   const endPrepare = performance.now();
   console.log(`Took ${(endPrepare - startPrepare).toFixed(2)}ms to prepare your request.`);
 
   console.log("Sending transaction...");
   const startSend = performance.now();
   const startTimestamp = Date.now();
+
   const response = await swc.sendPreparedCalls({
     preparedCalls
   });
+
   const endSend = performance.now();
   console.log(
     `Took ${(endSend - startSend).toFixed(2)}ms to send your request. Your Gelato id is: ${response.id}`
@@ -71,6 +75,7 @@ const publicClient = createPublicClient({
     console.log(`Transaction submitted: ${status.transactionHash}`);
     console.log(`Time from sending to onchain submission: ${(end - startSend).toFixed(2)}ms`);
   });
+
   response.on("success", async (status: GelatoTaskStatus) => {
     console.log(`Transaction successful: ${status.transactionHash}`);
     const blockTimestamp = await publicClient
@@ -81,6 +86,7 @@ const publicClient = createPublicClient({
     console.log(`Latency to get transaction included: ${latency}ms`);
     process.exit(0);
   });
+
   response.on("error", (error: Error) => {
     const end = performance.now();
     console.error(`Transaction failed: ${error.message}`);
