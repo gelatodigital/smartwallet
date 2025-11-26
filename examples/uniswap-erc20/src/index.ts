@@ -24,6 +24,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { signAuthorization } from "viem/actions";
 import { unichainSepolia } from "viem/chains";
+import "dotenv/config";
 
 const GELATO_API_KEY = process.env.GELATO_API_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
