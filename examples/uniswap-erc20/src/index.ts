@@ -229,7 +229,7 @@ const main = async () => {
   const { receipt } = await bundler.waitForUserOperationReceipt({ hash });
 
   console.log("transaction hash:", receipt.transactionHash);
-  process.exit(1);
+  process.exit(0);
 };
 
 main().catch((error) => {
