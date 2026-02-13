@@ -1,3 +1,9 @@
+console.warn(
+  "[@gelatonetwork/smartwallet-react-wagmi] DEPRECATED: This package is deprecated. " +
+  "Please migrate to @gelatocloud/gasless. " +
+  "See https://github.com/gelatodigital/gasless"
+);
+
 export {
   GelatoSmartWalletProvider,
   type GelatoSmartWalletProviderProps
