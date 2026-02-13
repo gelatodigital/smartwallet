@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-wagmi",
-  "version": "0.0.23",
+  "version": "1.0.0",
   "author": "Gelato",
   "type": "module",
   "deprecated": "This package is deprecated. Use @gelatocloud/gasless instead. See https://github.com/gelatodigital/gasless",

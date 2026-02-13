@@ -1,5 +1,17 @@
 # @gelatonetwork/smartwallet-react-privy
 
+## 1.0.0
+
+### Minor Changes
+
+- 3f0c94e: DEPRECATED: All @gelatonetwork/smartwallet packages are deprecated. Please migrate to @gelatocloud/gasless.
+
+### Patch Changes
+
+- Updated dependencies [3f0c94e]
+  - @gelatonetwork/smartwallet@0.1.0
+  - @gelatonetwork/smartwallet-react-types@1.0.0
+
 ## 0.0.28
 
 ### Patch Changes

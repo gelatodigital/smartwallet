@@ -1,6 +1,6 @@
 {
   "name": "@gelatonetwork/smartwallet-react-types",
-  "version": "0.0.28",
+  "version": "1.0.0",
   "author": "Gelato",
   "deprecated": "This package is deprecated. Use @gelatocloud/gasless instead. See https://github.com/gelatodigital/gasless",
   "description": "[DEPRECATED] Common react types",
