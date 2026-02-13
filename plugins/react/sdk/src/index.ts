@@ -1,7 +1,7 @@
 console.warn(
   "[@gelatonetwork/smartwallet-react-sdk] DEPRECATED: This package is deprecated. " +
-  "Please migrate to @gelatocloud/gasless. " +
-  "See https://github.com/gelatodigital/gasless"
+    "Please migrate to @gelatocloud/gasless. " +
+    "See https://github.com/gelatodigital/gasless"
 );
 
 import type { wallet } from "@gelatonetwork/smartwallet-react-types";
