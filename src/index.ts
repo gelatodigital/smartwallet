@@ -1,3 +1,9 @@
+console.warn(
+  "[@gelatonetwork/smartwallet] DEPRECATED: This package is deprecated. " +
+    "Please migrate to @gelatocloud/gasless. " +
+    "See https://github.com/gelatodigital/gasless"
+);
+
 import type { Account, Chain, PublicActions, PublicClient, Transport, WalletClient } from "viem";
 import { publicActions } from "viem";
 import { type PublicActionsL2, publicActionsL2 } from "viem/op-stack";

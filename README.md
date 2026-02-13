@@ -1,3 +1,14 @@
+# [DEPRECATED] Gelato SmartWallet SDK
+
+> **This package has been deprecated.** Use [`@gelatocloud/gasless`](https://www.npmjs.com/package/@gelatocloud/gasless) instead.
+>
+> - **New package:** [@gelatocloud/gasless](https://www.npmjs.com/package/@gelatocloud/gasless)
+> - **New repository:** [github.com/gelatodigital/gasless](https://github.com/gelatodigital/gasless)
+>
+> This repository is archived and will not receive further updates.
+
+<details><summary>Legacy documentation</summary>
+
 # Gelato SmartWallet SDK
 
 A Modern Account Abstraction SDK for building and interacting with smart wallets.
@@ -163,3 +174,5 @@ pnpm test
 ## License
 
 This project is licensed under the terms of the MIT license.
+
+</details>
